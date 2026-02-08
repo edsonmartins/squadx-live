@@ -1,18 +1,18 @@
 # ===========================================
-# PairUX Installer Service - Railway Configuration
+# SquadX Live Installer Service - Railway Configuration
 # ===========================================
-# Deploy this as a separate Railway service for installer.pairux.com
+# Deploy this as a separate Railway service for installer.squadx.live
 #
 # SETUP INSTRUCTIONS:
 # 1. Create a new Railway project or add a new service
 # 2. Connect to this GitHub repo
 # 3. In service settings, set "Root Directory" to: apps/installer
 # 4. Railway will use this railway.toml automatically
-# 5. Set custom domain to: installer.pairux.com
+# 5. Set custom domain to: installer.squadx.live
 #
 # Environment variables to set in Railway:
 # - LATEST_VERSION: The latest release version (e.g., "0.1.0")
-# - BASE_URL: https://installer.pairux.com
+# - BASE_URL: https://installer.squadx.live
 # ===========================================
 
 [build]

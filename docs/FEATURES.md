@@ -1,8 +1,8 @@
-# PairUX Features Specification
+# SquadX Live Features Specification
 
 ## Overview
 
-This document details all features for PairUX v1 (MVP) and outlines future enhancements.
+This document details all features for SquadX Live v1 (MVP) and outlines future enhancements.
 
 ---
 
@@ -65,19 +65,19 @@ This document details all features for PairUX v1 (MVP) and outlines future enhan
 
   ```bash
   # macOS
-  brew install --cask pairux
+  brew install --cask squadx-live
 
   # Windows
-  winget install PairUX.PairUX
+  winget install SquadX Live.SquadX Live
 
   # Ubuntu/Debian
-  sudo apt install pairux
+  sudo apt install squadx-live
 
   # Fedora/RHEL
-  sudo dnf install pairux
+  sudo dnf install squadx-live
 
   # Arch Linux
-  yay -S pairux-bin
+  yay -S squadx-live-bin
   ```
 
 - Direct download links (DMG, MSI, AppImage)
@@ -189,7 +189,7 @@ stateDiagram-v2
 
 ### 3.3 Join Links
 
-**Format**: `https://pairux.com/join/{session_id}`
+**Format**: `https://squadx-live.com/join/{session_id}`
 
 **Properties**:
 
@@ -564,7 +564,7 @@ stateDiagram-v2
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│  PairUX                              [_] [□] [X]    │
+│  SquadX Live                              [_] [□] [X]    │
 ├─────────────────────────────────────────────────────┤
 │                                                     │
 │  ┌─────────────────────────────────────────────┐   │
@@ -588,9 +588,9 @@ stateDiagram-v2
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│  PairUX - Session Active              [_] [□] [X]  │
+│  SquadX Live - Session Active              [_] [□] [X]  │
 ├─────────────────────────────────────────────────────┤
-│  Share Link: https://pairux.com/join/abc123        │
+│  Share Link: https://squadx-live.com/join/abc123        │
 │  [Copy Link]                                        │
 ├─────────────────────────────────────────────────────┤
 │  Sharing: Screen 1                    [Change]     │
@@ -613,7 +613,7 @@ stateDiagram-v2
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│  PairUX Viewer          🟢 Connected    [Settings] │
+│  SquadX Live Viewer          🟢 Connected    [Settings] │
 ├─────────────────────────────────────────────────────┤
 │                                                     │
 │  ┌─────────────────────────────────────────────┐   │

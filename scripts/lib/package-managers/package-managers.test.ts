@@ -36,29 +36,29 @@ function createSampleRelease(version = '1.0.0'): ReleaseInfo {
     tagName: `v${version}`,
     assets: [
       {
-        name: `PairUX-${version}-x64.exe`,
-        downloadUrl: `https://github.com/profullstack/pairux.com/releases/download/v${version}/PairUX-${version}-x64.exe`,
+        name: `SquadX-Live-${version}-x64.exe`,
+        downloadUrl: `https://github.com/squadx/squadx-live/releases/download/v${version}/SquadX-Live-${version}-x64.exe`,
         size: 100000000,
         contentType: 'application/octet-stream',
         sha256: 'ABC123DEF456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789A',
       },
       {
-        name: `PairUX-${version}-arm64.dmg`,
-        downloadUrl: `https://github.com/profullstack/pairux.com/releases/download/v${version}/PairUX-${version}-arm64.dmg`,
+        name: `SquadX-Live-${version}-arm64.dmg`,
+        downloadUrl: `https://github.com/squadx/squadx-live/releases/download/v${version}/SquadX-Live-${version}-arm64.dmg`,
         size: 120000000,
         contentType: 'application/octet-stream',
         sha256: 'DEF456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF01',
       },
       {
-        name: `PairUX-${version}-x64.dmg`,
-        downloadUrl: `https://github.com/profullstack/pairux.com/releases/download/v${version}/PairUX-${version}-x64.dmg`,
+        name: `SquadX-Live-${version}-x64.dmg`,
+        downloadUrl: `https://github.com/squadx/squadx-live/releases/download/v${version}/SquadX-Live-${version}-x64.dmg`,
         size: 115000000,
         contentType: 'application/octet-stream',
         sha256: 'GHI789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF012345',
       },
       {
-        name: `PairUX-${version}-x86_64.AppImage`,
-        downloadUrl: `https://github.com/profullstack/pairux.com/releases/download/v${version}/PairUX-${version}-x86_64.AppImage`,
+        name: `SquadX-Live-${version}-x86_64.AppImage`,
+        downloadUrl: `https://github.com/squadx/squadx-live/releases/download/v${version}/SquadX-Live-${version}-x86_64.AppImage`,
         size: 95000000,
         contentType: 'application/octet-stream',
         sha256: 'JKL012ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF012345',
@@ -66,24 +66,24 @@ function createSampleRelease(version = '1.0.0'): ReleaseInfo {
     ],
     checksums: new Map([
       [
-        `PairUX-${version}-x64.exe`,
+        `SquadX-Live-${version}-x64.exe`,
         'ABC123DEF456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789A',
       ],
       [
-        `PairUX-${version}-arm64.dmg`,
+        `SquadX-Live-${version}-arm64.dmg`,
         'DEF456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF01',
       ],
       [
-        `PairUX-${version}-x64.dmg`,
+        `SquadX-Live-${version}-x64.dmg`,
         'GHI789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF012345',
       ],
       [
-        `PairUX-${version}-x86_64.AppImage`,
+        `SquadX-Live-${version}-x86_64.AppImage`,
         'JKL012ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF012345',
       ],
     ]),
     publishedAt: new Date('2024-01-15T10:00:00Z'),
-    releaseUrl: `https://github.com/profullstack/pairux.com/releases/tag/v${version}`,
+    releaseUrl: `https://github.com/squadx/squadx-live/releases/tag/v${version}`,
     isPrerelease: false,
   };
 }
@@ -115,7 +115,7 @@ describe('WingetPackageManager', () => {
       expect(manifests).toHaveProperty('locale');
 
       // Check version manifest
-      expect(manifests.version).toContain('PackageIdentifier: Profullstack.PairUX');
+      expect(manifests.version).toContain('PackageIdentifier: SquadX.SquadXLive');
       expect(manifests.version).toContain('PackageVersion: 1.0.0');
       expect(manifests.version).toContain('ManifestType: version');
 
@@ -125,8 +125,8 @@ describe('WingetPackageManager', () => {
       expect(manifests.installer).toContain('InstallerSha256:');
 
       // Check locale manifest
-      expect(manifests.locale).toContain('Publisher: Profullstack, Inc.');
-      expect(manifests.locale).toContain('PackageName: PairUX');
+      expect(manifests.locale).toContain('Publisher: SquadX Team');
+      expect(manifests.locale).toContain('PackageName: SquadX Live');
       expect(manifests.locale).toContain('License: MIT');
     });
 
@@ -135,7 +135,7 @@ describe('WingetPackageManager', () => {
       const manifests = await winget.generateManifest(release);
 
       expect(manifests.installer).toContain(
-        'InstallerUrl: https://github.com/profullstack/pairux.com/releases/download/v2.0.0/PairUX-2.0.0-x64.exe'
+        'InstallerUrl: https://github.com/squadx/squadx-live/releases/download/v2.0.0/SquadX-Live-2.0.0-x64.exe'
       );
     });
 
@@ -177,7 +177,7 @@ describe('WingetPackageManager', () => {
       expect(exists).toBe(true);
       expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining(
-          'microsoft/winget-pkgs/contents/manifests/p/Profullstack/PairUX/1.0.0'
+          'microsoft/winget-pkgs/contents/manifests/p/SquadX/SquadXLive/1.0.0'
         ),
         expect.any(Object)
       );
@@ -253,7 +253,7 @@ describe('WingetPackageManager', () => {
       // 8. Create branch
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({ ref: 'refs/heads/pairux-1.0.0' }),
+        json: () => Promise.resolve({ ref: 'refs/heads/squadx-live-1.0.0' }),
       });
       // 9-11. Create/update 3 manifest files
       for (let i = 0; i < 3; i++) {
@@ -297,8 +297,8 @@ describe('HomebrewPackageManager', () => {
       {
         enabled: true,
         additionalConfig: {
-          tapOwner: 'profullstack',
-          tapRepo: 'homebrew-pairux',
+          tapOwner: 'squadx',
+          tapRepo: 'homebrew-squadx-live',
         },
       },
       logger
@@ -316,10 +316,10 @@ describe('HomebrewPackageManager', () => {
       const release = createSampleRelease('1.0.0');
       const cask = await homebrew.generateManifest(release);
 
-      expect(cask).toContain('cask "pairux"');
+      expect(cask).toContain('cask "squadx-live"');
       expect(cask).toContain('version "1.0.0"');
-      expect(cask).toContain('homepage "https://pairux.com"');
-      expect(cask).toContain('app "PairUX.app"');
+      expect(cask).toContain('homepage "https://squadx.live"');
+      expect(cask).toContain('app "SquadX Live.app"');
     });
 
     it('should include both arm64 and x64 URLs', async () => {
@@ -343,8 +343,8 @@ describe('ScoopPackageManager', () => {
       {
         enabled: true,
         additionalConfig: {
-          bucketOwner: 'profullstack',
-          bucketRepo: 'scoop-pairux',
+          bucketOwner: 'squadx',
+          bucketRepo: 'scoop-squadx-live',
         },
       },
       logger
@@ -364,7 +364,7 @@ describe('ScoopPackageManager', () => {
       const json = JSON.parse(manifest);
 
       expect(json.version).toBe('1.0.0');
-      expect(json.homepage).toBe('https://pairux.com');
+      expect(json.homepage).toBe('https://squadx.live');
       expect(json.license).toBe('MIT');
       expect(json.url).toContain('github.com');
       expect(json.hash).toBeDefined();
@@ -387,12 +387,12 @@ describe('AURPackageManager', () => {
       const release = createSampleRelease('1.0.0');
       const pkgbuild = await aur.generateManifest(release);
 
-      expect(pkgbuild).toContain('pkgname=pairux-bin');
+      expect(pkgbuild).toContain('pkgname=squadx-live-bin');
       expect(pkgbuild).toContain('pkgver=1.0.0');
       expect(pkgbuild).toContain('pkgrel=1');
       expect(pkgbuild).toContain("arch=('x86_64')");
       expect(pkgbuild).toContain("license=('MIT')");
-      expect(pkgbuild).toContain("provides=('pairux')");
+      expect(pkgbuild).toContain("provides=('squadx-live')");
     });
 
     it('should include AppImage download URL', async () => {
@@ -400,7 +400,7 @@ describe('AURPackageManager', () => {
       const pkgbuild = await aur.generateManifest(release);
 
       expect(pkgbuild).toContain('.AppImage');
-      expect(pkgbuild).toContain('github.com/profullstack/pairux.com/releases');
+      expect(pkgbuild).toContain('github.com/squadx/squadx-live/releases');
     });
   });
 
@@ -450,16 +450,16 @@ describe('ChocolateyPackageManager', () => {
       const files = await chocolatey.generateManifest(release);
 
       // Should return multiple files
-      expect(files).toHaveProperty('pairux.nuspec');
+      expect(files).toHaveProperty('squadx-live.nuspec');
       expect(files).toHaveProperty('tools/chocolateyInstall.ps1');
       expect(files).toHaveProperty('tools/chocolateyUninstall.ps1');
 
       // Check nuspec content
-      const nuspec = files['pairux.nuspec'];
-      expect(nuspec).toContain('<id>pairux</id>');
+      const nuspec = files['squadx-live.nuspec'];
+      expect(nuspec).toContain('<id>squadx-live</id>');
       expect(nuspec).toContain('<version>1.0.0</version>');
-      expect(nuspec).toContain('<authors>Profullstack, Inc.</authors>');
-      expect(nuspec).toContain('<projectUrl>https://pairux.com</projectUrl>');
+      expect(nuspec).toContain('<authors>SquadX Team</authors>');
+      expect(nuspec).toContain('<projectUrl>https://squadx.live</projectUrl>');
     });
   });
 
@@ -503,7 +503,7 @@ describe('GentooPackageManager', () => {
       const ebuild = files[ebuildKey];
       expect(ebuild).toContain('EAPI=8');
       expect(ebuild).toContain('DESCRIPTION="Collaborative screen sharing');
-      expect(ebuild).toContain('HOMEPAGE="https://pairux.com"');
+      expect(ebuild).toContain('HOMEPAGE="https://squadx.live"');
       expect(ebuild).toContain('LICENSE="MIT"');
       expect(ebuild).toContain('SLOT="0"');
     });
@@ -530,11 +530,11 @@ describe('NixPackageManager', () => {
       const release = createSampleRelease('1.0.0');
       const nixExpr = await nix.generateManifest(release);
 
-      expect(nixExpr).toContain('pname = "pairux"');
+      expect(nixExpr).toContain('pname = "squadx-live"');
       expect(nixExpr).toContain('version = "1.0.0"');
       // Nix uses `meta = with lib;` syntax
       expect(nixExpr).toContain('meta = with lib;');
-      expect(nixExpr).toContain('homepage = "https://pairux.com"');
+      expect(nixExpr).toContain('homepage = "https://squadx.live"');
       expect(nixExpr).toContain('license = licenses.mit');
     });
   });

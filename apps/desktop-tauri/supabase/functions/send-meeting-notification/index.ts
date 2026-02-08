@@ -2,8 +2,8 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-const EMAIL_FROM = Deno.env.get("EMAIL_FROM") || "reunioes@pairux.com";
-const APP_URL = Deno.env.get("APP_URL") || "https://app.pairux.com";
+const EMAIL_FROM = Deno.env.get("EMAIL_FROM") || "reunioes@squadx.live";
+const APP_URL = Deno.env.get("APP_URL") || "https://app.squadx.live";
 
 interface NotificationPayload {
   meeting_id: string;
@@ -199,7 +199,7 @@ function buildInviteEmail(meeting: Meeting, userName: string, organizerName: str
           </div>
         </div>
         <div class="footer">
-          <p>Este email foi enviado pelo PairUX. <a href="${APP_URL}">Abrir PairUX</a></p>
+          <p>Este email foi enviado pelo SquadX Live. <a href="${APP_URL}">Abrir SquadX Live</a></p>
         </div>
       </div>
     </body>
@@ -241,7 +241,7 @@ function buildReminderEmail(meeting: Meeting, userName: string, date: string, ti
           <a href="${APP_URL}/calendar" class="btn">Abrir Agenda</a>
         </div>
         <div class="footer">
-          <p>Este email foi enviado pelo PairUX.</p>
+          <p>Este email foi enviado pelo SquadX Live.</p>
         </div>
       </div>
     </body>
@@ -285,7 +285,7 @@ function buildUpdateEmail(meeting: Meeting, userName: string, organizerName: str
           <a href="${APP_URL}/calendar" class="btn">Ver Detalhes</a>
         </div>
         <div class="footer">
-          <p>Este email foi enviado pelo PairUX.</p>
+          <p>Este email foi enviado pelo SquadX Live.</p>
         </div>
       </div>
     </body>
@@ -326,7 +326,7 @@ function buildCancelEmail(meeting: Meeting, userName: string, organizerName: str
           <p>Este horario agora esta disponivel na sua agenda.</p>
         </div>
         <div class="footer">
-          <p>Este email foi enviado pelo PairUX.</p>
+          <p>Este email foi enviado pelo SquadX Live.</p>
         </div>
       </div>
     </body>

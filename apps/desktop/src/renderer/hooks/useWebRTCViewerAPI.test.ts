@@ -5,7 +5,7 @@ import { useWebRTCViewerAPI } from './useWebRTCViewerAPI';
 // Mock modules
 vi.mock('../../shared/config', () => ({
   API_BASE_URL: 'http://localhost:3000',
-  APP_URL: 'https://pairux.com',
+  APP_URL: 'https://squadx.live',
 }));
 
 vi.mock('@/lib/ipc', () => ({

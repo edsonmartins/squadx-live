@@ -18,7 +18,7 @@ interface ApiResponse<T> {
 }
 
 // Settings key (same as in settings page)
-const SETTINGS_KEY = 'pairux-web-settings';
+const SETTINGS_KEY = 'squadx-live-web-settings';
 
 export default function StartHostPage() {
   const router = useRouter();

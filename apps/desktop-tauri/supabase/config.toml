@@ -1,7 +1,7 @@
-# Supabase Configuration for PairUX Desktop
+# Supabase Configuration for SquadX Live Desktop
 
 [project]
-name = "pairux-desktop"
+name = "squadx-live-desktop"
 
 # Edge Functions
 [functions.send-meeting-notification]
@@ -34,7 +34,7 @@ name = "pairux-desktop"
 # SUPABASE_URL - Your Supabase project URL
 # SUPABASE_SERVICE_ROLE_KEY - Service role key for admin access
 # RESEND_API_KEY - Resend.com API key for sending emails
-# EMAIL_FROM - From email address (e.g., reunioes@pairux.com)
+# EMAIL_FROM - From email address (e.g., reunioes@squadx.live)
 # APP_URL - Application URL for links in emails
 # GOOGLE_CLIENT_ID - Google OAuth client ID
 # GOOGLE_CLIENT_SECRET - Google OAuth client secret

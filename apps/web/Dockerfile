@@ -1,5 +1,5 @@
 # ===========================================
-# PairUX Web App - Railway Dockerfile
+# SquadX Live Web App - Railway Dockerfile
 # ===========================================
 # Multi-stage build for optimized production image
 # Uses Node.js 24 Alpine for minimal footprint

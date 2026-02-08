@@ -2,8 +2,8 @@ import { SignupForm } from '@/components/auth';
 import { Gift, CreditCard, Coins, Sparkles, Check } from 'lucide-react';
 
 export const metadata = {
-  title: 'Sign Up - PairUX',
-  description: 'Create a PairUX account to start sharing your screen',
+  title: 'Sign Up - SquadX Live',
+  description: 'Create a SquadX Live account to start sharing your screen',
 };
 
 export default function SignupPage() {
@@ -128,7 +128,7 @@ export default function SignupPage() {
       <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
         <h4 className="font-medium text-gray-900">How Credits Work</h4>
         <p className="mt-1 text-sm text-gray-600">
-          PairUX uses a credit-based system. Credits are used for SFU relay servers when you need
+          SquadX Live uses a credit-based system. Credits are used for SFU relay servers when you need
           more than 5 viewers. <span className="font-medium">$0.08 per viewer-hour at 720p</span>.
           Free tier P2P connections never expire.
         </p>

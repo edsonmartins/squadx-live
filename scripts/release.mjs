@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Release Script for PairUX Monorepo
+ * Release Script for SquadX Live Monorepo
  *
  * Usage:
  *   pnpm release patch     # 0.1.0 → 0.1.1
@@ -155,7 +155,7 @@ function main() {
     console.log('  2. A GitHub Release will be created automatically');
     console.log('  3. Package managers will be updated via the submit-packages workflow');
     console.log('  4. Download links will be available at:');
-    console.log(`     https://github.com/profullstack/pairux.com/releases/tag/v${newVersion}`);
+    console.log(`     https://github.com/squadx/squadx-live/releases/tag/v${newVersion}`);
     console.log('\n💡 To manually submit to package managers:');
     console.log(`   pnpm submit-packages -v ${newVersion}`);
   } catch (error) {

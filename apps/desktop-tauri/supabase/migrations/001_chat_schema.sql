@@ -1,5 +1,5 @@
 -- =============================================
--- PairUX Chat System - Database Schema
+-- SquadX Live Chat System - Database Schema
 -- =============================================
 -- Run this migration in your Supabase SQL Editor
 -- =============================================

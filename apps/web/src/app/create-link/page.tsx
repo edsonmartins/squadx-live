@@ -76,7 +76,7 @@ export default function CreateLinkPage() {
   async function handleCopyLink() {
     if (!session) return;
 
-    const joinUrl = `https://pairux.com/join/${session.join_code}`;
+    const joinUrl = `https://squadx.live/join/${session.join_code}`;
     await navigator.clipboard.writeText(joinUrl);
     setCopied(true);
     setTimeout(() => {
@@ -84,7 +84,7 @@ export default function CreateLinkPage() {
     }, 2000);
   }
 
-  const joinUrl = session ? `https://pairux.com/join/${session.join_code}` : '';
+  const joinUrl = session ? `https://squadx.live/join/${session.join_code}` : '';
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">

@@ -17,8 +17,8 @@ import {
 import { detectOS, type OS, type Arch } from '@/lib/utils';
 import { trackDownload } from '@/lib/analytics';
 
-const GITHUB_REPO = 'profullstack/pairux.com';
-const INSTALLER_API = 'https://installer.pairux.com';
+const GITHUB_REPO = 'squadx/squadx-live';
+const INSTALLER_API = 'https://installer.squadx.live';
 
 interface ReleaseInfo {
   version: string;
@@ -45,19 +45,19 @@ function getDownloadUrls(version: string): ReleaseInfo['downloads'] {
   const base = `https://github.com/${GITHUB_REPO}/releases/download/v${version}`;
   return {
     // macOS
-    'mac-arm64-dmg': `${base}/PairUX-${version}-arm64.dmg`,
-    'mac-x64-dmg': `${base}/PairUX-${version}.dmg`,
-    'mac-arm64-zip': `${base}/PairUX-${version}-arm64-mac.zip`,
-    'mac-x64-zip': `${base}/PairUX-${version}-mac.zip`,
+    'mac-arm64-dmg': `${base}/SquadX-Live-${version}-arm64.dmg`,
+    'mac-x64-dmg': `${base}/SquadX-Live-${version}.dmg`,
+    'mac-arm64-zip': `${base}/SquadX-Live-${version}-arm64-mac.zip`,
+    'mac-x64-zip': `${base}/SquadX-Live-${version}-mac.zip`,
     // Windows
-    'win-x64-exe': `${base}/PairUX.Setup.${version}.exe`,
+    'win-x64-exe': `${base}/SquadX-Live.Setup.${version}.exe`,
     // Linux
-    'linux-x64-appimage': `${base}/PairUX-${version}-x86_64.AppImage`,
-    'linux-arm64-appimage': `${base}/PairUX-${version}-arm64.AppImage`,
-    'linux-x64-deb': `${base}/PairUX-${version}-amd64.deb`,
-    'linux-arm64-deb': `${base}/PairUX-${version}-arm64.deb`,
-    'linux-x64-rpm': `${base}/PairUX-${version}-x86_64.rpm`,
-    'linux-arm64-rpm': `${base}/PairUX-${version}-aarch64.rpm`,
+    'linux-x64-appimage': `${base}/SquadX-Live-${version}-x86_64.AppImage`,
+    'linux-arm64-appimage': `${base}/SquadX-Live-${version}-arm64.AppImage`,
+    'linux-x64-deb': `${base}/SquadX-Live-${version}-amd64.deb`,
+    'linux-arm64-deb': `${base}/SquadX-Live-${version}-arm64.deb`,
+    'linux-x64-rpm': `${base}/SquadX-Live-${version}-x86_64.rpm`,
+    'linux-arm64-rpm': `${base}/SquadX-Live-${version}-aarch64.rpm`,
   };
 }
 
@@ -136,8 +136,8 @@ export function DownloadSection() {
     void fetchRelease();
   }, []);
 
-  const shellInstallCommand = 'curl -fsSL https://installer.pairux.com/install.sh | bash';
-  const psInstallCommand = 'irm https://installer.pairux.com/install.ps1 | iex';
+  const shellInstallCommand = 'curl -fsSL https://installer.squadx.live/install.sh | bash';
+  const psInstallCommand = 'irm https://installer.squadx.live/install.ps1 | iex';
 
   if (loading) {
     return (
@@ -227,9 +227,9 @@ export function DownloadSection() {
             <div className="mt-6 border-t border-gray-200 pt-4">
               <p className="text-center text-sm text-gray-600">
                 After installing, use{' '}
-                <code className="rounded bg-gray-200 px-1.5 py-0.5 text-xs">pairux update</code> to
+                <code className="rounded bg-gray-200 px-1.5 py-0.5 text-xs">squadx-live update</code> to
                 upgrade and{' '}
-                <code className="rounded bg-gray-200 px-1.5 py-0.5 text-xs">pairux uninstall</code>{' '}
+                <code className="rounded bg-gray-200 px-1.5 py-0.5 text-xs">squadx-live uninstall</code>{' '}
                 to remove.
               </p>
             </div>

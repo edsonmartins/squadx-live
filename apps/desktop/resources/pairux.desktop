@@ -1,9 +1,9 @@
 [Desktop Entry]
-Name=PairUX
+Name=SquadX Live
 Comment=Screen sharing with remote control
-Exec=pairux %U
-Icon=pairux
+Exec=squadx-live %U
+Icon=squadx-live
 Type=Application
 Categories=Network;RemoteAccess;
-StartupWMClass=pairux
+StartupWMClass=squadx-live
 StartupNotify=true

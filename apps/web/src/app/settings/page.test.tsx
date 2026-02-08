@@ -26,7 +26,7 @@ vi.mock('@/components/notifications/NotificationPreferences', () => ({
   ),
 }));
 
-const SETTINGS_KEY = 'pairux-web-settings';
+const SETTINGS_KEY = 'squadx-live-web-settings';
 
 describe('SettingsPage', () => {
   beforeEach(() => {
@@ -214,7 +214,7 @@ describe('SettingsPage', () => {
     it('should display application info', () => {
       render(<SettingsPage />);
 
-      expect(screen.getByText('PairUX Web')).toBeInTheDocument();
+      expect(screen.getByText('SquadX Live Web')).toBeInTheDocument();
       expect(screen.getByText('Browser / PWA')).toBeInTheDocument();
       expect(screen.getByText(/screen share, recording, chat/i)).toBeInTheDocument();
     });

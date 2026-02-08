@@ -37,7 +37,7 @@ export function Login({ onLogin }: LoginProps) {
       <div className="w-full max-w-md">
         <div className="rounded-lg bg-slate-800 p-8 shadow-xl">
           <div className="mb-8 text-center">
-            <h1 className="text-3xl font-bold text-white">PairUX</h1>
+            <h1 className="text-3xl font-bold text-white">SquadX Live</h1>
             <p className="mt-2 text-slate-400">
               Collaborative screen sharing with remote control
             </p>

@@ -9,7 +9,7 @@ import type { ReleaseInfo, SubmissionResult } from './types.js';
 
 const WINGET_OWNER = 'microsoft';
 const WINGET_REPO = 'winget-pkgs';
-const PACKAGE_IDENTIFIER = 'Profullstack.PairUX';
+const PACKAGE_IDENTIFIER = 'SquadX.SquadXLive';
 
 export class WingetPackageManager extends BasePackageManager {
   readonly name = 'winget';
@@ -23,7 +23,7 @@ export class WingetPackageManager extends BasePackageManager {
 
   async checkExisting(version: string): Promise<boolean> {
     try {
-      const path = `manifests/p/Profullstack/PairUX/${version}/${PACKAGE_IDENTIFIER}.yaml`;
+      const path = `manifests/s/SquadX/SquadXLive/${version}/${PACKAGE_IDENTIFIER}.yaml`;
       const file = await this.getFileContent(WINGET_OWNER, WINGET_REPO, path);
       return file !== null;
     } catch {
@@ -41,7 +41,7 @@ export class WingetPackageManager extends BasePackageManager {
     const x64Sha = x64Exe?.sha256?.toUpperCase() ?? 'SHA256_PLACEHOLDER';
     const downloadUrl =
       x64Exe?.downloadUrl ??
-      `https://github.com/profullstack/pairux.com/releases/download/v${release.version}/PairUX-${release.version}-x64.exe`;
+      `https://github.com/squadx/squadx-live/releases/download/v${release.version}/SquadX-Live-${release.version}-x64.exe`;
 
     // Version manifest
     const versionManifest = `# yaml-language-server: $schema=https://aka.ms/winget-manifest.version.1.10.0.schema.json
@@ -81,17 +81,17 @@ ManifestVersion: 1.10.0
 PackageIdentifier: ${PACKAGE_IDENTIFIER}
 PackageVersion: ${release.version}
 PackageLocale: en-US
-Publisher: Profullstack, Inc.
-PublisherUrl: https://pairux.com
-PublisherSupportUrl: https://github.com/profullstack/pairux.com/issues
-PrivacyUrl: https://pairux.com/privacy
-PackageName: PairUX
-PackageUrl: https://pairux.com
+Publisher: SquadX Team
+PublisherUrl: https://squadx.live
+PublisherSupportUrl: https://github.com/squadx/squadx-live/issues
+PrivacyUrl: https://squadx.live/privacy
+PackageName: SquadX Live
+PackageUrl: https://squadx.live
 License: MIT
-LicenseUrl: https://github.com/profullstack/pairux.com/blob/master/LICENSE
+LicenseUrl: https://github.com/squadx/squadx-live/blob/master/LICENSE
 ShortDescription: Collaborative screen sharing with remote control
 Description: |-
-  PairUX enables real-time screen sharing with simultaneous local and remote
+  SquadX Live enables real-time screen sharing with simultaneous local and remote
   mouse/keyboard control for pair programming and collaboration.
 Tags:
   - screen-sharing
@@ -100,7 +100,7 @@ Tags:
   - webrtc
   - pair-programming
   - remote-desktop
-ReleaseNotesUrl: https://github.com/profullstack/pairux.com/releases/tag/v${release.version}
+ReleaseNotesUrl: https://github.com/squadx/squadx-live/releases/tag/v${release.version}
 ManifestType: defaultLocale
 ManifestVersion: 1.10.0
 `;
@@ -117,7 +117,7 @@ ManifestVersion: 1.10.0
    */
   private async closeExistingPRs(forkOwner: string): Promise<void> {
     try {
-      // Search for open PRs from our fork that match PairUX
+      // Search for open PRs from our fork that match SquadX Live
       const searchQuery = `repo:${WINGET_OWNER}/${WINGET_REPO} is:pr is:open author:${forkOwner} ${PACKAGE_IDENTIFIER} in:title`;
       const searchResult = await this.githubRequest<{
         items: { number: number; title: string }[];
@@ -178,7 +178,7 @@ ManifestVersion: 1.10.0
       };
     }
 
-    const basePath = `manifests/p/Profullstack/PairUX/${release.version}`;
+    const basePath = `manifests/s/SquadX/SquadXLive/${release.version}`;
 
     // Submit via PR to microsoft/winget-pkgs
     // First, we need to fork the repo to our account
@@ -220,7 +220,7 @@ ManifestVersion: 1.10.0
       // May fail if already up to date
     }
 
-    const branchName = `pairux-${release.version}`;
+    const branchName = `squadx-live-${release.version}`;
 
     // Submit via cross-fork PR to microsoft/winget-pkgs
     return this.submitCrossForkPR({
@@ -243,7 +243,7 @@ ManifestVersion: 1.10.0
 
 ## Pull Request
 
-This is an automated submission from the PairUX release pipeline.
+This is an automated submission from the SquadX Live release pipeline.
 
 ### Validation
 
@@ -253,7 +253,7 @@ This is an automated submission from the PairUX release pipeline.
 
 ---
 
-Created by [PairUX Submit Packages](https://github.com/profullstack/pairux.com)`,
+Created by [SquadX Live Submit Packages](https://github.com/squadx/squadx-live)`,
     });
   }
 }

@@ -1,5 +1,5 @@
 # ===========================================
-# PairUX TURN Server - coturn
+# SquadX Live TURN Server - coturn
 # ===========================================
 # STUN/TURN server for WebRTC NAT traversal
 # Deploy on Fly.io or VPS (NOT Railway - no UDP support)

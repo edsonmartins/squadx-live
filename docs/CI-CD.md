@@ -1,8 +1,8 @@
-# PairUX CI/CD Pipeline
+# SquadX Live CI/CD Pipeline
 
 ## Overview
 
-This document details the GitHub Actions workflows for PairUX, covering PR checks, web deployment, desktop builds, and package manager publishing.
+This document details the GitHub Actions workflows for SquadX Live, covering PR checks, web deployment, desktop builds, and package manager publishing.
 
 ---
 
@@ -84,7 +84,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build web app
-        run: pnpm --filter @pairux/web build
+        run: pnpm --filter @squadx-live/web build
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
@@ -119,7 +119,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build desktop app
-        run: pnpm --filter @pairux/desktop build
+        run: pnpm --filter @squadx-live/desktop build
         env:
           # Skip signing for PR checks
           CSC_IDENTITY_AUTO_DISCOVERY: false
@@ -198,7 +198,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: pnpm --filter @pairux/web build
+        run: pnpm --filter @squadx-live/web build
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
@@ -236,10 +236,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: pnpm --filter @pairux/web build
+        run: pnpm --filter @squadx-live/web build
 
       - name: Export static
-        run: pnpm --filter @pairux/web export
+        run: pnpm --filter @squadx-live/web export
         continue-on-error: true
 
       - name: Upload artifact
@@ -339,7 +339,7 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" build.keychain
 
       - name: Build and sign
-        run: pnpm --filter @pairux/desktop build:mac --${{ matrix.arch }}
+        run: pnpm --filter @squadx-live/desktop build:mac --${{ matrix.arch }}
         env:
           CSC_LINK: ${{ secrets.MACOS_CERTIFICATE }}
           CSC_KEY_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
@@ -383,7 +383,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build and sign
-        run: pnpm --filter @pairux/desktop build:win --${{ matrix.arch }}
+        run: pnpm --filter @squadx-live/desktop build:win --${{ matrix.arch }}
         env:
           # Azure Key Vault signing
           AZURE_KEY_VAULT_URI: ${{ secrets.AZURE_KEY_VAULT_URI }}
@@ -432,7 +432,7 @@ jobs:
           sudo apt-get install -y rpm
 
       - name: Build
-        run: pnpm --filter @pairux/desktop build:linux --${{ matrix.arch }}
+        run: pnpm --filter @squadx-live/desktop build:linux --${{ matrix.arch }}
 
       - name: Import GPG key
         env:
@@ -499,38 +499,38 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ needs.validate.outputs.version }}
-          name: PairUX v${{ needs.validate.outputs.version }}
+          name: SquadX Live v${{ needs.validate.outputs.version }}
           draft: true
           prerelease: ${{ contains(needs.validate.outputs.version, '-') }}
           files: release/*
           body: |
-            ## PairUX v${{ needs.validate.outputs.version }}
+            ## SquadX Live v${{ needs.validate.outputs.version }}
 
             ### Installation
 
             **macOS (Homebrew)**
             ```bash
-            brew install --cask pairux
+            brew install --cask squadx-live
             ```
 
             **Windows (WinGet)**
             ```powershell
-            winget install PairUX.PairUX
+            winget install SquadX Live.SquadX Live
             ```
 
             **Linux (Debian/Ubuntu)**
             ```bash
-            sudo apt install pairux
+            sudo apt install squadx-live
             ```
 
             **Linux (Fedora)**
             ```bash
-            sudo dnf install pairux
+            sudo dnf install squadx-live
             ```
 
             **Linux (Arch)**
             ```bash
-            yay -S pairux-bin
+            yay -S squadx-live-bin
             ```
 
             ### Checksums
@@ -609,7 +609,7 @@ jobs:
       - name: Checkout tap repository
         uses: actions/checkout@v4
         with:
-          repository: pairux/homebrew-tap
+          repository: squadx-live/homebrew-tap
           token: ${{ secrets.TAP_GITHUB_TOKEN }}
           path: homebrew-tap
 
@@ -623,23 +623,23 @@ jobs:
           X64_SHA=$(echo "$CHECKSUMS" | grep "x64.dmg" | awk '{print $1}')
 
           # Update cask
-          cat > homebrew-tap/Casks/pairux.rb << EOF
-          cask "pairux" do
+          cat > homebrew-tap/Casks/squadx-live.rb << EOF
+          cask "squadx-live" do
             version "$VERSION"
             
             on_arm do
               sha256 "$ARM64_SHA"
-              url "https://github.com/profullstack/pairux.com/releases/download/v#{version}/PairUX-#{version}-arm64.dmg"
+              url "https://github.com/squadx/squadx-live/releases/download/v#{version}/SquadX Live-#{version}-arm64.dmg"
             end
             
             on_intel do
               sha256 "$X64_SHA"
-              url "https://github.com/profullstack/pairux.com/releases/download/v#{version}/PairUX-#{version}-x64.dmg"
+              url "https://github.com/squadx/squadx-live/releases/download/v#{version}/SquadX Live-#{version}-x64.dmg"
             end
             
-            name "PairUX"
+            name "SquadX Live"
             desc "Collaborative screen sharing with remote control"
-            homepage "https://pairux.com"
+            homepage "https://squadx.live"
             
             livecheck do
               url :url
@@ -649,12 +649,12 @@ jobs:
             auto_updates true
             depends_on macos: ">= :monterey"
             
-            app "PairUX.app"
+            app "SquadX Live.app"
             
             zap trash: [
-              "~/Library/Application Support/PairUX",
-              "~/Library/Caches/com.pairux.app",
-              "~/Library/Preferences/com.pairux.app.plist",
+              "~/Library/Application Support/SquadX Live",
+              "~/Library/Caches/com.squadx-live.app",
+              "~/Library/Preferences/com.squadx-live.app.plist",
             ]
           end
           EOF
@@ -664,8 +664,8 @@ jobs:
           cd homebrew-tap
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add Casks/pairux.rb
-          git commit -m "Update pairux to ${{ needs.get-release-info.outputs.version }}"
+          git add Casks/squadx-live.rb
+          git commit -m "Update squadx-live to ${{ needs.get-release-info.outputs.version }}"
           git push
 
   update-winget:
@@ -687,8 +687,8 @@ jobs:
           mkdir -p winget-manifests
 
           # Version manifest
-          cat > winget-manifests/PairUX.PairUX.yaml << EOF
-          PackageIdentifier: PairUX.PairUX
+          cat > winget-manifests/SquadX Live.SquadX Live.yaml << EOF
+          PackageIdentifier: SquadX Live.SquadX Live
           PackageVersion: $VERSION
           DefaultLocale: en-US
           ManifestType: version
@@ -696,8 +696,8 @@ jobs:
           EOF
 
           # Installer manifest
-          cat > winget-manifests/PairUX.PairUX.installer.yaml << EOF
-          PackageIdentifier: PairUX.PairUX
+          cat > winget-manifests/SquadX Live.SquadX Live.installer.yaml << EOF
+          PackageIdentifier: SquadX Live.SquadX Live
           PackageVersion: $VERSION
           Platform:
             - Windows.Desktop
@@ -710,24 +710,24 @@ jobs:
             - silentWithProgress
           Installers:
             - Architecture: x64
-              InstallerUrl: https://github.com/profullstack/pairux.com/releases/download/v${VERSION}/PairUX-${VERSION}-x64.msi
+              InstallerUrl: https://github.com/squadx/squadx-live/releases/download/v${VERSION}/SquadX Live-${VERSION}-x64.msi
               InstallerSha256: $X64_SHA
             - Architecture: arm64
-              InstallerUrl: https://github.com/profullstack/pairux.com/releases/download/v${VERSION}/PairUX-${VERSION}-arm64.msi
+              InstallerUrl: https://github.com/squadx/squadx-live/releases/download/v${VERSION}/SquadX Live-${VERSION}-arm64.msi
               InstallerSha256: $ARM64_SHA
           ManifestType: installer
           ManifestVersion: 1.4.0
           EOF
 
           # Locale manifest
-          cat > winget-manifests/PairUX.PairUX.locale.en-US.yaml << EOF
-          PackageIdentifier: PairUX.PairUX
+          cat > winget-manifests/SquadX Live.SquadX Live.locale.en-US.yaml << EOF
+          PackageIdentifier: SquadX Live.SquadX Live
           PackageVersion: $VERSION
           PackageLocale: en-US
-          Publisher: PairUX
-          PublisherUrl: https://pairux.com
-          PackageName: PairUX
-          PackageUrl: https://pairux.com
+          Publisher: SquadX Live
+          PublisherUrl: https://squadx.live
+          PackageName: SquadX Live
+          PackageUrl: https://squadx.live
           License: MIT
           ShortDescription: Collaborative screen sharing with remote control
           ManifestType: defaultLocale
@@ -739,15 +739,15 @@ jobs:
         with:
           token: ${{ secrets.WINGET_GITHUB_TOKEN }}
           repository: microsoft/winget-pkgs
-          branch: pairux-${{ needs.get-release-info.outputs.version }}
-          title: 'PairUX version ${{ needs.get-release-info.outputs.version }}'
+          branch: squadx-live-${{ needs.get-release-info.outputs.version }}
+          title: 'SquadX Live version ${{ needs.get-release-info.outputs.version }}'
           body: |
-            ## PairUX ${{ needs.get-release-info.outputs.version }}
+            ## SquadX Live ${{ needs.get-release-info.outputs.version }}
 
             Automated update from release workflow.
-          commit-message: 'Add PairUX version ${{ needs.get-release-info.outputs.version }}'
+          commit-message: 'Add SquadX Live version ${{ needs.get-release-info.outputs.version }}'
           add-paths: |
-            manifests/p/PairUX/PairUX/${{ needs.get-release-info.outputs.version }}/*
+            manifests/p/SquadX Live/SquadX Live/${{ needs.get-release-info.outputs.version }}/*
 
   update-apt-repo:
     name: Update APT Repository
@@ -757,16 +757,16 @@ jobs:
       - name: Checkout apt repo
         uses: actions/checkout@v4
         with:
-          repository: pairux/apt-repo
+          repository: squadx-live/apt-repo
           token: ${{ secrets.APT_REPO_TOKEN }}
           path: apt-repo
 
       - name: Download .deb files
         run: |
           VERSION=${{ needs.get-release-info.outputs.version }}
-          mkdir -p apt-repo/pool/main/p/pairux
-          curl -sL "https://github.com/profullstack/pairux.com/releases/download/v${VERSION}/pairux_${VERSION}_amd64.deb" \
-            -o "apt-repo/pool/main/p/pairux/pairux_${VERSION}_amd64.deb"
+          mkdir -p apt-repo/pool/main/p/squadx-live
+          curl -sL "https://github.com/squadx/squadx-live/releases/download/v${VERSION}/squadx-live_${VERSION}_amd64.deb" \
+            -o "apt-repo/pool/main/p/squadx-live/squadx-live_${VERSION}_amd64.deb"
 
       - name: Import GPG key
         env:
@@ -806,7 +806,7 @@ jobs:
       - name: Checkout rpm repo
         uses: actions/checkout@v4
         with:
-          repository: pairux/rpm-repo
+          repository: squadx-live/rpm-repo
           token: ${{ secrets.RPM_REPO_TOKEN }}
           path: rpm-repo
 
@@ -814,8 +814,8 @@ jobs:
         run: |
           VERSION=${{ needs.get-release-info.outputs.version }}
           mkdir -p rpm-repo/Packages
-          curl -sL "https://github.com/profullstack/pairux.com/releases/download/v${VERSION}/pairux-${VERSION}-1.x86_64.rpm" \
-            -o "rpm-repo/Packages/pairux-${VERSION}-1.x86_64.rpm"
+          curl -sL "https://github.com/squadx/squadx-live/releases/download/v${VERSION}/squadx-live-${VERSION}-1.x86_64.rpm" \
+            -o "rpm-repo/Packages/squadx-live-${VERSION}-1.x86_64.rpm"
 
       - name: Import GPG key
         env:
@@ -851,7 +851,7 @@ jobs:
     steps:
       - name: Checkout AUR package
         run: |
-          git clone ssh://aur@aur.archlinux.org/pairux-bin.git aur-package
+          git clone ssh://aur@aur.archlinux.org/squadx-live-bin.git aur-package
         env:
           SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_KEY }}
 
@@ -863,28 +863,28 @@ jobs:
           X64_SHA=$(echo "$CHECKSUMS" | grep "linux-x64.tar.gz" | awk '{print $1}')
 
           cat > aur-package/PKGBUILD << EOF
-          # Maintainer: PairUX <support@pairux.com>
-          pkgname=pairux-bin
+          # Maintainer: SquadX Live <support@squadx.live>
+          pkgname=squadx-live-bin
           pkgver=$VERSION
           pkgrel=1
           pkgdesc="Collaborative screen sharing with remote control"
           arch=('x86_64')
-          url="https://pairux.com"
+          url="https://squadx.live"
           license=('MIT')
           depends=('gtk3' 'libnotify' 'nss' 'libxss' 'libxtst' 'xdg-utils' 'at-spi2-core' 'util-linux-libs')
-          provides=('pairux')
-          conflicts=('pairux')
-          source=("https://github.com/profullstack/pairux.com/releases/download/v\${pkgver}/pairux-\${pkgver}-linux-x64.tar.gz")
+          provides=('squadx-live')
+          conflicts=('squadx-live')
+          source=("https://github.com/squadx/squadx-live/releases/download/v\${pkgver}/squadx-live-\${pkgver}-linux-x64.tar.gz")
           sha256sums=('$X64_SHA')
 
           package() {
               cd "\$srcdir"
-              install -dm755 "\$pkgdir/opt/pairux"
-              cp -r * "\$pkgdir/opt/pairux/"
+              install -dm755 "\$pkgdir/opt/squadx-live"
+              cp -r * "\$pkgdir/opt/squadx-live/"
               install -dm755 "\$pkgdir/usr/bin"
-              ln -s /opt/pairux/pairux "\$pkgdir/usr/bin/pairux"
-              install -Dm644 "\$pkgdir/opt/pairux/pairux.desktop" "\$pkgdir/usr/share/applications/pairux.desktop"
-              install -Dm644 "\$pkgdir/opt/pairux/resources/icon.png" "\$pkgdir/usr/share/pixmaps/pairux.png"
+              ln -s /opt/squadx-live/squadx-live "\$pkgdir/usr/bin/squadx-live"
+              install -Dm644 "\$pkgdir/opt/squadx-live/squadx-live.desktop" "\$pkgdir/usr/share/applications/squadx-live.desktop"
+              install -Dm644 "\$pkgdir/opt/squadx-live/resources/icon.png" "\$pkgdir/usr/share/pixmaps/squadx-live.png"
           }
           EOF
 
@@ -1082,15 +1082,15 @@ git push origin main --tags
 
 ```bash
 # Test macOS signing
-codesign --verify --deep --strict --verbose=2 PairUX.app
+codesign --verify --deep --strict --verbose=2 SquadX Live.app
 
 # Test notarization status
 xcrun notarytool history --apple-id YOUR_ID --team-id TEAM_ID
 
 # Verify Windows signature
-signtool verify /pa /v PairUX.msi
+signtool verify /pa /v SquadX Live.msi
 
 # Verify Linux packages
-dpkg-sig --verify pairux.deb
-rpm -K pairux.rpm
+dpkg-sig --verify squadx-live.deb
+rpm -K squadx-live.rpm
 ```

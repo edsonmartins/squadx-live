@@ -14,7 +14,7 @@ import {
 export const metadata: Metadata = {
   title: 'Documentation',
   description:
-    'Learn how to use PairUX: installation guides, system requirements, security information, and frequently asked questions.',
+    'Learn how to use SquadX Live: installation guides, system requirements, security information, and frequently asked questions.',
 };
 
 const tableOfContents = [
@@ -31,9 +31,9 @@ const tableOfContents = [
 
 const faqs = [
   {
-    question: 'Is PairUX free?',
+    question: 'Is SquadX Live free?',
     answer:
-      'Yes, PairUX is completely free and open source under the MIT license. There are no premium tiers or paid features.',
+      'Yes, SquadX Live is completely free and open source under the MIT license. There are no premium tiers or paid features.',
   },
   {
     question: 'Do viewers need to install anything?',
@@ -46,19 +46,19 @@ const faqs = [
       'Yes. All media streams are encrypted using WebRTC DTLS-SRTP encryption. The connection is peer-to-peer, meaning your screen data never passes through our servers.',
   },
   {
-    question: 'Can I self-host PairUX?',
+    question: 'Can I self-host SquadX Live?',
     answer:
-      "Yes. Since PairUX uses WebRTC, the screen sharing happens peer-to-peer. You only need to run your own TURN server for NAT traversal. The signaling can use Supabase's free tier or your own instance.",
+      "Yes. Since SquadX Live uses WebRTC, the screen sharing happens peer-to-peer. You only need to run your own TURN server for NAT traversal. The signaling can use Supabase's free tier or your own instance.",
   },
   {
     question: 'What happens if I lose connection?',
     answer:
-      'PairUX automatically attempts to reconnect. During brief disconnections, viewers will see a reconnecting indicator. For longer outages, viewers may need to rejoin using the same link.',
+      'SquadX Live automatically attempts to reconnect. During brief disconnections, viewers will see a reconnecting indicator. For longer outages, viewers may need to rejoin using the same link.',
   },
   {
     question: 'Can multiple viewers join a session?',
     answer:
-      'Currently, PairUX supports one viewer per session. Multi-viewer support is planned for a future release.',
+      'Currently, SquadX Live supports one viewer per session. Multi-viewer support is planned for a future release.',
   },
   {
     question: 'Does the viewer see my cursor?',
@@ -68,12 +68,12 @@ const faqs = [
   {
     question: 'Can I share audio?',
     answer:
-      'Audio sharing is on our roadmap but not yet implemented. Currently, PairUX is focused on visual screen sharing and control.',
+      'Audio sharing is on our roadmap but not yet implemented. Currently, SquadX Live is focused on visual screen sharing and control.',
   },
   {
-    question: 'How do I uninstall PairUX?',
+    question: 'How do I uninstall SquadX Live?',
     answer:
-      'Run "pairux uninstall" to completely remove PairUX, including the desktop app, launcher script, desktop entry, and icon. On macOS, you can also drag PairUX from Applications to the Trash.',
+      'Run "squadx-live uninstall" to completely remove SquadX Live, including the desktop app, launcher script, desktop entry, and icon. On macOS, you can also drag SquadX Live from Applications to the Trash.',
   },
 ];
 
@@ -88,7 +88,7 @@ export default function DocsPage() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900">Documentation</h1>
             <p className="mt-4 max-w-2xl text-lg text-gray-600">
-              Everything you need to know about using PairUX for collaborative screen sharing.
+              Everything you need to know about using SquadX Live for collaborative screen sharing.
             </p>
           </div>
         </section>
@@ -126,17 +126,17 @@ export default function DocsPage() {
                   <section id="getting-started">
                     <h2>Getting Started</h2>
                     <p>
-                      PairUX makes it easy to share your screen and collaborate in real-time.
+                      SquadX Live makes it easy to share your screen and collaborate in real-time.
                       Here&apos;s how to get started:
                     </p>
                     <ol>
                       <li>
                         <strong>Download the desktop app</strong> - Visit the{' '}
-                        <Link href="/download">download page</Link> and install PairUX on your
+                        <Link href="/download">download page</Link> and install SquadX Live on your
                         computer.
                       </li>
                       <li>
-                        <strong>Start a session</strong> - Open PairUX and click &quot;Start
+                        <strong>Start a session</strong> - Open SquadX Live and click &quot;Start
                         Session&quot; to begin sharing.
                       </li>
                       <li>
@@ -311,7 +311,7 @@ export default function DocsPage() {
                     </div>
 
                     <p>
-                      PairUX is designed with security as a core principle. Key security features
+                      SquadX Live is designed with security as a core principle. Key security features
                       include:
                     </p>
                     <ul>
@@ -345,7 +345,7 @@ export default function DocsPage() {
                     <h4>Screen Recording permission denied (macOS)</h4>
                     <p>
                       Go to System Preferences → Security & Privacy → Privacy → Screen Recording and
-                      enable PairUX.
+                      enable SquadX Live.
                     </p>
 
                     <h4>Viewer cannot connect</h4>
@@ -370,29 +370,29 @@ export default function DocsPage() {
                     <h3>Linux</h3>
                     <p>Run the built-in uninstall command to remove everything:</p>
                     <pre>
-                      <code>pairux uninstall</code>
+                      <code>squadx-live uninstall</code>
                     </pre>
                     <p>This removes the AppImage, launcher script, desktop entry, and icon.</p>
                     <p>To uninstall manually:</p>
                     <pre>
-                      <code>{`rm -rf ~/.pairux
-rm -f ~/.local/bin/pairux
-rm -f ~/.local/share/applications/pairux.desktop
-rm -f ~/.local/share/icons/hicolor/256x256/apps/pairux.png`}</code>
+                      <code>{`rm -rf ~/.squadx-live
+rm -f ~/.local/bin/squadx-live
+rm -f ~/.local/share/applications/squadx-live.desktop
+rm -f ~/.local/share/icons/hicolor/256x256/apps/squadx-live.png`}</code>
                     </pre>
 
                     <h3>macOS</h3>
                     <p>
-                      Drag <strong>PairUX.app</strong> from your Applications folder to the Trash.
+                      Drag <strong>SquadX Live.app</strong> from your Applications folder to the Trash.
                       To also remove the CLI launcher:
                     </p>
                     <pre>
-                      <code>rm -f ~/.local/bin/pairux</code>
+                      <code>rm -f ~/.local/bin/squadx-live</code>
                     </pre>
 
                     <h3>Windows</h3>
                     <p>
-                      Open <strong>Settings → Apps → Installed apps</strong>, find PairUX, and click{' '}
+                      Open <strong>Settings → Apps → Installed apps</strong>, find SquadX Live, and click{' '}
                       <strong>Uninstall</strong>. Alternatively, run the uninstaller from the Start
                       Menu.
                     </p>
@@ -419,14 +419,14 @@ rm -f ~/.local/share/icons/hicolor/256x256/apps/pairux.png`}</code>
                       <p className="mt-2 text-gray-600">
                         If you can&apos;t find what you&apos;re looking for, check out our{' '}
                         <Link
-                          href="https://github.com/profullstack/pairux.com/discussions"
+                          href="https://github.com/squadx/squadx-live/discussions"
                           className="text-primary-600 hover:underline"
                         >
                           GitHub Discussions
                         </Link>{' '}
                         or{' '}
                         <Link
-                          href="https://github.com/profullstack/pairux.com/issues"
+                          href="https://github.com/squadx/squadx-live/issues"
                           className="text-primary-600 hover:underline"
                         >
                           open an issue

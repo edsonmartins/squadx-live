@@ -155,7 +155,7 @@ export default function JoinPage({ params }: { params: Promise<{ joinCode: strin
                 <div className="bg-primary-600 flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-white">
                   P
                 </div>
-                <span className="text-xl font-bold text-gray-900">PairUX</span>
+                <span className="text-xl font-bold text-gray-900">SquadX Live</span>
               </Link>
             </div>
           </div>

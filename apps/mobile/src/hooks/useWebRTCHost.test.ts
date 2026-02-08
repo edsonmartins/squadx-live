@@ -5,7 +5,7 @@ import { createEventSource } from '../lib/event-source';
 import { getStoredAuth } from '../lib/secure-storage';
 
 vi.mock('../config', () => ({
-  API_BASE_URL: 'https://pairux.com',
+  API_BASE_URL: 'https://squadx.live',
 }));
 
 vi.mock('../lib/secure-storage', () => ({

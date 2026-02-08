@@ -2,8 +2,8 @@ import { Suspense } from 'react';
 import { LoginForm } from '@/components/auth';
 
 export const metadata = {
-  title: 'Sign In - PairUX',
-  description: 'Sign in to your PairUX account',
+  title: 'Sign In - SquadX Live',
+  description: 'Sign in to your SquadX Live account',
 };
 
 export default function LoginPage() {

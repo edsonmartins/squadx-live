@@ -1,8 +1,8 @@
-# PairUX Scaling Architecture
+# SquadX Live Scaling Architecture
 
 ## Overview
 
-This document outlines PairUX's scaling strategy, inspired by Jitsi's battle-tested architecture. The key principle: **start simple, scale when needed**.
+This document outlines SquadX Live's scaling strategy, inspired by Jitsi's battle-tested architecture. The key principle: **start simple, scale when needed**.
 
 ### Philosophy
 

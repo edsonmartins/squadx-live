@@ -66,7 +66,7 @@ const steps = [
   {
     number: '1',
     title: 'Install the Desktop App',
-    description: 'Download PairUX on your computer via your package manager or direct download.',
+    description: 'Download SquadX Live on your computer via your package manager or direct download.',
   },
   {
     number: '2',
@@ -106,7 +106,7 @@ export default function HomePage() {
                   <ArrowRight className="h-5 w-5" />
                 </Link>
                 <Link
-                  href="https://github.com/profullstack/pairux.com"
+                  href="https://github.com/squadx/squadx-live"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-6 py-3 text-base font-semibold text-gray-900 shadow transition-all hover:border-gray-400 hover:shadow-md"
@@ -195,7 +195,7 @@ export default function HomePage() {
                 Loved by developers and executives
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
-                ...and everyone in between. See what others are saying about PairUX.
+                ...and everyone in between. See what others are saying about SquadX Live.
               </p>
             </div>
 
@@ -241,7 +241,7 @@ export default function HomePage() {
             <p className="mt-8 text-center text-sm text-gray-500">
               Want to share your experience?{' '}
               <Link
-                href="https://github.com/profullstack/pairux.com/discussions"
+                href="https://github.com/squadx/squadx-live/discussions"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary-600 hover:underline"
@@ -261,7 +261,7 @@ export default function HomePage() {
                   Security you can trust
                 </h2>
                 <p className="mt-4 text-lg text-gray-600">
-                  PairUX is built with security at its core. Your screen data never touches our
+                  SquadX Live is built with security at its core. Your screen data never touches our
                   servers.
                 </p>
 
@@ -324,7 +324,7 @@ export default function HomePage() {
                 Ready to collaborate?
               </h2>
               <p className="text-primary-100 mx-auto mt-4 max-w-2xl text-lg">
-                Download PairUX and start sharing your screen in seconds. Free, open source, and
+                Download SquadX Live and start sharing your screen in seconds. Free, open source, and
                 privacy-focused.
               </p>
               <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">

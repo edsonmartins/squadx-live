@@ -1,6 +1,6 @@
-# Linux Setup Guide for PairUX
+# Linux Setup Guide for SquadX Live
 
-This guide covers Linux-specific setup, permissions, and troubleshooting for PairUX.
+This guide covers Linux-specific setup, permissions, and troubleshooting for SquadX Live.
 
 ## System Requirements
 
@@ -14,51 +14,51 @@ This guide covers Linux-specific setup, permissions, and troubleshooting for Pai
 ### Ubuntu/Debian (APT)
 
 ```bash
-# Add PairUX repository
-curl -fsSL https://pairux.com/linux/gpg | sudo gpg --dearmor -o /usr/share/keyrings/pairux-archive-keyring.gpg
-echo "deb [signed-by=/usr/share/keyrings/pairux-archive-keyring.gpg] https://pairux.com/linux/apt stable main" | sudo tee /etc/apt/sources.list.d/pairux.list
+# Add SquadX Live repository
+curl -fsSL https://squadx-live.com/linux/gpg | sudo gpg --dearmor -o /usr/share/keyrings/squadx-live-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/squadx-live-archive-keyring.gpg] https://squadx-live.com/linux/apt stable main" | sudo tee /etc/apt/sources.list.d/squadx-live.list
 
-# Install PairUX
+# Install SquadX Live
 sudo apt update
-sudo apt install pairux
+sudo apt install squadx-live
 ```
 
 ### Fedora/RHEL (DNF)
 
 ```bash
-# Add PairUX repository
-sudo dnf config-manager --add-repo https://pairux.com/linux/rpm/pairux.repo
+# Add SquadX Live repository
+sudo dnf config-manager --add-repo https://squadx-live.com/linux/rpm/squadx-live.repo
 
-# Install PairUX
-sudo dnf install pairux
+# Install SquadX Live
+sudo dnf install squadx-live
 ```
 
 ### Arch Linux (AUR)
 
 ```bash
 # Using yay
-yay -S pairux
+yay -S squadx-live
 
 # Or using paru
-paru -S pairux
+paru -S squadx-live
 ```
 
 ### AppImage (Universal)
 
 ```bash
 # Download AppImage
-wget https://github.com/pairux/pairux/releases/latest/download/PairUX-linux-x86_64.AppImage
+wget https://github.com/squadx-live/squadx-live/releases/latest/download/SquadX Live-linux-x86_64.AppImage
 
 # Make executable
-chmod +x PairUX-linux-x86_64.AppImage
+chmod +x SquadX Live-linux-x86_64.AppImage
 
 # Run
-./PairUX-linux-x86_64.AppImage
+./SquadX Live-linux-x86_64.AppImage
 ```
 
 ## Display Server Detection
 
-PairUX automatically detects your display server:
+SquadX Live automatically detects your display server:
 
 ### Check Your Display Server
 
@@ -117,17 +117,17 @@ If you encounter sandbox errors, you may need to disable the SUID sandbox:
 
 ```bash
 # Option 1: Run with --no-sandbox
-pairux --no-sandbox
+squadx-live --no-sandbox
 
 # Option 2: Set environment variable
 export ELECTRON_DISABLE_SANDBOX=1
-pairux
+squadx-live
 ```
 
 For persistent configuration, add to your `.bashrc` or `.zshrc`:
 
 ```bash
-alias pairux='pairux --no-sandbox'
+alias squadx-live='squadx-live --no-sandbox'
 ```
 
 ## Wayland Configuration
@@ -178,7 +178,7 @@ systemctl --user enable xdg-desktop-portal
 
 ### GNOME on Wayland
 
-GNOME works well with PairUX. Ensure these portals are installed:
+GNOME works well with SquadX Live. Ensure these portals are installed:
 
 ```bash
 sudo apt install xdg-desktop-portal-gnome  # Ubuntu/Debian
@@ -230,14 +230,14 @@ Wayland's security model restricts input injection. Current status:
 
 ### Using Xwayland for Remote Control
 
-You can run PairUX under Xwayland for input support:
+You can run SquadX Live under Xwayland for input support:
 
 ```bash
 # Force X11 mode
-GDK_BACKEND=x11 pairux
+GDK_BACKEND=x11 squadx-live
 
 # Or set DISPLAY explicitly
-DISPLAY=:0 pairux
+DISPLAY=:0 squadx-live
 ```
 
 ## Troubleshooting
@@ -288,7 +288,7 @@ sudo dnf install mesa-vulkan-drivers vulkan-tools
 Or run without GPU acceleration:
 
 ```bash
-pairux --disable-gpu
+squadx-live --disable-gpu
 ```
 
 ### Sandbox Errors
@@ -301,7 +301,7 @@ sudo chown root:root /path/to/chrome-sandbox
 sudo chmod 4755 /path/to/chrome-sandbox
 
 # Option 2: Disable sandbox (development only)
-pairux --no-sandbox
+squadx-live --no-sandbox
 ```
 
 ### No Audio in Recording
@@ -322,7 +322,7 @@ Check for missing dependencies:
 
 ```bash
 # Find missing libraries
-ldd /opt/pairux/pairux | grep "not found"
+ldd /opt/squadx-live/squadx-live | grep "not found"
 
 # Common missing libraries
 sudo apt install libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libgbm1 \
@@ -333,7 +333,7 @@ sudo apt install libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libgbm1 \
 
 ```bash
 # Make sure the executable is runnable
-chmod +x /opt/pairux/pairux
+chmod +x /opt/squadx-live/squadx-live
 
 # Check AppArmor (Ubuntu)
 sudo aa-status
@@ -344,20 +344,20 @@ getenforce
 
 ## Environment Variables
 
-Configure PairUX behavior with environment variables:
+Configure SquadX Live behavior with environment variables:
 
 ```bash
 # Force X11 backend (for Wayland users who want input support)
-GDK_BACKEND=x11 pairux
+GDK_BACKEND=x11 squadx-live
 
 # Enable verbose logging
-ELECTRON_ENABLE_LOGGING=1 pairux
+ELECTRON_ENABLE_LOGGING=1 squadx-live
 
 # Disable hardware acceleration
-LIBGL_ALWAYS_SOFTWARE=1 pairux
+LIBGL_ALWAYS_SOFTWARE=1 squadx-live
 
 # Wayland-specific
-XDG_SESSION_TYPE=wayland pairux
+XDG_SESSION_TYPE=wayland squadx-live
 ```
 
 ## Flatpak/Snap Notes
@@ -367,9 +367,9 @@ XDG_SESSION_TYPE=wayland pairux
 If using Flatpak, grant necessary permissions:
 
 ```bash
-flatpak override --user --socket=wayland com.pairux.PairUX
-flatpak override --user --socket=x11 com.pairux.PairUX
-flatpak override --user --device=dri com.pairux.PairUX
+flatpak override --user --socket=wayland com.squadx-live.SquadX Live
+flatpak override --user --socket=x11 com.squadx-live.SquadX Live
+flatpak override --user --device=dri com.squadx-live.SquadX Live
 ```
 
 ### Snap
@@ -377,12 +377,12 @@ flatpak override --user --device=dri com.pairux.PairUX
 Snap packages may have additional confinement. Check with:
 
 ```bash
-snap connections pairux
+snap connections squadx-live
 ```
 
 ## Getting Help
 
-- [Documentation](https://pairux.com/docs)
-- [GitHub Issues](https://github.com/pairux/pairux/issues)
-- [Community Forum](https://pairux.com/community)
-- IRC: #pairux on Libera.Chat
+- [Documentation](https://squadx-live.com/docs)
+- [GitHub Issues](https://github.com/squadx-live/squadx-live/issues)
+- [Community Forum](https://squadx-live.com/community)
+- IRC: #squadx-live on Libera.Chat

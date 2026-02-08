@@ -8,8 +8,8 @@ import { initializeMenu, showAboutDialog } from './platform';
 import { setMainWindow as setStreamingMainWindow } from './streaming';
 
 // Set app name early — used as Wayland app-id for KDE/GNOME icon lookup.
-// Must match the .desktop file name (pairux.desktop) and electron-builder executableName.
-app.setName('pairux');
+// Must match the .desktop file name (squadx-live.desktop) and electron-builder executableName.
+app.setName('squadx-live');
 
 // Load environment variables from .env file in development only.
 // In production, env vars are injected at build time by electron-vite.

@@ -4,7 +4,7 @@ import { Footer } from '@/components/footer';
 
 export const metadata: Metadata = {
   title: 'Changelog',
-  description: 'See what&apos;s new in PairUX. Release notes and version history.',
+  description: 'See what&apos;s new in SquadX Live. Release notes and version history.',
 };
 
 const releases = [
@@ -36,7 +36,7 @@ export default function ChangelogPage() {
                 Changelog
               </h1>
               <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
-                See what&apos;s new in PairUX
+                See what&apos;s new in SquadX Live
               </p>
             </div>
           </div>

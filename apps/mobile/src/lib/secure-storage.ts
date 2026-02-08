@@ -6,7 +6,7 @@
  */
 import * as SecureStore from 'expo-secure-store';
 
-const AUTH_KEY = 'pairux_auth';
+const AUTH_KEY = 'squadx_live_auth';
 
 export interface StoredAuth {
   accessToken: string;

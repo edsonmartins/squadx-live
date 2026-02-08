@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
   output: 'standalone',
 
   // Transpile shared packages
-  transpilePackages: ['@pairux/shared-types'],
+  transpilePackages: ['@squadx-live/shared-types'],
 
   // Image optimization
   images: {
@@ -58,7 +58,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/github',
-        destination: 'https://github.com/profullstack/pairux.com',
+        destination: 'https://github.com/squadx/squadx-live',
         permanent: false,
       },
     ];

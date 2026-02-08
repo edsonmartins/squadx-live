@@ -5,7 +5,7 @@ import { useWebRTCHostAPI } from './useWebRTCHostAPI';
 // Mock the shared config
 vi.mock('../../shared/config', () => ({
   API_BASE_URL: 'http://localhost:3000',
-  APP_URL: 'https://pairux.com',
+  APP_URL: 'https://squadx.live',
 }));
 
 // Mock the IPC module

@@ -1,8 +1,8 @@
 # ===========================================
-# PairUX Desktop App Installer for Windows
+# SquadX Live Desktop App Installer for Windows
 # ===========================================
-# Usage: irm https://installer.pairux.com/install.ps1 | iex
-# Or: Invoke-WebRequest -Uri https://installer.pairux.com/install.ps1 -UseBasicParsing | Invoke-Expression
+# Usage: irm https://installer.squadx.live/install.ps1 | iex
+# Or: Invoke-WebRequest -Uri https://installer.squadx.live/install.ps1 -UseBasicParsing | Invoke-Expression
 # ===========================================
 
 #Requires -Version 5.1
@@ -10,9 +10,9 @@
 $ErrorActionPreference = 'Stop'
 
 # Configuration
-$GitHubRepo = 'profullstack/pairux.com'
-$InstallerUrl = if ($env:PAIRUX_INSTALLER_URL) { $env:PAIRUX_INSTALLER_URL } else { 'https://installer.pairux.com' }
-$InstallDir = if ($env:PAIRUX_INSTALL_DIR) { $env:PAIRUX_INSTALL_DIR } else { Join-Path $env:LOCALAPPDATA 'PairUX' }
+$GitHubRepo = 'squadx/squadx-live'
+$InstallerUrl = if ($env:PAIRUX_INSTALLER_URL) { $env:PAIRUX_INSTALLER_URL } else { 'https://installer.squadx.live' }
+$InstallDir = if ($env:PAIRUX_INSTALL_DIR) { $env:PAIRUX_INSTALL_DIR } else { Join-Path $env:LOCALAPPDATA 'SquadX Live' }
 $BinDir = if ($env:PAIRUX_BIN_DIR) { $env:PAIRUX_BIN_DIR } else { Join-Path $InstallDir 'bin' }
 
 # Colors
@@ -80,7 +80,7 @@ function Get-DownloadUrl {
     )
 
     # Windows uses NSIS installer
-    $filename = "PairUX.Setup.$Version.exe"
+    $filename = "SquadX Live.Setup.$Version.exe"
     return "https://github.com/$GitHubRepo/releases/download/v$Version/$filename"
 }
 
@@ -100,21 +100,21 @@ function Get-Download {
     }
 }
 
-# Install PairUX
-function Install-PairUX {
+# Install SquadX Live
+function Install-SquadX Live {
     param(
         [string]$Platform,
         [string]$Version
     )
 
-    $tempDir = Join-Path $env:TEMP "pairux-install-$(Get-Random)"
+    $tempDir = Join-Path $env:TEMP "squadx-live-install-$(Get-Random)"
     New-Item -ItemType Directory -Path $tempDir -Force | Out-Null
 
     try {
-        Write-Info "Downloading PairUX $Version for $Platform..."
+        Write-Info "Downloading SquadX Live $Version for $Platform..."
 
         $downloadUrl = Get-DownloadUrl -Platform $Platform -Version $Version
-        $installerPath = Join-Path $tempDir 'PairUX-Setup.exe'
+        $installerPath = Join-Path $tempDir 'SquadX Live-Setup.exe'
 
         Get-Download -Url $downloadUrl -OutFile $installerPath
 
@@ -127,7 +127,7 @@ function Install-PairUX {
             Write-Error "Installer failed with exit code: $($process.ExitCode)"
         }
 
-        Write-Success "PairUX $Version installed successfully!"
+        Write-Success "SquadX Live $Version installed successfully!"
     }
     finally {
         # Cleanup
@@ -156,21 +156,21 @@ function Add-ToPath {
 
 # Create desktop shortcut
 function New-DesktopShortcut {
-    $exePath = Join-Path $InstallDir 'pairux.exe'
+    $exePath = Join-Path $InstallDir 'squadx-live.exe'
 
     if (-not (Test-Path $exePath)) {
         return
     }
 
     $desktopPath = [Environment]::GetFolderPath('Desktop')
-    $shortcutPath = Join-Path $desktopPath 'PairUX.lnk'
+    $shortcutPath = Join-Path $desktopPath 'SquadX Live.lnk'
 
     try {
         $shell = New-Object -ComObject WScript.Shell
         $shortcut = $shell.CreateShortcut($shortcutPath)
         $shortcut.TargetPath = $exePath
         $shortcut.WorkingDirectory = $InstallDir
-        $shortcut.Description = 'PairUX Desktop App'
+        $shortcut.Description = 'SquadX Live Desktop App'
         $shortcut.Save()
 
         Write-Info 'Desktop shortcut created.'
@@ -182,21 +182,21 @@ function New-DesktopShortcut {
 
 # Create Start Menu shortcut
 function New-StartMenuShortcut {
-    $exePath = Join-Path $InstallDir 'pairux.exe'
+    $exePath = Join-Path $InstallDir 'squadx-live.exe'
 
     if (-not (Test-Path $exePath)) {
         return
     }
 
     $startMenuPath = Join-Path $env:APPDATA 'Microsoft\Windows\Start Menu\Programs'
-    $shortcutPath = Join-Path $startMenuPath 'PairUX.lnk'
+    $shortcutPath = Join-Path $startMenuPath 'SquadX Live.lnk'
 
     try {
         $shell = New-Object -ComObject WScript.Shell
         $shortcut = $shell.CreateShortcut($shortcutPath)
         $shortcut.TargetPath = $exePath
         $shortcut.WorkingDirectory = $InstallDir
-        $shortcut.Description = 'PairUX Desktop App'
+        $shortcut.Description = 'SquadX Live Desktop App'
         $shortcut.Save()
 
         Write-Info 'Start Menu shortcut created.'
@@ -260,7 +260,7 @@ function Main {
     $version = Get-LatestVersion
     Write-Info "Latest version: $version"
 
-    Install-PairUX -Platform $platform -Version $version
+    Install-SquadX Live -Platform $platform -Version $version
     Install-FFmpeg -Version $version
     Add-ToPath
     New-DesktopShortcut
@@ -269,8 +269,8 @@ function Main {
     Write-Host ''
     Write-Success 'Installation complete!'
     Write-Host ''
-    Write-Host "  Run 'pairux --help' to get started"
-    Write-Host '  Or visit https://pairux.com/docs for documentation'
+    Write-Host "  Run 'squadx-live --help' to get started"
+    Write-Host '  Or visit https://squadx.live/docs for documentation'
     Write-Host ''
 }
 

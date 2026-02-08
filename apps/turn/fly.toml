@@ -1,29 +1,29 @@
 # ===========================================
-# PairUX TURN Server - Fly.io Configuration
+# SquadX Live TURN Server - Fly.io Configuration
 # ===========================================
 # Fly.io supports UDP ports required for TURN
 #
 # SETUP INSTRUCTIONS:
 # 1. Install flyctl: curl -L https://fly.io/install.sh | sh
 # 2. Login: fly auth login
-# 3. Create app: fly apps create pairux-turn
+# 3. Create app: fly apps create squadx-live-turn
 # 4. Set secrets:
 #    fly secrets set TURN_PASSWORD="your-strong-password"
 # 5. Deploy: fly deploy
 # 6. Allocate IP: fly ips allocate-v4
-# 7. Add DNS: turn.pairux.com -> allocated IP
+# 7. Add DNS: turn.squadx-live.com -> allocated IP
 #
 # Cost: ~$5/month for shared-cpu-1x with 256MB RAM
 # ===========================================
 
-app = "pairux-turn"
+app = "squadx-live-turn"
 primary_region = "iad"
 
 [build]
   dockerfile = "Dockerfile"
 
 [env]
-  REALM = "turn.pairux.com"
+  REALM = "turn.squadx-live.com"
 
 [http_service]
   internal_port = 3478

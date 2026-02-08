@@ -1,15 +1,15 @@
 /**
  * Homebrew Cask Package Manager
  *
- * Submits to a Homebrew tap repository (profullstack/homebrew-pairux).
+ * Submits to a Homebrew tap repository (squadx/homebrew-squadx-live).
  */
 
 import { BasePackageManager } from './base.js';
 import type { PackageManagerConfig, ReleaseInfo, SubmissionResult, Logger } from './types.js';
 
-const DEFAULT_TAP_OWNER = 'profullstack';
-const DEFAULT_TAP_REPO = 'homebrew-pairux';
-const CASK_NAME = 'pairux';
+const DEFAULT_TAP_OWNER = 'squadx';
+const DEFAULT_TAP_REPO = 'homebrew-squadx-live';
+const CASK_NAME = 'squadx-live';
 
 export class HomebrewPackageManager extends BasePackageManager {
   readonly name = 'homebrew';
@@ -58,24 +58,24 @@ export class HomebrewPackageManager extends BasePackageManager {
     const arm64Sha = arm64Dmg?.sha256 ?? 'SHA256_PLACEHOLDER';
     const x64Sha = x64Dmg?.sha256 ?? 'SHA256_PLACEHOLDER';
 
-    return Promise.resolve(`cask "pairux" do
+    return Promise.resolve(`cask "squadx-live" do
   version "${release.version}"
 
   on_arm do
     sha256 "${arm64Sha}"
-    url "https://github.com/profullstack/pairux.com/releases/download/v#{version}/PairUX-#{version}-arm64.dmg",
-        verified: "github.com/profullstack/pairux.com/"
+    url "https://github.com/squadx/squadx-live/releases/download/v#{version}/SquadX-Live-#{version}-arm64.dmg",
+        verified: "github.com/squadx/squadx-live/"
   end
 
   on_intel do
     sha256 "${x64Sha}"
-    url "https://github.com/profullstack/pairux.com/releases/download/v#{version}/PairUX-#{version}-x64.dmg",
-        verified: "github.com/profullstack/pairux.com/"
+    url "https://github.com/squadx/squadx-live/releases/download/v#{version}/SquadX-Live-#{version}-x64.dmg",
+        verified: "github.com/squadx/squadx-live/"
   end
 
-  name "PairUX"
+  name "SquadX Live"
   desc "Collaborative screen sharing with remote control"
-  homepage "https://pairux.com"
+  homepage "https://squadx.live"
 
   livecheck do
     url :url
@@ -85,13 +85,13 @@ export class HomebrewPackageManager extends BasePackageManager {
   auto_updates true
   depends_on macos: ">= :monterey"
 
-  app "PairUX.app"
+  app "SquadX Live.app"
 
   zap trash: [
-    "~/Library/Application Support/PairUX",
-    "~/Library/Caches/com.pairux.desktop",
-    "~/Library/Preferences/com.pairux.desktop.plist",
-    "~/Library/Saved Application State/com.pairux.desktop.savedState",
+    "~/Library/Application Support/SquadX Live",
+    "~/Library/Caches/live.squadx.desktop",
+    "~/Library/Preferences/live.squadx.desktop.plist",
+    "~/Library/Saved Application State/live.squadx.desktop.savedState",
   ]
 end
 `);
@@ -121,7 +121,7 @@ end
     }
 
     // Ensure the tap repository exists
-    await this.ensureRepo(this.tapOwner, this.tapRepo, 'Homebrew tap for PairUX', false);
+    await this.ensureRepo(this.tapOwner, this.tapRepo, 'Homebrew tap for SquadX Live', false);
 
     // Ensure Casks directory exists by creating a placeholder if needed
     const casksDir = await this.getFileContent(this.tapOwner, this.tapRepo, 'Casks/.gitkeep');
@@ -149,7 +149,7 @@ end
           content: manifest,
         },
       ],
-      `Update pairux to ${release.version}`
+      `Update squadx-live to ${release.version}`
     );
   }
 }

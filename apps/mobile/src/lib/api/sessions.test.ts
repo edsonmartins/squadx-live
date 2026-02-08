@@ -4,7 +4,7 @@ import * as secureStorage from '../secure-storage';
 
 vi.mock('../secure-storage');
 vi.mock('../../config', () => ({
-  API_BASE_URL: 'https://pairux.com',
+  API_BASE_URL: 'https://squadx.live',
 }));
 
 const mockAuth = {
@@ -31,7 +31,7 @@ describe('sessionApi', () => {
       const result = await sessionApi.create({ allowGuestControl: true });
 
       expect(fetch).toHaveBeenCalledWith(
-        'https://pairux.com/api/sessions',
+        'https://squadx.live/api/sessions',
         expect.objectContaining({
           method: 'POST',
           body: JSON.stringify({ allowGuestControl: true }),
@@ -50,7 +50,7 @@ describe('sessionApi', () => {
 
       const result = await sessionApi.get('session-1');
       expect(fetch).toHaveBeenCalledWith(
-        'https://pairux.com/api/sessions/session-1',
+        'https://squadx.live/api/sessions/session-1',
         expect.objectContaining({
           headers: expect.objectContaining({
             Authorization: 'Bearer test-token',
@@ -70,7 +70,7 @@ describe('sessionApi', () => {
 
       const result = await sessionApi.list();
       expect(fetch).toHaveBeenCalledWith(
-        'https://pairux.com/api/sessions',
+        'https://squadx.live/api/sessions',
         expect.objectContaining({
           headers: expect.objectContaining({
             Authorization: 'Bearer test-token',
@@ -90,7 +90,7 @@ describe('sessionApi', () => {
 
       await sessionApi.end('session-1');
       expect(fetch).toHaveBeenCalledWith(
-        'https://pairux.com/api/sessions/session-1',
+        'https://squadx.live/api/sessions/session-1',
         expect.objectContaining({ method: 'DELETE' })
       );
     });
@@ -105,7 +105,7 @@ describe('sessionApi', () => {
 
       const result = await sessionApi.join('ABC123', 'Jane');
       expect(fetch).toHaveBeenCalledWith(
-        'https://pairux.com/api/sessions/join/ABC123',
+        'https://squadx.live/api/sessions/join/ABC123',
         expect.objectContaining({
           method: 'POST',
           body: JSON.stringify({ displayName: 'Jane' }),
@@ -124,7 +124,7 @@ describe('sessionApi', () => {
 
       const result = await sessionApi.lookup('ABC123');
       expect(fetch).toHaveBeenCalledWith(
-        'https://pairux.com/api/sessions/join/ABC123',
+        'https://squadx.live/api/sessions/join/ABC123',
         expect.objectContaining({
           headers: expect.objectContaining({
             Authorization: 'Bearer test-token',

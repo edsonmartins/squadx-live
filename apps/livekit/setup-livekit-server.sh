@@ -1,6 +1,6 @@
 #!/bin/bash
 # ===========================================
-# PairUX LiveKit SFU Server Setup Script
+# SquadX Live LiveKit SFU Server Setup Script
 # ===========================================
 # Run this on a fresh Ubuntu 24.04 droplet as root
 # This script is fully idempotent - safe to run multiple times
@@ -12,7 +12,7 @@ set -e
 LIVEKIT_API_KEY="${1:-}"
 LIVEKIT_API_SECRET="${2:-}"
 EXTERNAL_IP="${3:-$(curl -s ifconfig.me 2>/dev/null || curl -s icanhazip.com 2>/dev/null || echo '')}"
-DOMAIN="${4:-sfu.pairux.com}"
+DOMAIN="${4:-sfu.squadx-live.com}"
 
 # Colors
 RED='\033[0;31m'
@@ -37,14 +37,14 @@ if [ -z "$LIVEKIT_API_KEY" ] || [ -z "$LIVEKIT_API_SECRET" ]; then
   echo "Usage: $0 <LIVEKIT_API_KEY> <LIVEKIT_API_SECRET> [EXTERNAL_IP] [DOMAIN]"
   echo ""
   echo "Example:"
-  echo "  $0 APIpairux 'my-secure-secret'"
-  echo "  $0 APIpairux 'my-secure-secret' 146.190.163.128 sfu.pairux.com"
+  echo "  $0 APIsquadx-live 'my-secure-secret'"
+  echo "  $0 APIsquadx-live 'my-secure-secret' 146.190.163.128 sfu.squadx-live.com"
   exit 1
 fi
 
 echo ""
 echo -e "${BLUE}============================================${NC}"
-echo -e "${BLUE}  PairUX LiveKit SFU Server Setup${NC}"
+echo -e "${BLUE}  SquadX Live LiveKit SFU Server Setup${NC}"
 echo -e "${BLUE}============================================${NC}"
 echo ""
 info "External IP: $EXTERNAL_IP"
@@ -140,9 +140,9 @@ source $ZSH/oh-my-zsh.sh
 alias ll='ls -la'
 alias la='ls -A'
 alias l='ls -CF'
-alias lklogs='sudo docker compose -f /opt/pairux-livekit/docker-compose.yml logs -f'
-alias lkstatus='sudo docker compose -f /opt/pairux-livekit/docker-compose.yml ps'
-alias lkrestart='sudo docker compose -f /opt/pairux-livekit/docker-compose.yml restart'
+alias lklogs='sudo docker compose -f /opt/squadx-live-livekit/docker-compose.yml logs -f'
+alias lkstatus='sudo docker compose -f /opt/squadx-live-livekit/docker-compose.yml ps'
+alias lkrestart='sudo docker compose -f /opt/squadx-live-livekit/docker-compose.yml restart'
 
 # Path
 export PATH="$HOME/.local/bin:$PATH"
@@ -263,12 +263,12 @@ else
 fi
 
 info "Writing landing page..."
-mkdir -p /var/www/pairux-sfu
-cat > /var/www/pairux-sfu/index.html << 'INDEXEOF'
+mkdir -p /var/www/squadx-live-sfu
+cat > /var/www/squadx-live-sfu/index.html << 'INDEXEOF'
 <!DOCTYPE html>
 <html>
 <head>
-  <title>PairUX SFU Server</title>
+  <title>SquadX Live SFU Server</title>
   <style>
     body { font-family: system-ui, sans-serif; background: #0a0a0a; color: #e0e0e0; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
     .container { text-align: center; padding: 2rem; }
@@ -280,9 +280,9 @@ cat > /var/www/pairux-sfu/index.html << 'INDEXEOF'
 </head>
 <body>
   <div class="container">
-    <h1>PairUX SFU Server</h1>
+    <h1>SquadX Live SFU Server</h1>
     <p class="status">LiveKit is running</p>
-    <p class="info">Selective Forwarding Unit for <a href="https://pairux.com">pairux.com</a></p>
+    <p class="info">Selective Forwarding Unit for <a href="https://squadx-live.com">squadx-live.com</a></p>
   </div>
 </body>
 </html>
@@ -296,7 +296,7 @@ ${DOMAIN} {
     not header Connection *Upgrade*
   }
   handle @landing {
-    root * /var/www/pairux-sfu
+    root * /var/www/squadx-live-sfu
     file_server
   }
   handle {
@@ -318,7 +318,7 @@ fi
 
 info "Setting up LiveKit server..."
 
-LIVEKIT_DIR="/opt/pairux-livekit"
+LIVEKIT_DIR="/opt/squadx-live-livekit"
 mkdir -p "$LIVEKIT_DIR"
 
 # LiveKit config

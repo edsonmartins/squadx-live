@@ -82,7 +82,7 @@ function buildContextMenu(): Menu {
 
   // App name header
   menuItems.push({
-    label: 'PairUX',
+    label: 'SquadX Live',
     enabled: false,
   });
 
@@ -154,7 +154,7 @@ function buildContextMenu(): Menu {
 
   // Quit
   menuItems.push({
-    label: 'Quit PairUX',
+    label: 'Quit SquadX Live',
     click: () => callbacks?.onQuit(),
   });
 
@@ -167,7 +167,7 @@ function buildContextMenu(): Menu {
 function updateTooltip(): void {
   if (!tray) return;
 
-  let tooltip = 'PairUX';
+  let tooltip = 'SquadX Live';
 
   if (currentSession) {
     const statusText =
@@ -177,7 +177,7 @@ function updateTooltip(): void {
           ? 'Paused'
           : currentSession.status;
 
-    tooltip = `PairUX - Session ${statusText} (${String(currentSession.participantCount)} participant${currentSession.participantCount !== 1 ? 's' : ''})`;
+    tooltip = `SquadX Live - Session ${statusText} (${String(currentSession.participantCount)} participant${currentSession.participantCount !== 1 ? 's' : ''})`;
   }
 
   tray.setToolTip(tooltip);

@@ -4,7 +4,7 @@ import * as secureStorage from '../secure-storage';
 
 vi.mock('../secure-storage');
 vi.mock('../../config', () => ({
-  API_BASE_URL: 'https://pairux.com',
+  API_BASE_URL: 'https://squadx.live',
 }));
 
 describe('authApi', () => {
@@ -28,7 +28,7 @@ describe('authApi', () => {
 
       const result = await authApi.login('test@example.com', 'password');
 
-      expect(fetch).toHaveBeenCalledWith('https://pairux.com/api/auth/login', {
+      expect(fetch).toHaveBeenCalledWith('https://squadx.live/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: 'test@example.com', password: 'password' }),
@@ -75,7 +75,7 @@ describe('authApi', () => {
         lastName: 'Doe',
       });
 
-      expect(fetch).toHaveBeenCalledWith('https://pairux.com/api/auth/signup', {
+      expect(fetch).toHaveBeenCalledWith('https://squadx.live/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

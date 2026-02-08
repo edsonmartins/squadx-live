@@ -24,7 +24,7 @@ describe('secure-storage', () => {
     it('should store auth data in secure store', async () => {
       await storeAuth(mockAuth);
       expect(SecureStore.setItemAsync).toHaveBeenCalledWith(
-        'pairux_auth',
+        'squadx_live_auth',
         JSON.stringify(mockAuth)
       );
     });
@@ -56,7 +56,7 @@ describe('secure-storage', () => {
   describe('clearStoredAuth', () => {
     it('should delete auth data from secure store', async () => {
       await clearStoredAuth();
-      expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith('pairux_auth');
+      expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith('squadx_live_auth');
     });
   });
 

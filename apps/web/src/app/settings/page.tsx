@@ -42,7 +42,7 @@ const DEFAULT_SETTINGS: AppSettings = {
 };
 
 // Local storage key for settings
-const SETTINGS_KEY = 'pairux-web-settings';
+const SETTINGS_KEY = 'squadx-live-web-settings';
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
@@ -372,7 +372,7 @@ export default function SettingsPage() {
               <div className="space-y-3 p-6">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Application</span>
-                  <span className="text-sm font-medium text-gray-900">PairUX Web</span>
+                  <span className="text-sm font-medium text-gray-900">SquadX Live Web</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Platform</span>

@@ -1,6 +1,6 @@
-# PairUX Documentation
+# SquadX Live Documentation
 
-Welcome to the PairUX documentation. This folder contains comprehensive technical documentation for the PairUX collaborative screen sharing application.
+Welcome to the SquadX Live documentation. This folder contains comprehensive technical documentation for the SquadX Live collaborative screen sharing application.
 
 ## Documentation Index
 
@@ -37,7 +37,7 @@ Welcome to the PairUX documentation. This folder contains comprehensive technica
 ## Project Structure
 
 ```
-pairux/
+squadx-live/
 ├── apps/
 │   ├── web/          # Next.js marketing site + viewer UI
 │   └── desktop/      # Electron desktop host application
@@ -55,8 +55,8 @@ pairux/
 1. Clone the repository
 2. Install dependencies: `pnpm install`
 3. Start development:
-   - Web: `pnpm --filter @pairux/web dev`
-   - Desktop: `pnpm --filter @pairux/desktop dev`
+   - Web: `pnpm --filter @squadx-live/web dev`
+   - Desktop: `pnpm --filter @squadx-live/desktop dev`
 
 ## Contributing
 

@@ -378,7 +378,7 @@ export function SettingsPage() {
           <CardContent className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Application</span>
-              <span className="text-sm font-medium">PairUX</span>
+              <span className="text-sm font-medium">SquadX Live</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Version</span>

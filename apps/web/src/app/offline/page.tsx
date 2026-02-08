@@ -8,7 +8,7 @@ export default function OfflinePage() {
       <WifiOff className="mb-6 h-16 w-16 text-gray-400" />
       <h1 className="mb-4 text-2xl font-bold">You&apos;re offline</h1>
       <p className="mb-8 max-w-md text-center text-gray-400">
-        PairUX requires an internet connection for real-time screen sharing and collaboration.
+        SquadX Live requires an internet connection for real-time screen sharing and collaboration.
         Please check your connection and try again.
       </p>
       <button

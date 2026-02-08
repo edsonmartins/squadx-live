@@ -1,8 +1,8 @@
-# PairUX Distribution Guide
+# SquadX Live Distribution Guide
 
 ## Overview
 
-This document details the distribution strategy for PairUX across all supported platforms, including package manager publishing, code signing, and release management.
+This document details the distribution strategy for SquadX Live across all supported platforms, including package manager publishing, code signing, and release management.
 
 ---
 
@@ -23,25 +23,25 @@ This document details the distribution strategy for PairUX across all supported 
 
 ## Shell Installers (Quick Install)
 
-For users who prefer a one-liner installation, PairUX provides shell installers that automatically detect the platform and install the appropriate version.
+For users who prefer a one-liner installation, SquadX Live provides shell installers that automatically detect the platform and install the appropriate version.
 
 ### macOS / Linux
 
 ```sh
-curl -LsSf https://install.pairux.sh | sh
+curl -LsSf https://install.squadx-live.sh | sh
 ```
 
 This script will:
 
 1. Detect the operating system and architecture
 2. Download the appropriate installer
-3. Install PairUX to the standard location
+3. Install SquadX Live to the standard location
 4. Add to PATH if necessary
 
 ### Windows (Preferred)
 
 ```powershell
-winget install PairUX
+winget install SquadX Live
 ```
 
 ### Windows (Fallback)
@@ -49,7 +49,7 @@ winget install PairUX
 For systems without WinGet or for automated deployments:
 
 ```powershell
-irm https://install.pairux.sh/windows | iex
+irm https://install.squadx-live.sh/windows | iex
 ```
 
 This PowerShell script will:
@@ -61,7 +61,7 @@ This PowerShell script will:
 
 ### Shell Installer Implementation
 
-The shell installer is hosted at `install.pairux.sh` and should:
+The shell installer is hosted at `install.squadx-live.sh` and should:
 
 **Unix Script (`install.sh`)**:
 
@@ -99,8 +99,8 @@ case "$ARCH" in
     ;;
 esac
 
-VERSION="${PAIRUX_VERSION:-latest}"
-BASE_URL="https://github.com/profullstack/pairux.com/releases"
+VERSION="${SQUADX_VERSION:-latest}"
+BASE_URL="https://github.com/squadx/squadx-live/releases"
 
 if [ "$VERSION" = "latest" ]; then
   DOWNLOAD_URL="$BASE_URL/latest/download"
@@ -108,55 +108,55 @@ else
   DOWNLOAD_URL="$BASE_URL/download/v$VERSION"
 fi
 
-echo "Installing PairUX for $PLATFORM ($ARCH)..."
+echo "Installing SquadX Live for $PLATFORM ($ARCH)..."
 
 if [ "$PLATFORM" = "macos" ]; then
   # Download and mount DMG
   TEMP_DMG=$(mktemp).dmg
-  curl -LsSf "$DOWNLOAD_URL/PairUX-$ARCH.dmg" -o "$TEMP_DMG"
+  curl -LsSf "$DOWNLOAD_URL/SquadX Live-$ARCH.dmg" -o "$TEMP_DMG"
 
   # Mount, copy, unmount
   MOUNT_POINT=$(hdiutil attach "$TEMP_DMG" -nobrowse | tail -1 | awk '{print $3}')
-  cp -R "$MOUNT_POINT/PairUX.app" /Applications/
+  cp -R "$MOUNT_POINT/SquadX Live.app" /Applications/
   hdiutil detach "$MOUNT_POINT" -quiet
   rm "$TEMP_DMG"
 
-  echo "PairUX installed to /Applications/PairUX.app"
+  echo "SquadX Live installed to /Applications/SquadX Live.app"
 
 elif [ "$PLATFORM" = "linux" ]; then
   # Detect package manager
   if command -v apt-get >/dev/null 2>&1; then
     # Debian/Ubuntu - add repo and install
-    curl -fsSL https://pairux.com/apt/pairux.gpg | sudo gpg --dearmor -o /usr/share/keyrings/pairux.gpg
-    echo "deb [signed-by=/usr/share/keyrings/pairux.gpg] https://pairux.com/apt stable main" | sudo tee /etc/apt/sources.list.d/pairux.list
+    curl -fsSL https://squadx.live/apt/squadx-live.gpg | sudo gpg --dearmor -o /usr/share/keyrings/squadx-live.gpg
+    echo "deb [signed-by=/usr/share/keyrings/squadx-live.gpg] https://squadx.live/apt stable main" | sudo tee /etc/apt/sources.list.d/squadx-live.list
     sudo apt-get update
-    sudo apt-get install -y pairux
+    sudo apt-get install -y squadx-live
   elif command -v dnf >/dev/null 2>&1; then
     # Fedora/RHEL
-    sudo dnf config-manager --add-repo https://pairux.com/rpm/pairux.repo
-    sudo dnf install -y pairux
+    sudo dnf config-manager --add-repo https://squadx.live/rpm/squadx-live.repo
+    sudo dnf install -y squadx-live
   elif command -v pacman >/dev/null 2>&1; then
     # Arch - use AUR helper if available
     if command -v yay >/dev/null 2>&1; then
-      yay -S --noconfirm pairux-bin
+      yay -S --noconfirm squadx-live-bin
     elif command -v paru >/dev/null 2>&1; then
-      paru -S --noconfirm pairux-bin
+      paru -S --noconfirm squadx-live-bin
     else
-      echo "Please install pairux-bin from AUR manually"
+      echo "Please install squadx-live-bin from AUR manually"
       exit 1
     fi
   else
     # Fallback to AppImage
-    INSTALL_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/pairux"
+    INSTALL_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/squadx-live"
     mkdir -p "$INSTALL_DIR"
-    curl -LsSf "$DOWNLOAD_URL/PairUX-x86_64.AppImage" -o "$INSTALL_DIR/PairUX.AppImage"
-    chmod +x "$INSTALL_DIR/PairUX.AppImage"
+    curl -LsSf "$DOWNLOAD_URL/SquadX Live-x86_64.AppImage" -o "$INSTALL_DIR/SquadX Live.AppImage"
+    chmod +x "$INSTALL_DIR/SquadX Live.AppImage"
 
     # Create symlink
     mkdir -p "$HOME/.local/bin"
-    ln -sf "$INSTALL_DIR/PairUX.AppImage" "$HOME/.local/bin/pairux"
+    ln -sf "$INSTALL_DIR/SquadX Live.AppImage" "$HOME/.local/bin/squadx-live"
 
-    echo "PairUX installed to $INSTALL_DIR"
+    echo "SquadX Live installed to $INSTALL_DIR"
     echo "Make sure $HOME/.local/bin is in your PATH"
   fi
 fi
@@ -170,7 +170,7 @@ echo "Installation complete!"
 #Requires -Version 5.1
 $ErrorActionPreference = 'Stop'
 
-$Version = $env:PAIRUX_VERSION
+$Version = $env:SQUADX_VERSION
 if (-not $Version) { $Version = 'latest' }
 
 $Arch = if ([Environment]::Is64BitOperatingSystem) {
@@ -180,16 +180,16 @@ $Arch = if ([Environment]::Is64BitOperatingSystem) {
     exit 1
 }
 
-$BaseUrl = "https://github.com/profullstack/pairux.com/releases"
+$BaseUrl = "https://github.com/squadx/squadx-live/releases"
 $DownloadUrl = if ($Version -eq 'latest') {
-    "$BaseUrl/latest/download/PairUX-$Arch.msi"
+    "$BaseUrl/latest/download/SquadX Live-$Arch.msi"
 } else {
-    "$BaseUrl/download/v$Version/PairUX-$Arch.msi"
+    "$BaseUrl/download/v$Version/SquadX Live-$Arch.msi"
 }
 
-Write-Host "Installing PairUX for Windows ($Arch)..."
+Write-Host "Installing SquadX Live for Windows ($Arch)..."
 
-$TempMsi = Join-Path $env:TEMP "PairUX-$Arch.msi"
+$TempMsi = Join-Path $env:TEMP "SquadX Live-$Arch.msi"
 
 try {
     # Download MSI
@@ -203,7 +203,7 @@ try {
         exit 1
     }
 
-    Write-Host "PairUX installed successfully!"
+    Write-Host "SquadX Live installed successfully!"
 }
 finally {
     # Cleanup
@@ -217,9 +217,9 @@ finally {
 
 The installer scripts should be hosted on a CDN or static hosting:
 
-1. **Primary**: `https://install.pairux.sh` (redirects to raw script)
-2. **Windows**: `https://install.pairux.sh/windows` (PowerShell script)
-3. **Versioned**: `https://install.pairux.sh/v1.0.0` (specific version)
+1. **Primary**: `https://install.squadx-live.sh` (redirects to raw script)
+2. **Windows**: `https://install.squadx-live.sh/windows` (PowerShell script)
+3. **Versioned**: `https://install.squadx-live.sh/v1.0.0` (specific version)
 
 **Cloudflare Workers Example**:
 
@@ -232,7 +232,7 @@ export default {
     if (path === '/' || path === '/sh') {
       // Unix installer
       const script = await fetch(
-        'https://raw.githubusercontent.com/pairux/pairux/master/scripts/install.sh'
+        'https://raw.githubusercontent.com/squadx-live/squadx-live/master/scripts/install.sh'
       );
       return new Response(script.body, {
         headers: { 'Content-Type': 'text/plain' },
@@ -242,7 +242,7 @@ export default {
     if (path === '/windows' || path === '/ps1') {
       // Windows installer
       const script = await fetch(
-        'https://raw.githubusercontent.com/pairux/pairux/master/scripts/install.ps1'
+        'https://raw.githubusercontent.com/squadx-live/squadx-live/master/scripts/install.ps1'
       );
       return new Response(script.body, {
         headers: { 'Content-Type': 'text/plain' },
@@ -263,24 +263,24 @@ export default {
 **Repository Structure**:
 
 ```
-homebrew-pairux/
+homebrew-squadx-live/
 ├── Casks/
-│   └── pairux.rb
+│   └── squadx-live.rb
 └── README.md
 ```
 
-**Cask Formula** (`pairux.rb`):
+**Cask Formula** (`squadx-live.rb`):
 
 ```ruby
-cask "pairux" do
+cask "squadx-live" do
   version "1.0.0"
   sha256 "CHECKSUM_HERE"
 
-  url "https://github.com/profullstack/pairux.com/releases/download/v#{version}/PairUX-#{version}-arm64.dmg",
-      verified: "github.com/pairux/pairux/"
-  name "PairUX"
+  url "https://github.com/squadx/squadx-live/releases/download/v#{version}/SquadX Live-#{version}-arm64.dmg",
+      verified: "github.com/squadx-live/squadx-live/"
+  name "SquadX Live"
   desc "Collaborative screen sharing with remote control"
-  homepage "https://pairux.com"
+  homepage "https://squadx.live"
 
   livecheck do
     url :url
@@ -290,12 +290,12 @@ cask "pairux" do
   auto_updates true
   depends_on macos: ">= :monterey"
 
-  app "PairUX.app"
+  app "SquadX Live.app"
 
   zap trash: [
-    "~/Library/Application Support/PairUX",
-    "~/Library/Caches/com.pairux.app",
-    "~/Library/Preferences/com.pairux.app.plist",
+    "~/Library/Application Support/SquadX Live",
+    "~/Library/Caches/com.squadx-live.app",
+    "~/Library/Preferences/com.squadx-live.app.plist",
   ]
 end
 ```
@@ -311,11 +311,11 @@ end
 
 ```bash
 # Using official tap
-brew tap pairux/tap
-brew install --cask pairux
+brew tap squadx-live/tap
+brew install --cask squadx-live
 
 # Or if accepted to homebrew-cask
-brew install --cask pairux
+brew install --cask squadx-live
 ```
 
 ### Code Signing & Notarization
@@ -401,28 +401,28 @@ APPLE_TEAM_ID=XXXXXXXXXX
 ```
 manifests/
 └── p/
-    └── PairUX/
-        └── PairUX/
+    └── SquadX Live/
+        └── SquadX Live/
             └── 1.0.0/
-                ├── PairUX.PairUX.installer.yaml
-                ├── PairUX.PairUX.locale.en-US.yaml
-                └── PairUX.PairUX.yaml
+                ├── SquadX Live.SquadX Live.installer.yaml
+                ├── SquadX Live.SquadX Live.locale.en-US.yaml
+                └── SquadX Live.SquadX Live.yaml
 ```
 
-**Version Manifest** (`PairUX.PairUX.yaml`):
+**Version Manifest** (`SquadX Live.SquadX Live.yaml`):
 
 ```yaml
-PackageIdentifier: PairUX.PairUX
+PackageIdentifier: SquadX Live.SquadX Live
 PackageVersion: 1.0.0
 DefaultLocale: en-US
 ManifestType: version
 ManifestVersion: 1.4.0
 ```
 
-**Installer Manifest** (`PairUX.PairUX.installer.yaml`):
+**Installer Manifest** (`SquadX Live.SquadX Live.installer.yaml`):
 
 ```yaml
-PackageIdentifier: PairUX.PairUX
+PackageIdentifier: SquadX Live.SquadX Live
 PackageVersion: 1.0.0
 Platform:
   - Windows.Desktop
@@ -435,33 +435,33 @@ InstallModes:
   - silentWithProgress
 Installers:
   - Architecture: x64
-    InstallerUrl: https://github.com/profullstack/pairux.com/releases/download/v1.0.0/PairUX-1.0.0-x64.msi
+    InstallerUrl: https://github.com/squadx/squadx-live/releases/download/v1.0.0/SquadX Live-1.0.0-x64.msi
     InstallerSha256: CHECKSUM_HERE
     ProductCode: '{GUID-HERE}'
   - Architecture: arm64
-    InstallerUrl: https://github.com/profullstack/pairux.com/releases/download/v1.0.0/PairUX-1.0.0-arm64.msi
+    InstallerUrl: https://github.com/squadx/squadx-live/releases/download/v1.0.0/SquadX Live-1.0.0-arm64.msi
     InstallerSha256: CHECKSUM_HERE
     ProductCode: '{GUID-HERE}'
 ManifestType: installer
 ManifestVersion: 1.4.0
 ```
 
-**Locale Manifest** (`PairUX.PairUX.locale.en-US.yaml`):
+**Locale Manifest** (`SquadX Live.SquadX Live.locale.en-US.yaml`):
 
 ```yaml
-PackageIdentifier: PairUX.PairUX
+PackageIdentifier: SquadX Live.SquadX Live
 PackageVersion: 1.0.0
 PackageLocale: en-US
-Publisher: PairUX
-PublisherUrl: https://pairux.com
-PublisherSupportUrl: https://pairux.com/support
-PrivacyUrl: https://pairux.com/privacy
-PackageName: PairUX
-PackageUrl: https://pairux.com
+Publisher: SquadX Live
+PublisherUrl: https://squadx.live
+PublisherSupportUrl: https://squadx.live/support
+PrivacyUrl: https://squadx.live/privacy
+PackageName: SquadX Live
+PackageUrl: https://squadx.live
 License: MIT
-LicenseUrl: https://github.com/profullstack/pairux.com/blob/master/LICENSE
+LicenseUrl: https://github.com/squadx/squadx-live/blob/master/LICENSE
 ShortDescription: Collaborative screen sharing with remote control
-Description: PairUX enables real-time screen sharing with simultaneous local and remote mouse/keyboard control.
+Description: SquadX Live enables real-time screen sharing with simultaneous local and remote mouse/keyboard control.
 Tags:
   - screen-sharing
   - remote-control
@@ -481,7 +481,7 @@ ManifestVersion: 1.4.0
 **Installation Command**:
 
 ```powershell
-winget install PairUX.PairUX
+winget install SquadX Live.SquadX Live
 ```
 
 ### Code Signing (Windows)
@@ -553,8 +553,8 @@ apt-repo/
 ├── pool/
 │   └── main/
 │       └── p/
-│           └── pairux/
-│               └── pairux_1.0.0_amd64.deb
+│           └── squadx-live/
+│               └── squadx-live_1.0.0_amd64.deb
 ├── dists/
 │   └── stable/
 │       ├── main/
@@ -565,7 +565,7 @@ apt-repo/
 │       ├── Release
 │       ├── Release.gpg
 │       └── InRelease
-└── pairux.gpg
+└── squadx-live.gpg
 ```
 
 **Repository Setup Script**:
@@ -595,14 +595,14 @@ gpg --default-key $GPG_KEY_ID --clearsign -o InRelease Release
 
 ```bash
 # Add GPG key
-curl -fsSL https://pairux.com/apt/pairux.gpg | sudo gpg --dearmor -o /usr/share/keyrings/pairux.gpg
+curl -fsSL https://squadx.live/apt/squadx-live.gpg | sudo gpg --dearmor -o /usr/share/keyrings/squadx-live.gpg
 
 # Add repository
-echo "deb [signed-by=/usr/share/keyrings/pairux.gpg] https://pairux.com/apt stable main" | sudo tee /etc/apt/sources.list.d/pairux.list
+echo "deb [signed-by=/usr/share/keyrings/squadx-live.gpg] https://squadx.live/apt stable main" | sudo tee /etc/apt/sources.list.d/squadx-live.list
 
 # Install
 sudo apt update
-sudo apt install pairux
+sudo apt install squadx-live
 ```
 
 **electron-builder Configuration**:
@@ -623,11 +623,11 @@ linux:
       arch:
         - x64
   category: Network
-  maintainer: PairUX <support@pairux.com>
-  vendor: PairUX
+  maintainer: SquadX Live <support@squadx.live>
+  vendor: SquadX Live
   synopsis: Collaborative screen sharing
   description: |
-    PairUX enables real-time screen sharing with simultaneous
+    SquadX Live enables real-time screen sharing with simultaneous
     local and remote mouse/keyboard control.
 
 deb:
@@ -651,13 +651,13 @@ deb:
 ```
 rpm-repo/
 ├── Packages/
-│   └── pairux-1.0.0-1.x86_64.rpm
+│   └── squadx-live-1.0.0-1.x86_64.rpm
 ├── repodata/
 │   ├── repomd.xml
 │   ├── primary.xml.gz
 │   ├── filelists.xml.gz
 │   └── other.xml.gz
-└── RPM-GPG-KEY-pairux
+└── RPM-GPG-KEY-squadx-live
 ```
 
 **Repository Setup Script**:
@@ -683,68 +683,68 @@ gpg --default-key $GPG_KEY_ID --detach-sign --armor $REPO_DIR/repodata/repomd.xm
 
 ```bash
 # Add repository
-sudo dnf config-manager --add-repo https://pairux.com/rpm/pairux.repo
+sudo dnf config-manager --add-repo https://squadx.live/rpm/squadx-live.repo
 
 # Import GPG key
-sudo rpm --import https://pairux.com/rpm/RPM-GPG-KEY-pairux
+sudo rpm --import https://squadx.live/rpm/RPM-GPG-KEY-squadx-live
 
 # Install
-sudo dnf install pairux
+sudo dnf install squadx-live
 ```
 
-**Repository Config** (`pairux.repo`):
+**Repository Config** (`squadx-live.repo`):
 
 ```ini
-[pairux]
-name=PairUX Repository
-baseurl=https://pairux.com/rpm
+[squadx-live]
+name=SquadX Live Repository
+baseurl=https://squadx.live/rpm
 enabled=1
 gpgcheck=1
-gpgkey=https://pairux.com/rpm/RPM-GPG-KEY-pairux
+gpgkey=https://squadx.live/rpm/RPM-GPG-KEY-squadx-live
 ```
 
 ### Arch User Repository (AUR)
 
-**PKGBUILD** (`pairux-bin/PKGBUILD`):
+**PKGBUILD** (`squadx-live-bin/PKGBUILD`):
 
 ```bash
-# Maintainer: PairUX <support@pairux.com>
-pkgname=pairux-bin
+# Maintainer: SquadX Live <support@squadx.live>
+pkgname=squadx-live-bin
 pkgver=1.0.0
 pkgrel=1
 pkgdesc="Collaborative screen sharing with remote control"
 arch=('x86_64')
-url="https://pairux.com"
+url="https://squadx.live"
 license=('MIT')
 depends=('gtk3' 'libnotify' 'nss' 'libxss' 'libxtst' 'xdg-utils' 'at-spi2-core' 'util-linux-libs')
-provides=('pairux')
-conflicts=('pairux')
-source=("https://github.com/profullstack/pairux.com/releases/download/v${pkgver}/pairux-${pkgver}-linux-x64.tar.gz")
+provides=('squadx-live')
+conflicts=('squadx-live')
+source=("https://github.com/squadx/squadx-live/releases/download/v${pkgver}/squadx-live-${pkgver}-linux-x64.tar.gz")
 sha256sums=('CHECKSUM_HERE')
 
 package() {
     cd "$srcdir"
 
     # Install to /opt
-    install -dm755 "$pkgdir/opt/pairux"
-    cp -r * "$pkgdir/opt/pairux/"
+    install -dm755 "$pkgdir/opt/squadx-live"
+    cp -r * "$pkgdir/opt/squadx-live/"
 
     # Create symlink
     install -dm755 "$pkgdir/usr/bin"
-    ln -s /opt/pairux/pairux "$pkgdir/usr/bin/pairux"
+    ln -s /opt/squadx-live/squadx-live "$pkgdir/usr/bin/squadx-live"
 
     # Desktop file
-    install -Dm644 "$pkgdir/opt/pairux/pairux.desktop" "$pkgdir/usr/share/applications/pairux.desktop"
+    install -Dm644 "$pkgdir/opt/squadx-live/squadx-live.desktop" "$pkgdir/usr/share/applications/squadx-live.desktop"
 
     # Icon
-    install -Dm644 "$pkgdir/opt/pairux/resources/icon.png" "$pkgdir/usr/share/pixmaps/pairux.png"
+    install -Dm644 "$pkgdir/opt/squadx-live/resources/icon.png" "$pkgdir/usr/share/pixmaps/squadx-live.png"
 }
 ```
 
 **Publishing Process**:
 
 1. Create AUR account
-2. Clone AUR package: `git clone ssh://aur@aur.archlinux.org/pairux-bin.git`
+2. Clone AUR package: `git clone ssh://aur@aur.archlinux.org/squadx-live-bin.git`
 3. Add PKGBUILD and .SRCINFO
 4. Push to AUR
 
@@ -752,14 +752,14 @@ package() {
 
 ```bash
 # Using yay
-yay -S pairux-bin
+yay -S squadx-live-bin
 
 # Using paru
-paru -S pairux-bin
+paru -S squadx-live-bin
 
 # Manual
-git clone https://aur.archlinux.org/pairux-bin.git
-cd pairux-bin
+git clone https://aur.archlinux.org/squadx-live-bin.git
+cd squadx-live-bin
 makepkg -si
 ```
 
@@ -770,7 +770,7 @@ makepkg -si
 ```yaml
 # electron-builder.yml
 appImage:
-  artifactName: PairUX-${version}-${arch}.AppImage
+  artifactName: SquadX Live-${version}-${arch}.AppImage
   category: Network
 ```
 
@@ -783,13 +783,13 @@ appImage:
 
 ```bash
 # Download
-wget https://github.com/profullstack/pairux.com/releases/download/v1.0.0/PairUX-1.0.0-x86_64.AppImage
+wget https://github.com/squadx/squadx-live/releases/download/v1.0.0/SquadX Live-1.0.0-x86_64.AppImage
 
 # Make executable
-chmod +x PairUX-1.0.0-x86_64.AppImage
+chmod +x SquadX Live-1.0.0-x86_64.AppImage
 
 # Run
-./PairUX-1.0.0-x86_64.AppImage
+./SquadX Live-1.0.0-x86_64.AppImage
 ```
 
 ---
@@ -800,15 +800,15 @@ chmod +x PairUX-1.0.0-x86_64.AppImage
 
 | Platform | Artifact                         | Signed   |
 | -------- | -------------------------------- | -------- |
-| macOS    | PairUX-{version}-arm64.dmg       | ✅       |
-| macOS    | PairUX-{version}-x64.dmg         | ✅       |
-| macOS    | PairUX-{version}-arm64.pkg       | ✅       |
-| macOS    | PairUX-{version}-x64.pkg         | ✅       |
-| Windows  | PairUX-{version}-x64.msi         | ✅       |
-| Windows  | PairUX-{version}-arm64.msi       | ✅       |
-| Linux    | pairux\_{version}\_amd64.deb     | ✅ (GPG) |
-| Linux    | pairux-{version}-1.x86_64.rpm    | ✅ (GPG) |
-| Linux    | PairUX-{version}-x86_64.AppImage | ❌       |
+| macOS    | SquadX Live-{version}-arm64.dmg       | ✅       |
+| macOS    | SquadX Live-{version}-x64.dmg         | ✅       |
+| macOS    | SquadX Live-{version}-arm64.pkg       | ✅       |
+| macOS    | SquadX Live-{version}-x64.pkg         | ✅       |
+| Windows  | SquadX Live-{version}-x64.msi         | ✅       |
+| Windows  | SquadX Live-{version}-arm64.msi       | ✅       |
+| Linux    | squadx-live\_{version}\_amd64.deb     | ✅ (GPG) |
+| Linux    | squadx-live-{version}-1.x86_64.rpm    | ✅ (GPG) |
+| Linux    | SquadX Live-{version}-x86_64.AppImage | ❌       |
 | All      | SHA256SUMS.txt                   | ✅ (GPG) |
 
 ### Checksum Generation
@@ -839,9 +839,9 @@ const version = packageJson.version;
 
 // Verify all manifests match
 const checks = [
-  { file: 'homebrew-pairux/Casks/pairux.rb', pattern: /version "(\d+\.\d+\.\d+)"/ },
-  { file: 'winget/PairUX.PairUX.yaml', pattern: /PackageVersion: (\d+\.\d+\.\d+)/ },
-  { file: 'aur/pairux-bin/PKGBUILD', pattern: /pkgver=(\d+\.\d+\.\d+)/ },
+  { file: 'homebrew-squadx-live/Casks/squadx-live.rb', pattern: /version "(\d+\.\d+\.\d+)"/ },
+  { file: 'winget/SquadX Live.SquadX Live.yaml', pattern: /PackageVersion: (\d+\.\d+\.\d+)/ },
+  { file: 'aur/squadx-live-bin/PKGBUILD', pattern: /pkgver=(\d+\.\d+\.\d+)/ },
 ];
 
 for (const check of checks) {
@@ -868,8 +868,8 @@ console.log(`All versions match: ${version}`);
 # electron-builder.yml
 publish:
   provider: github
-  owner: pairux
-  repo: pairux
+  owner: squadx-live
+  repo: squadx-live
   releaseType: release
 ```
 
@@ -969,33 +969,33 @@ import { detectOS } from '@/lib/os-detection';
 const DOWNLOADS = {
   macos: {
     x64: {
-      primary: 'brew install --cask pairux',
-      direct: 'https://github.com/profullstack/pairux.com/releases/latest/download/PairUX-x64.dmg',
+      primary: 'brew install --cask squadx-live',
+      direct: 'https://github.com/squadx/squadx-live/releases/latest/download/SquadX Live-x64.dmg',
     },
     arm64: {
-      primary: 'brew install --cask pairux',
+      primary: 'brew install --cask squadx-live',
       direct:
-        'https://github.com/profullstack/pairux.com/releases/latest/download/PairUX-arm64.dmg',
+        'https://github.com/squadx/squadx-live/releases/latest/download/SquadX Live-arm64.dmg',
     },
   },
   windows: {
     x64: {
-      primary: 'winget install PairUX.PairUX',
-      direct: 'https://github.com/profullstack/pairux.com/releases/latest/download/PairUX-x64.msi',
+      primary: 'winget install SquadX Live.SquadX Live',
+      direct: 'https://github.com/squadx/squadx-live/releases/latest/download/SquadX Live-x64.msi',
     },
     arm64: {
-      primary: 'winget install PairUX.PairUX',
+      primary: 'winget install SquadX Live.SquadX Live',
       direct:
-        'https://github.com/profullstack/pairux.com/releases/latest/download/PairUX-arm64.msi',
+        'https://github.com/squadx/squadx-live/releases/latest/download/SquadX Live-arm64.msi',
     },
   },
   linux: {
     x64: {
-      debian: 'sudo apt install pairux',
-      fedora: 'sudo dnf install pairux',
-      arch: 'yay -S pairux-bin',
+      debian: 'sudo apt install squadx-live',
+      fedora: 'sudo dnf install squadx-live',
+      arch: 'yay -S squadx-live-bin',
       direct:
-        'https://github.com/profullstack/pairux.com/releases/latest/download/PairUX-x86_64.AppImage',
+        'https://github.com/squadx/squadx-live/releases/latest/download/SquadX Live-x86_64.AppImage',
     },
   },
 };
@@ -1006,7 +1006,7 @@ export function DownloadSection() {
 
   return (
     <div className="download-section">
-      <h2>Download PairUX</h2>
+      <h2>Download SquadX Live</h2>
       <p>
         Detected: {os} ({arch})
       </p>

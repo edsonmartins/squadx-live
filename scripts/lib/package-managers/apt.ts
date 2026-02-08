@@ -12,8 +12,8 @@ import { createHash } from 'node:crypto';
 import { BasePackageManager } from './base.js';
 import type { PackageManagerConfig, ReleaseInfo, SubmissionResult, Logger } from './types.js';
 
-const DEFAULT_REPO_OWNER = 'profullstack';
-const DEFAULT_REPO_NAME = 'pairux-apt';
+const DEFAULT_REPO_OWNER = 'squadx';
+const DEFAULT_REPO_NAME = 'squadx-live-apt';
 
 export class APTPackageManager extends BasePackageManager {
   readonly name = 'apt';
@@ -41,7 +41,7 @@ export class APTPackageManager extends BasePackageManager {
   async checkExisting(version: string): Promise<boolean> {
     try {
       // Check if the .deb file exists in the pool
-      const path = `pool/main/p/pairux/pairux_${version}_amd64.deb`;
+      const path = `pool/main/s/squadx-live/squadx-live_${version}_amd64.deb`;
       const file = await this.getFileContent(this.repoOwner, this.repoName, path);
       return file !== null;
     } catch {
@@ -55,7 +55,7 @@ export class APTPackageManager extends BasePackageManager {
     return Promise.resolve(`APT Repository Update for ${release.version}
 
 Pool structure:
-  pool/main/p/pairux/pairux_${release.version}_amd64.deb
+  pool/main/s/squadx-live/squadx-live_${release.version}_amd64.deb
 
 Distribution structure:
   dists/stable/main/binary-amd64/Packages
@@ -113,7 +113,7 @@ Distribution structure:
       this.logger.info('Cloning APT repository...');
 
       // Ensure repo exists
-      await this.ensureRepo(this.repoOwner, this.repoName, 'APT repository for PairUX', false);
+      await this.ensureRepo(this.repoOwner, this.repoName, 'APT repository for SquadX Live', false);
 
       execSync(
         `git clone https://${token ?? ''}@github.com/${this.repoOwner}/${this.repoName}.git ${repoDir}`,
@@ -121,7 +121,7 @@ Distribution structure:
       );
 
       // Create directory structure
-      const poolDir = join(repoDir, 'pool/main/p/pairux');
+      const poolDir = join(repoDir, 'pool/main/s/squadx-live');
       const distsDir = join(repoDir, 'dists/stable/main/binary-amd64');
       mkdirSync(poolDir, { recursive: true });
       mkdirSync(distsDir, { recursive: true });
@@ -137,7 +137,7 @@ Distribution structure:
       // Download the .deb file
       this.logger.info('Downloading .deb package...');
       const debData = await this.downloadFile(debAsset.downloadUrl);
-      const debFilename = `pairux_${release.version}_amd64.deb`;
+      const debFilename = `squadx-live_${release.version}_amd64.deb`;
       const debPath = join(poolDir, debFilename);
       writeFileSync(debPath, debData);
 
@@ -173,36 +173,36 @@ Distribution structure:
       // Export public key
       const gpgPublicKey = this.exportGPGPublicKey();
       if (gpgPublicKey) {
-        writeFileSync(join(repoDir, 'pairux.gpg'), gpgPublicKey);
+        writeFileSync(join(repoDir, 'squadx-live.gpg'), gpgPublicKey);
       }
 
       // Create README with installation instructions
-      const readmeContent = `# PairUX APT Repository
+      const readmeContent = `# SquadX Live APT Repository
 
 ## Installation
 
 \`\`\`bash
 # Add GPG key
-curl -fsSL https://${this.repoOwner}.github.io/${this.repoName}/pairux.gpg | sudo gpg --dearmor -o /usr/share/keyrings/pairux.gpg
+curl -fsSL https://${this.repoOwner}.github.io/${this.repoName}/squadx-live.gpg | sudo gpg --dearmor -o /usr/share/keyrings/squadx-live.gpg
 
 # Add repository
-echo "deb [signed-by=/usr/share/keyrings/pairux.gpg] https://${this.repoOwner}.github.io/${this.repoName} stable main" | sudo tee /etc/apt/sources.list.d/pairux.list
+echo "deb [signed-by=/usr/share/keyrings/squadx-live.gpg] https://${this.repoOwner}.github.io/${this.repoName} stable main" | sudo tee /etc/apt/sources.list.d/squadx-live.list
 
 # Install
 sudo apt update
-sudo apt install pairux
+sudo apt install squadx-live
 \`\`\`
 `;
       writeFileSync(join(repoDir, 'README.md'), readmeContent);
 
       // Commit and push
       this.logger.info('Committing changes...');
-      execSync('git config user.email "hello@pairux.com"', { cwd: repoDir, stdio: 'pipe' });
-      execSync('git config user.name "PairUX Bot"', { cwd: repoDir, stdio: 'pipe' });
+      execSync('git config user.email "hello@squadx.live"', { cwd: repoDir, stdio: 'pipe' });
+      execSync('git config user.name "SquadX Bot"', { cwd: repoDir, stdio: 'pipe' });
       execSync('git add -A', { cwd: repoDir, stdio: 'pipe' });
 
       try {
-        execSync(`git commit -m "Add PairUX ${release.version}"`, {
+        execSync(`git commit -m "Add SquadX Live ${release.version}"`, {
           cwd: repoDir,
           stdio: 'pipe',
         });
@@ -237,19 +237,19 @@ sudo apt install pairux
   }
 
   private generatePackagesFile(release: ReleaseInfo, size: number): string {
-    return `Package: pairux
+    return `Package: squadx-live
 Version: ${release.version}
 Architecture: amd64
-Maintainer: PairUX Team <hello@pairux.com>
+Maintainer: SquadX Team <hello@squadx.live>
 Installed-Size: ${String(Math.ceil(size / 1024))}
 Depends: libgtk-3-0, libnotify4, libnss3, libxss1, libxtst6, xdg-utils, libatspi2.0-0, libuuid1
-Filename: pool/main/p/pairux/pairux_${release.version}_amd64.deb
+Filename: pool/main/s/squadx-live/squadx-live_${release.version}_amd64.deb
 Size: ${String(size)}
 Section: net
 Priority: optional
-Homepage: https://pairux.com
+Homepage: https://squadx.live
 Description: Collaborative screen sharing with remote control
- PairUX enables real-time screen sharing with simultaneous local
+ SquadX Live enables real-time screen sharing with simultaneous local
  and remote mouse/keyboard control for pair programming and collaboration.
 
 `;
@@ -278,13 +278,13 @@ Description: Collaborative screen sharing with remote control
 
     const date = new Date().toUTCString();
 
-    return `Origin: PairUX
-Label: PairUX
+    return `Origin: SquadX Live
+Label: SquadX Live
 Suite: stable
 Codename: stable
 Architectures: amd64
 Components: main
-Description: PairUX APT Repository
+Description: SquadX Live APT Repository
 Date: ${date}
 SHA256:
  ${packagesHash} ${String(packagesSize)} main/binary-amd64/Packages
@@ -330,7 +330,7 @@ SHA256:
 
   private exportGPGPublicKey(): string | null {
     try {
-      return execSync('gpg --armor --export PairUX', { encoding: 'utf-8' });
+      return execSync('gpg --armor --export SquadX', { encoding: 'utf-8' });
     } catch {
       return null;
     }

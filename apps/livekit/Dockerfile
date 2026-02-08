@@ -1,8 +1,8 @@
 # ===========================================
-# PairUX LiveKit SFU Server
+# SquadX Live LiveKit SFU Server
 # ===========================================
 # Selective Forwarding Unit for multi-viewer sessions
-# Deploy on DigitalOcean droplet (sfu.pairux.com) or VPS
+# Deploy on DigitalOcean droplet (sfu.squadx.live) or VPS
 # ===========================================
 
 FROM livekit/livekit-server:latest

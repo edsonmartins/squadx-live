@@ -1,8 +1,8 @@
-# PairUX API & Database Schema
+# SquadX Live API & Database Schema
 
 ## Overview
 
-This document details the Supabase database schema, API contracts, and real-time channel specifications for PairUX.
+This document details the Supabase database schema, API contracts, and real-time channel specifications for SquadX Live.
 
 ---
 

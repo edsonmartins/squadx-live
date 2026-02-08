@@ -23,7 +23,7 @@ pub fn run() {
         .with(tracing_subscriber::EnvFilter::from_default_env())
         .init();
 
-    tracing::info!("Starting PairUX Desktop...");
+    tracing::info!("Starting SquadX Live Desktop...");
 
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())

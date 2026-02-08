@@ -58,7 +58,7 @@ export abstract class BasePackageManager implements PackageManager {
     const headers: Record<string, string> = {
       Accept: 'application/vnd.github.v3+json',
       Authorization: `Bearer ${token}`,
-      'User-Agent': 'PairUX-Submit-Packages',
+      'User-Agent': 'SquadX-Live-Submit-Packages',
       'Content-Type': 'application/json',
     };
 

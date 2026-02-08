@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   const tokenHash = searchParams.get('token_hash');
   const type = searchParams.get('type');
   const next = searchParams.get('next') ?? '/dashboard';
-  const origin = process.env.NEXT_PUBLIC_APP_URL ?? 'https://pairux.com';
+  const origin = process.env.NEXT_PUBLIC_APP_URL ?? 'https://squadx.live';
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '';
 

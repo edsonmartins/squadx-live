@@ -95,7 +95,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
         {/* Desktop CTA */}
         <div className="hidden md:flex md:items-center md:gap-4">
           <Link
-            href="https://github.com/profullstack/pairux.com"
+            href="https://github.com/squadx/squadx-live"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 text-sm font-medium text-gray-600 transition-colors hover:text-gray-900"
@@ -208,7 +208,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
             </Link>
           ))}
           <Link
-            href="https://github.com/profullstack/pairux.com"
+            href="https://github.com/squadx/squadx-live"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 rounded-lg px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900"

@@ -4,7 +4,7 @@ import * as secureStorage from '../secure-storage';
 
 vi.mock('../secure-storage');
 vi.mock('../../config', () => ({
-  API_BASE_URL: 'https://pairux.com',
+  API_BASE_URL: 'https://squadx.live',
 }));
 
 const mockAuth = {
@@ -32,7 +32,7 @@ describe('chatApi', () => {
 
       const result = await chatApi.send('session-1', 'Hello', 'participant-1');
       expect(fetch).toHaveBeenCalledWith(
-        'https://pairux.com/api/chat/send',
+        'https://squadx.live/api/chat/send',
         expect.objectContaining({
           method: 'POST',
           body: JSON.stringify({

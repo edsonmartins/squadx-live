@@ -230,7 +230,7 @@ export function useRecording(options: UseRecordingOptions = {}) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = filename ?? `pairux-recording-${String(Date.now())}.webm`;
+    a.download = filename ?? `squadx-live-recording-${String(Date.now())}.webm`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

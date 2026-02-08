@@ -3,7 +3,7 @@
 /**
  * Submit Packages Script
  *
- * Automatically submits PairUX releases to various package managers.
+ * Automatically submits SquadX Live releases to various package managers.
  *
  * Usage:
  *   npx tsx scripts/submit-packages.ts [options]
@@ -56,7 +56,7 @@ import {
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, '..');
 
-const GITHUB_REPO = 'profullstack/pairux.com';
+const GITHUB_REPO = 'squadx/squadx-live';
 
 // Colors for terminal output
 const colors = {
@@ -135,7 +135,7 @@ function parseArguments() {
  */
 function showHelp(): void {
   console.log(`
-${colors.cyan}PairUX Package Submission Script${colors.reset}
+${colors.cyan}SquadX Live Package Submission Script${colors.reset}
 
 ${colors.yellow}Usage:${colors.reset}
   npx tsx scripts/submit-packages.ts [options]
@@ -203,7 +203,7 @@ async function fetchReleaseInfo(version: string): Promise<ReleaseInfo | null> {
   const token = process.env.GITHUB_TOKEN;
   const headers: Record<string, string> = {
     Accept: 'application/vnd.github.v3+json',
-    'User-Agent': 'PairUX-Submit-Packages',
+    'User-Agent': 'SquadX-Live-Submit-Packages',
   };
   if (token) {
     headers.Authorization = `Bearer ${token}`;
@@ -289,15 +289,15 @@ function loadConfig(): AllConfigs {
     homebrew: {
       enabled: true,
       additionalConfig: {
-        tapOwner: 'profullstack',
-        tapRepo: 'homebrew-pairux',
+        tapOwner: 'squadx',
+        tapRepo: 'homebrew-squadx-live',
       },
     },
     scoop: {
       enabled: true,
       additionalConfig: {
-        bucketOwner: 'profullstack',
-        bucketRepo: 'scoop-pairux',
+        bucketOwner: 'squadx',
+        bucketRepo: 'scoop-squadx-live',
       },
     },
     winget: {
@@ -312,15 +312,15 @@ function loadConfig(): AllConfigs {
     apt: {
       enabled: !!process.env.GPG_PRIVATE_KEY,
       additionalConfig: {
-        repoOwner: 'profullstack',
-        repoName: 'pairux-apt',
+        repoOwner: 'squadx',
+        repoName: 'squadx-live-apt',
       },
     },
     rpm: {
       enabled: !!process.env.GPG_PRIVATE_KEY,
       additionalConfig: {
-        repoOwner: 'profullstack',
-        repoName: 'pairux-rpm',
+        repoOwner: 'squadx',
+        repoName: 'squadx-live-rpm',
       },
     },
     gentoo: {
@@ -358,7 +358,7 @@ async function main(): Promise<void> {
 
   console.log(`
 ${colors.cyan}╔════════════════════════════════════════════════════════════╗
-║           PairUX Package Submission Script                 ║
+║         SquadX Live Package Submission Script              ║
 ╚════════════════════════════════════════════════════════════╝${colors.reset}
 `);
 
@@ -396,15 +396,15 @@ ${colors.cyan}╔═════════════════════
   logger.info(`Found ${releaseInfo.checksums.size} checksums`);
 
   // Map checksums to assets
-  // Note: checksums file may have spaces in filename (e.g., "PairUX Setup 0.1.17.exe")
-  // while GitHub asset has dots (e.g., "PairUX.Setup.0.1.17.exe")
+  // Note: checksums file may have spaces in filename (e.g., "SquadX Live Setup 0.1.17.exe")
+  // while GitHub asset has dots (e.g., "SquadX-Live.Setup.0.1.17.exe")
   for (const asset of releaseInfo.assets) {
     // Try exact match first
     let checksum = releaseInfo.checksums.get(asset.name);
 
-    // If not found, try replacing "PairUX.Setup" with "PairUX Setup"
-    if (!checksum && asset.name.startsWith('PairUX.Setup.')) {
-      const nameWithSpaces = asset.name.replace('PairUX.Setup.', 'PairUX Setup ');
+    // If not found, try replacing "SquadX-Live.Setup" with "SquadX Live Setup"
+    if (!checksum && asset.name.startsWith('SquadX-Live.Setup.')) {
+      const nameWithSpaces = asset.name.replace('SquadX-Live.Setup.', 'SquadX Live Setup ');
       checksum = releaseInfo.checksums.get(nameWithSpaces);
     }
 

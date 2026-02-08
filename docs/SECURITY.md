@@ -1,8 +1,8 @@
-# PairUX Security Model
+# SquadX Live Security Model
 
 ## Overview
 
-This document details the security architecture, threat model, and security controls for PairUX. Security is a core design principle given the sensitive nature of screen sharing and remote control.
+This document details the security architecture, threat model, and security controls for SquadX Live. Security is a core design principle given the sensitive nature of screen sharing and remote control.
 
 ---
 
@@ -100,7 +100,7 @@ const authConfig = {
 import { safeStorage } from 'electron';
 
 class SecureTokenStorage {
-  private readonly KEY = 'pairux_auth_token';
+  private readonly KEY = 'squadx-live_auth_token';
 
   async store(token: string): Promise<void> {
     if (!safeStorage.isEncryptionAvailable()) {
@@ -396,7 +396,7 @@ class EmergencyRevokeSystem {
 
   private showEmergencyNotification(): void {
     // Show system notification
-    new Notification('PairUX', {
+    new Notification('SquadX Live', {
       body: 'Remote control has been revoked',
       urgency: 'critical',
     });
@@ -627,9 +627,9 @@ class SecurityIndicator {
 
 | State           | Icon     | Tooltip                        |
 | --------------- | -------- | ------------------------------ |
-| Idle            | Default  | PairUX - No active session     |
-| Session active  | Blue dot | PairUX - Sharing screen        |
-| Control granted | Red dot  | PairUX - Remote control active |
+| Idle            | Default  | SquadX Live - No active session     |
+| Session active  | Blue dot | SquadX Live - Sharing screen        |
+| Control granted | Red dot  | SquadX Live - Remote control active |
 
 ---
 

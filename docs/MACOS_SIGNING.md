@@ -1,6 +1,6 @@
 # macOS Code Signing & Notarization
 
-PairUX desktop builds for macOS are automatically code-signed and notarized in CI when the required secrets are configured. This document covers setup and troubleshooting.
+SquadX Live desktop builds for macOS are automatically code-signed and notarized in CI when the required secrets are configured. This document covers setup and troubleshooting.
 
 ## Overview
 
@@ -27,7 +27,7 @@ Without both steps, users see Gatekeeper warnings or the app may refuse to launc
 | `APPLE_APP_SPECIFIC_PASSWORD` | App-specific password for notarytool                          |
 | `APPLE_TEAM_ID`               | 10-character Apple Developer Team ID                          |
 
-Add these at: https://github.com/profullstack/pairux.com/settings/secrets/actions
+Add these at: https://github.com/squadx/squadx-live/settings/secrets/actions
 
 ## Setup Steps
 
@@ -45,7 +45,7 @@ Apple blocks regular passwords for automated tools. Generate a dedicated one:
 2. Sign in with your Apple ID
 3. Go to **Sign-In and Security** > **App-Specific Passwords**
 4. Click **Generate an app-specific password**
-5. Label it `pairux-notarize`
+5. Label it `squadx-live-notarize`
 6. Copy the password (format: `xxxx-xxxx-xxxx-xxxx`)
 
 ### 3. Create a Developer ID Application Certificate
@@ -80,7 +80,7 @@ The encoded string is now on your clipboard — paste it as the `APPLE_CERTIFICA
 
 ### 6. Add all secrets to GitHub
 
-Go to https://github.com/profullstack/pairux.com/settings/secrets/actions and add:
+Go to https://github.com/squadx/squadx-live/settings/secrets/actions and add:
 
 - `APPLE_CERTIFICATE` — the base64 string from step 5
 - `APPLE_CERTIFICATE_PASSWORD` — the password from step 4
@@ -110,11 +110,11 @@ Fix:
 
 ```bash
 # Re-run the installer
-curl -fsSL https://installer.pairux.com/install.sh | bash
+curl -fsSL https://installer.squadx.live/install.sh | bash
 
 # Or fix permissions on an existing install
-xattr -cr /Applications/PairUX.app
-chmod +x /Applications/PairUX.app/Contents/Frameworks/PairUX\ Helper*.app/Contents/MacOS/*
+xattr -cr "/Applications/SquadX Live.app"
+chmod +x "/Applications/SquadX Live.app/Contents/Frameworks/SquadX Live Helper"*.app/Contents/MacOS/*
 ```
 
 ### Gatekeeper blocks the app

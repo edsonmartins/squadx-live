@@ -1,4 +1,4 @@
-# PairUX MVP - Go-to-Market Feature Checklist
+# SquadX Live MVP - Go-to-Market Feature Checklist
 
 > **Target:** Production-ready MVP for initial launch
 > **Stack:** Node.js 24+, TypeScript, Next.js 16.2, Electron, Supabase, WebRTC
@@ -389,7 +389,7 @@
 - [x] **Shell Installers**
   - [x] Unix installer script (install.sh)
   - [x] Windows installer script (install.ps1)
-  - [ ] Host at install.pairux.sh
+  - [ ] Host at install.squadx-live.sh
   - [ ] Cloudflare Workers routing
 
 - [x] **Release Automation**

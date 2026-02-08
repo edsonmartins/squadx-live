@@ -41,7 +41,7 @@ function sendEvent(event: string, data: unknown): void {
 
 /**
  * Resolve ffmpeg binary path using a cascade:
- * 1. Installer-provisioned: ~/.pairux/bin/ffmpeg (or %LOCALAPPDATA%\PairUX\bin\ffmpeg.exe)
+ * 1. Installer-provisioned: ~/.squadx-live/bin/ffmpeg (or %LOCALAPPDATA%\SquadX Live\bin\ffmpeg.exe)
  * 2. System PATH: which ffmpeg / where ffmpeg
  * 3. Dev-only fallback: @ffmpeg-installer/ffmpeg npm package
  * Returns null if ffmpeg is not available.
@@ -56,11 +56,11 @@ export function getFFmpegPath(): string | null {
     process.platform === 'win32'
       ? join(
           process.env.LOCALAPPDATA ?? join(homedir(), 'AppData', 'Local'),
-          'PairUX',
+          'SquadX Live',
           'bin',
           'ffmpeg.exe'
         )
-      : join(homedir(), '.pairux', 'bin', 'ffmpeg');
+      : join(homedir(), '.squadx-live', 'bin', 'ffmpeg');
 
   if (existsSync(installerPath)) {
     _ffmpegPath = installerPath;
@@ -232,7 +232,7 @@ function spawnFFmpeg(
     if (!ffmpegPath) {
       return {
         success: false,
-        error: 'ffmpeg is not installed. Please reinstall PairUX or install ffmpeg manually.',
+        error: 'ffmpeg is not installed. Please reinstall SquadX Live or install ffmpeg manually.',
       };
     }
     const args = buildFFmpegArgs(destination.encoderSettings, destination.rtmpUrl, streamKey);

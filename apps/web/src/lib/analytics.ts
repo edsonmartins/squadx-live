@@ -1,5 +1,5 @@
 /**
- * Datafast Analytics - Goal tracking for PairUX
+ * Datafast Analytics - Goal tracking for SquadX Live
  * https://datafa.st
  */
 

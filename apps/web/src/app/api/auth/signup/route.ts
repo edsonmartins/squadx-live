@@ -19,7 +19,7 @@ export async function POST(request: Request) {
           display_name: `${firstName} ${lastName}`,
         },
         // Skip email confirmation for now - remove this line once SMTP is working
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://pairux.com'}/auth/callback`,
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://squadx.live'}/auth/callback`,
       },
     });
 

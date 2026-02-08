@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="apps/web/public/favicon.svg" alt="SquadX Live Logo" width="120" />
+  <img src="apps/web/public/logo.png" alt="SquadX Live Logo" width="120" />
 </p>
 
 <h1 align="center">SquadX Live</h1>

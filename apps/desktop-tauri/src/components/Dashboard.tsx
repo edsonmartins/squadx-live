@@ -80,7 +80,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
       {/* Header */}
       <header className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">PairUX</h1>
+          <h1 className="text-2xl font-bold text-white">SquadX Live</h1>
           <p className="text-slate-400">{user.email}</p>
         </div>
         <div className="flex items-center gap-2">

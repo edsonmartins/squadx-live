@@ -1,8 +1,8 @@
-# PairUX Desktop - Migração Electron → Tauri
+# SquadX Live Desktop - Migração Electron → Tauri
 
 ## Resumo Executivo
 
-Este documento descreve o progresso da migração do aplicativo desktop PairUX de **Electron** para **Tauri 2.0** com backend Rust. O objetivo é reduzir o tamanho do binário (~90%), consumo de memória (~84%) e tempo de startup (~88%).
+Este documento descreve o progresso da migração do aplicativo desktop SquadX Live de **Electron** para **Tauri 2.0** com backend Rust. O objetivo é reduzir o tamanho do binário (~90%), consumo de memória (~84%) e tempo de startup (~88%).
 
 ---
 
@@ -32,7 +32,7 @@ apps/desktop-tauri/
 ├── index.html                   # Entry point HTML
 ├── dist/                        # Build output (placeholder)
 ├── public/
-│   └── pairux.svg               # Logo
+│   └── squadx-live.svg               # Logo
 ├── src/                         # Frontend React
 │   ├── main.tsx                 # Entry point React
 │   ├── App.tsx                  # Componente raiz com rotas
@@ -221,8 +221,8 @@ npm install -g pnpm
 
 ```bash
 # Se clonar do git
-git clone https://github.com/profullstack/pairux.com.git
-cd pairux.com
+git clone https://github.com/squadx/squadx-live.git
+cd squadx.live
 
 # Ou copiar a pasta existente para o novo Mac
 ```
@@ -366,7 +366,7 @@ cargo build
 
 Para dúvidas sobre a migração, consulte:
 - Documentação Tauri: https://tauri.app/v2/
-- Repositório: https://github.com/profullstack/pairux.com
+- Repositório: https://github.com/squadx/squadx-live
 
 ---
 

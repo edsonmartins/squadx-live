@@ -35,22 +35,22 @@ interface EmailTemplate {
 const templates: EmailTemplate[] = [
   {
     type: 'confirmation',
-    subject: 'Confirm your email - PairUX',
+    subject: 'Confirm your email - SquadX Live',
     contentPath: 'supabase/email-templates/confirm-signup.html',
   },
   {
     type: 'recovery',
-    subject: 'Reset your password - PairUX',
+    subject: 'Reset your password - SquadX Live',
     contentPath: 'supabase/email-templates/reset-password.html',
   },
   {
     type: 'magic_link',
-    subject: 'Sign in to PairUX',
+    subject: 'Sign in to SquadX Live',
     contentPath: 'supabase/email-templates/magic-link.html',
   },
   {
     type: 'invite',
-    subject: "You're invited to PairUX!",
+    subject: "You're invited to SquadX Live!",
     contentPath: 'supabase/email-templates/invite-user.html',
   },
 ];

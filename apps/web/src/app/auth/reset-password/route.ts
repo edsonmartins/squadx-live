@@ -5,7 +5,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get('code');
-  const origin = process.env.NEXT_PUBLIC_APP_URL ?? 'https://pairux.com';
+  const origin = process.env.NEXT_PUBLIC_APP_URL ?? 'https://squadx.live';
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '';
 

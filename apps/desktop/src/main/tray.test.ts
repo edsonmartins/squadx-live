@@ -208,9 +208,9 @@ describe('Tray Module', () => {
       initializeTray(mockCallbacks);
     });
 
-    it('should include PairUX header', () => {
+    it('should include SquadX Live header', () => {
       expect(Menu.buildFromTemplate).toHaveBeenCalledWith(
-        expect.arrayContaining([expect.objectContaining({ label: 'PairUX', enabled: false })])
+        expect.arrayContaining([expect.objectContaining({ label: 'SquadX Live', enabled: false })])
       );
     });
 
@@ -228,9 +228,9 @@ describe('Tray Module', () => {
       );
     });
 
-    it('should include "Quit PairUX" action', () => {
+    it('should include "Quit SquadX Live" action', () => {
       expect(Menu.buildFromTemplate).toHaveBeenCalledWith(
-        expect.arrayContaining([expect.objectContaining({ label: 'Quit PairUX' })])
+        expect.arrayContaining([expect.objectContaining({ label: 'Quit SquadX Live' })])
       );
     });
 

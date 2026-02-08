@@ -6,8 +6,8 @@ import { Monitor, User, Loader2, AlertCircle, Users, ArrowLeft } from 'lucide-re
  * Parse a join code from user input. Handles both raw codes and full URLs.
  * Examples:
  *   "ABC123" -> "ABC123"
- *   "https://pairux.com/join/abc123" -> "ABC123"
- *   "pairux.com/join/XYZ789" -> "XYZ789"
+ *   "https://squadx.live/join/abc123" -> "ABC123"
+ *   "squadx.live/join/XYZ789" -> "XYZ789"
  */
 function parseJoinInput(input: string): string {
   const trimmed = input.trim();

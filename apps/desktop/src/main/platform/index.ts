@@ -242,8 +242,8 @@ export async function requestWindowsElevation(reason: string): Promise<boolean> 
   const result = await dialog.showMessageBox({
     type: 'warning',
     title: 'Administrator Privileges Required',
-    message: 'PairUX needs administrator privileges',
-    detail: `${reason}\n\nWould you like to restart PairUX with administrator privileges?`,
+    message: 'SquadX Live needs administrator privileges',
+    detail: `${reason}\n\nWould you like to restart SquadX Live with administrator privileges?`,
     buttons: ['Restart as Administrator', 'Cancel'],
     defaultId: 0,
     cancelId: 1,
@@ -321,8 +321,8 @@ export async function showWindowsDefenderHelp(): Promise<void> {
   const result = await dialog.showMessageBox({
     type: 'info',
     title: 'Windows Defender Exclusion',
-    message: 'Add PairUX to Windows Defender exclusions',
-    detail: `To prevent Windows Defender from interfering with PairUX, you can add an exclusion:
+    message: 'Add SquadX Live to Windows Defender exclusions',
+    detail: `To prevent Windows Defender from interfering with SquadX Live, you can add an exclusion:
 
 1. Open Windows Security
 2. Go to Virus & threat protection

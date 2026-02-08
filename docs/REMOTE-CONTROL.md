@@ -1,8 +1,8 @@
-# PairUX Remote Control System
+# SquadX Live Remote Control System
 
 ## Overview
 
-This document details the remote control system for PairUX, including the control state machine, input event handling, and input injection via nut.js.
+This document details the remote control system for SquadX Live, including the control state machine, input event handling, and input injection via nut.js.
 
 ---
 
@@ -1038,7 +1038,7 @@ async function checkScreenRecordingPermission(): Promise<boolean> {
 
 **No Special Permissions**: Windows allows input injection without special permissions for desktop apps.
 
-**UAC Considerations**: If the target application is running as admin, PairUX may need to run as admin too.
+**UAC Considerations**: If the target application is running as admin, SquadX Live may need to run as admin too.
 
 ### Linux
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 # ===========================================
-# PairUX TURN Server - DigitalOcean Droplet Deployment
+# SquadX Live TURN Server - DigitalOcean Droplet Deployment
 # ===========================================
 # Usage: ./deploy-droplet.sh <droplet-ip> <turn-password>
 # ===========================================
@@ -9,7 +9,7 @@ set -e
 
 DROPLET_IP="${1:-}"
 TURN_PASSWORD="${2:-}"
-DOMAIN="${3:-turn.pairux.com}"
+DOMAIN="${3:-turn.squadx-live.com}"
 
 if [ -z "$DROPLET_IP" ] || [ -z "$TURN_PASSWORD" ]; then
   echo "Usage: ./deploy-droplet.sh <droplet-ip> <turn-password> [domain]"
@@ -20,7 +20,7 @@ if [ -z "$DROPLET_IP" ] || [ -z "$TURN_PASSWORD" ]; then
   exit 1
 fi
 
-echo "=== PairUX TURN Server Deployment ==="
+echo "=== SquadX Live TURN Server Deployment ==="
 echo "Droplet: $DROPLET_IP"
 echo "Domain:  $DOMAIN"
 echo ""
@@ -78,7 +78,7 @@ ufw allow 49152:49252/udp
 ufw --force enable
 
 echo "Building and starting TURN server..."
-cd /opt/pairux-turn
+cd /opt/squadx-live-turn
 docker compose down 2>/dev/null || true
 docker compose build --no-cache
 docker compose up -d
@@ -90,17 +90,17 @@ docker compose logs --tail=20
 
 echo ""
 echo "=== TURN Server Deployed ==="
-echo "Test with: turnutils_uclient -t -u pairux -w YOUR_PASSWORD $HOSTNAME"
+echo "Test with: turnutils_uclient -t -u squadx-live -w YOUR_PASSWORD $HOSTNAME"
 SETUP_EOF
 
 chmod +x "$DEPLOY_DIR/setup.sh"
 
 echo "Uploading to droplet..."
-ssh -o StrictHostKeyChecking=no "root@$DROPLET_IP" "mkdir -p /opt/pairux-turn"
-scp -o StrictHostKeyChecking=no -r "$DEPLOY_DIR"/* "root@$DROPLET_IP:/opt/pairux-turn/"
+ssh -o StrictHostKeyChecking=no "root@$DROPLET_IP" "mkdir -p /opt/squadx-live-turn"
+scp -o StrictHostKeyChecking=no -r "$DEPLOY_DIR"/* "root@$DROPLET_IP:/opt/squadx-live-turn/"
 
 echo "Running setup on droplet..."
-ssh -o StrictHostKeyChecking=no "root@$DROPLET_IP" "cd /opt/pairux-turn && bash setup.sh"
+ssh -o StrictHostKeyChecking=no "root@$DROPLET_IP" "cd /opt/squadx-live-turn && bash setup.sh"
 
 # Cleanup
 rm -rf "$DEPLOY_DIR"
@@ -117,6 +117,6 @@ echo ""
 echo "WebRTC config:"
 echo "  {"
 echo "    urls: 'turn:$DOMAIN:3478',"
-echo "    username: 'pairux',"
+echo "    username: 'squadx-live',"
 echo "    credential: '<your-password>'"
 echo "  }"

@@ -1,10 +1,10 @@
 #!/bin/bash
 # ===========================================
-# PairUX TURN Server Setup Script
+# SquadX Live TURN Server Setup Script
 # ===========================================
 # Run this on a fresh Ubuntu 24.04 droplet as root
 # This script is fully idempotent - safe to run multiple times
-# Usage: curl -fsSL https://raw.githubusercontent.com/profullstack/pairux.com/master/apps/turn/setup-turn-server.sh | bash -s -- <TURN_PASSWORD>
+# Usage: curl -fsSL https://raw.githubusercontent.com/squadx/squadx-live/master/apps/turn/setup-turn-server.sh | bash -s -- <TURN_PASSWORD>
 # Or: ./setup-turn-server.sh <TURN_PASSWORD>
 # ===========================================
 
@@ -12,7 +12,7 @@ set -e
 
 TURN_PASSWORD="${1:-}"
 EXTERNAL_IP="${2:-$(curl -s ifconfig.me 2>/dev/null || curl -s icanhazip.com 2>/dev/null || echo '')}"
-REALM="${3:-turn.pairux.com}"
+REALM="${3:-turn.squadx-live.com}"
 USERNAME="ubuntu"
 
 # Colors
@@ -39,13 +39,13 @@ if [ -z "$TURN_PASSWORD" ]; then
   echo ""
   echo "Example:"
   echo "  $0 'my-secure-password'"
-  echo "  $0 'my-secure-password' 143.198.96.161 turn.pairux.com"
+  echo "  $0 'my-secure-password' 143.198.96.161 turn.squadx-live.com"
   exit 1
 fi
 
 echo ""
 echo -e "${BLUE}============================================${NC}"
-echo -e "${BLUE}  PairUX TURN Server Setup (Idempotent)${NC}"
+echo -e "${BLUE}  SquadX Live TURN Server Setup (Idempotent)${NC}"
 echo -e "${BLUE}============================================${NC}"
 echo ""
 info "External IP: $EXTERNAL_IP"
@@ -252,7 +252,7 @@ fi
 info "Updating coturn configuration..."
 cat > /etc/turnserver.conf << EOF
 # ===========================================
-# PairUX TURN Server Configuration
+# SquadX Live TURN Server Configuration
 # ===========================================
 
 # Listener ports

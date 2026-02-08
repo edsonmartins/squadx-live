@@ -2,7 +2,7 @@
  * WebRTC Viewer Hook using LiveKit SFU with API-based token fetching
  *
  * Desktop variant of useWebRTCSFU. Uses HTTP Bearer token auth
- * to fetch LiveKit tokens from the PairUX API.
+ * to fetch LiveKit tokens from the SquadX Live API.
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -336,7 +336,7 @@ export function useWebRTCViewerSFUAPI({
         return;
       }
 
-      // Fetch LiveKit token from PairUX API with Bearer auth
+      // Fetch LiveKit token from SquadX Live API with Bearer auth
       const tokenRes = await fetch(`${API_BASE_URL}/api/livekit/token`, {
         method: 'POST',
         headers: {

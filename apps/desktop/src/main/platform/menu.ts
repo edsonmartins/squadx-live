@@ -142,7 +142,7 @@ function buildMacOSMenu(): MenuItemConstructorOptions[] {
     role: 'help',
     submenu: [
       {
-        label: 'PairUX Help',
+        label: 'SquadX Live Help',
         click: () => {
           void shell.openExternal(`${APP_URL}/docs`);
         },
@@ -150,7 +150,7 @@ function buildMacOSMenu(): MenuItemConstructorOptions[] {
       {
         label: 'Report an Issue',
         click: () => {
-          void shell.openExternal('https://github.com/pairux/pairux/issues');
+          void shell.openExternal('https://github.com/squadx/squadx-live/issues');
         },
       },
       { type: 'separator' },
@@ -231,7 +231,7 @@ function buildDefaultMenu(): MenuItemConstructorOptions[] {
     label: 'Help',
     submenu: [
       {
-        label: 'About PairUX',
+        label: 'About SquadX Live',
         click: () => menuCallbacks?.onAbout(),
       },
       { type: 'separator' },
@@ -244,7 +244,7 @@ function buildDefaultMenu(): MenuItemConstructorOptions[] {
       {
         label: 'Report an Issue',
         click: () => {
-          void shell.openExternal('https://github.com/pairux/pairux/issues');
+          void shell.openExternal('https://github.com/squadx/squadx-live/issues');
         },
       },
     ],

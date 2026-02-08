@@ -67,25 +67,25 @@ const pricingTiers = [
 const comparisonData = [
   {
     plan: 'Free',
-    pairux: '$0',
+    squadxLive: '$0',
     zoom: '$0 (40 min limit)',
     teams: '$0 (60 min limit)',
   },
   {
     plan: 'Pro / Small Team',
-    pairux: '$12/mo',
+    squadxLive: '$12/mo',
     zoom: '$16/mo/host',
     teams: '$12.50/mo/user',
   },
   {
     plan: 'Team / Business',
-    pairux: '$49/mo',
+    squadxLive: '$49/mo',
     zoom: '$22/mo/host',
     teams: '$22/mo/user',
   },
   {
     plan: '10-person team',
-    pairux: '$49/mo total',
+    squadxLive: '$49/mo total',
     zoom: '$220/mo',
     teams: '$220/mo',
   },
@@ -94,7 +94,7 @@ const comparisonData = [
 const competitorComparison = [
   {
     feature: 'Transparent pricing',
-    pairux: true,
+    squadxLive: true,
     zoom: false,
     teams: false,
     webex: false,
@@ -103,7 +103,7 @@ const competitorComparison = [
   },
   {
     feature: 'No seat-based fees',
-    pairux: true,
+    squadxLive: true,
     zoom: false,
     teams: false,
     webex: false,
@@ -112,7 +112,7 @@ const competitorComparison = [
   },
   {
     feature: 'No annual contracts',
-    pairux: true,
+    squadxLive: true,
     zoom: false,
     teams: false,
     webex: false,
@@ -121,7 +121,7 @@ const competitorComparison = [
   },
   {
     feature: 'Simple flat-rate plans',
-    pairux: true,
+    squadxLive: true,
     zoom: false,
     teams: false,
     webex: false,
@@ -130,7 +130,7 @@ const competitorComparison = [
   },
   {
     feature: 'Open source',
-    pairux: true,
+    squadxLive: true,
     zoom: false,
     teams: false,
     webex: false,
@@ -139,7 +139,7 @@ const competitorComparison = [
   },
   {
     feature: 'Self-hostable',
-    pairux: true,
+    squadxLive: true,
     zoom: false,
     teams: false,
     webex: false,
@@ -148,7 +148,7 @@ const competitorComparison = [
   },
   {
     feature: 'Remote control',
-    pairux: true,
+    squadxLive: true,
     zoom: true,
     teams: false,
     webex: true,
@@ -157,7 +157,7 @@ const competitorComparison = [
   },
   {
     feature: 'Multi-cursor support',
-    pairux: true,
+    squadxLive: true,
     zoom: false,
     teams: false,
     webex: false,
@@ -166,7 +166,7 @@ const competitorComparison = [
   },
   {
     feature: 'No account required (viewers)',
-    pairux: true,
+    squadxLive: true,
     zoom: false,
     teams: false,
     webex: false,
@@ -285,7 +285,7 @@ export default function PricingPage() {
                       Plan
                     </th>
                     <th className="text-primary-600 px-4 py-3 text-left text-sm font-semibold">
-                      PairUX
+                      SquadX Live
                     </th>
                     <th className="px-4 py-3 text-left text-sm font-semibold text-gray-500">
                       Zoom
@@ -300,7 +300,7 @@ export default function PricingPage() {
                     <tr key={i} className="border-b border-gray-100">
                       <td className="px-4 py-4 text-sm text-gray-700">{row.plan}</td>
                       <td className="text-primary-600 px-4 py-4 text-sm font-semibold">
-                        {row.pairux}
+                        {row.squadxLive}
                       </td>
                       <td className="px-4 py-4 text-sm text-gray-500">{row.zoom}</td>
                       <td className="px-4 py-4 text-sm text-gray-500">{row.teams}</td>
@@ -311,7 +311,7 @@ export default function PricingPage() {
             </div>
 
             <p className="mt-6 text-center text-sm text-gray-500">
-              * PairUX charges per team, not per user. No seat-based licensing.
+              * SquadX Live charges per team, not per user. No seat-based licensing.
             </p>
           </div>
         </section>
@@ -321,7 +321,7 @@ export default function PricingPage() {
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <h2 className="text-center text-3xl font-bold text-gray-900">Feature Comparison</h2>
             <p className="mx-auto mt-4 max-w-2xl text-center text-gray-600">
-              See how PairUX stacks up against Zoom, Teams, Webex, Google Meet, and Jitsi
+              See how SquadX Live stacks up against Zoom, Teams, Webex, Google Meet, and Jitsi
             </p>
 
             <div className="mt-10 overflow-x-auto">
@@ -332,7 +332,7 @@ export default function PricingPage() {
                       Feature
                     </th>
                     <th className="text-primary-600 px-4 py-3 text-center text-sm font-semibold">
-                      PairUX
+                      SquadX Live
                     </th>
                     <th className="px-4 py-3 text-center text-sm font-semibold text-gray-500">
                       Zoom
@@ -356,7 +356,7 @@ export default function PricingPage() {
                     <tr key={i} className="border-b border-gray-100">
                       <td className="px-4 py-3 text-sm text-gray-700">{row.feature}</td>
                       <td className="px-4 py-3 text-center">
-                        {row.pairux ? (
+                        {row.squadxLive ? (
                           <Check className="text-accent-600 mx-auto h-5 w-5" />
                         ) : (
                           <X className="mx-auto h-5 w-5 text-gray-300" />
@@ -409,7 +409,7 @@ export default function PricingPage() {
         <section className="bg-gray-50 py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <h2 className="text-center text-3xl font-bold text-gray-900">
-              Why PairUX is Different
+              Why SquadX Live is Different
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-center text-gray-600">
               Enterprise tools can&apos;t copy this without breaking their pricing models
@@ -471,7 +471,7 @@ export default function PricingPage() {
               <div>
                 <h3 className="font-semibold text-gray-900">Can I self-host to avoid costs?</h3>
                 <p className="mt-2 text-gray-600">
-                  Absolutely. PairUX is open source under the MIT license. You can run your own SFU
+                  Absolutely. SquadX Live is open source under the MIT license. You can run your own SFU
                   infrastructure if you prefer. Great for enterprises with specific security
                   requirements.
                 </p>
@@ -483,7 +483,7 @@ export default function PricingPage() {
                 </h3>
                 <p className="mt-2 text-gray-600">
                   We charge per team, not per seat. A 10-person team pays $49/month total with
-                  PairUX, vs $220/month with Zoom or Teams. No enterprise sales teams means lower
+                  SquadX Live, vs $220/month with Zoom or Teams. No enterprise sales teams means lower
                   overhead for you.
                 </p>
               </div>

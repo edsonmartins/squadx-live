@@ -1,8 +1,8 @@
-# PairUX TURN Server
+# SquadX Live TURN Server
 
 STUN/TURN server for WebRTC NAT traversal using [coturn](https://github.com/coturn/coturn).
 
-**Hostname:** `turn.pairux.com`
+**Hostname:** `turn.squadx-live.com`
 
 ## Why TURN?
 
@@ -18,7 +18,7 @@ WebRTC requires STUN/TURN servers when:
 
 ```bash
 # Via doctl CLI
-doctl compute droplet create pairux-turn \
+doctl compute droplet create squadx-live-turn \
   --region nyc1 \
   --size s-1vcpu-1gb \
   --image ubuntu-24-04-x64 \
@@ -32,7 +32,7 @@ doctl compute droplet create pairux-turn \
 
 ```bash
 # SSH to droplet and run setup script
-ssh root@<DROPLET_IP> "curl -fsSL https://raw.githubusercontent.com/profullstack/pairux.com/master/apps/turn/setup-turn-server.sh | bash -s -- 'YOUR_PASSWORD'"
+ssh root@<DROPLET_IP> "curl -fsSL https://raw.githubusercontent.com/squadx/squadx-live/master/apps/turn/setup-turn-server.sh | bash -s -- 'YOUR_PASSWORD'"
 
 # Or copy and run locally
 scp apps/turn/setup-turn-server.sh root@<DROPLET_IP>:/root/
@@ -41,13 +41,13 @@ ssh root@<DROPLET_IP> "./setup-turn-server.sh 'YOUR_PASSWORD'"
 
 ### 3. Add DNS
 
-Add an A record: `turn.pairux.com` → `<droplet-ip>`
+Add an A record: `turn.squadx-live.com` → `<droplet-ip>`
 
 ### 4. Test
 
 ```bash
 # From anywhere
-turnutils_uclient -t -u ubuntu -w YOUR_PASSWORD turn.pairux.com
+turnutils_uclient -t -u ubuntu -w YOUR_PASSWORD turn.squadx-live.com
 ```
 
 **Cost:** ~$6/month (1 vCPU, 1GB RAM)
@@ -104,7 +104,7 @@ gh workflow run deploy-turn.yml
 | --------------- | ------------- | ----------------- |
 | `TURN_PASSWORD` | Auth password | Yes               |
 | `EXTERNAL_IP`   | Public IP     | Auto-detected     |
-| `REALM`         | Domain        | `turn.pairux.com` |
+| `REALM`         | Domain        | `turn.squadx-live.com` |
 
 ---
 
@@ -115,16 +115,16 @@ const config = {
   iceServers: [
     // Free STUN servers
     { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:turn.pairux.com:3478' },
+    { urls: 'stun:turn.squadx-live.com:3478' },
 
     // TURN fallback (when direct connections fail)
     {
-      urls: 'turn:turn.pairux.com:3478',
+      urls: 'turn:turn.squadx-live.com:3478',
       username: 'ubuntu',
       credential: process.env.TURN_PASSWORD,
     },
     {
-      urls: 'turns:turn.pairux.com:5349',
+      urls: 'turns:turn.squadx-live.com:5349',
       username: 'ubuntu',
       credential: process.env.TURN_PASSWORD,
     },
@@ -153,7 +153,7 @@ If you prefer not to self-host:
 ### Trickle ICE (Browser)
 
 1. Go to https://webrtc.github.io/samples/src/content/peerconnection/trickle-ice/
-2. Add server: `turn:turn.pairux.com:3478`
+2. Add server: `turn:turn.squadx-live.com:3478`
 3. Enter username: `ubuntu`
 4. Enter password: `<your-password>`
 5. Click "Gather candidates"
@@ -166,10 +166,10 @@ If you prefer not to self-host:
 apt install coturn-utils
 
 # Test STUN
-turnutils_uclient -p 3478 turn.pairux.com
+turnutils_uclient -p 3478 turn.squadx-live.com
 
 # Test TURN
-turnutils_uclient -t -u ubuntu -w YOUR_PASSWORD turn.pairux.com
+turnutils_uclient -t -u ubuntu -w YOUR_PASSWORD turn.squadx-live.com
 ```
 
 ---

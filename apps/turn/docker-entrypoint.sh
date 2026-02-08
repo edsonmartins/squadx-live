@@ -2,7 +2,7 @@
 set -e
 
 # ===========================================
-# PairUX TURN Server Entrypoint
+# SquadX Live TURN Server Entrypoint
 # ===========================================
 # Substitutes environment variables into config
 # ===========================================
@@ -18,7 +18,7 @@ fi
 # Substitute environment variables
 if [ -n "$TURN_PASSWORD" ]; then
   sed -i "s/\${TURN_PASSWORD:-changeme}/$TURN_PASSWORD/g" "$CONFIG_FILE"
-  echo "user=pairux:$TURN_PASSWORD" >> "$CONFIG_FILE"
+  echo "user=squadx-live:$TURN_PASSWORD" >> "$CONFIG_FILE"
 fi
 
 if [ -n "$EXTERNAL_IP" ]; then
@@ -26,8 +26,8 @@ if [ -n "$EXTERNAL_IP" ]; then
 fi
 
 if [ -n "$REALM" ]; then
-  sed -i "s/realm=turn.pairux.com/realm=$REALM/g" "$CONFIG_FILE"
-  sed -i "s/server-name=turn.pairux.com/server-name=$REALM/g" "$CONFIG_FILE"
+  sed -i "s/realm=turn.squadx-live.com/realm=$REALM/g" "$CONFIG_FILE"
+  sed -i "s/server-name=turn.squadx-live.com/server-name=$REALM/g" "$CONFIG_FILE"
 fi
 
 # Auto-detect external IP if not set (for cloud deployments)

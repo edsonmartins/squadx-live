@@ -225,7 +225,7 @@ pub async fn sync_meeting_to_google(
 
     let end_time = scheduled_at + chrono::Duration::minutes(meeting.duration_minutes as i64);
 
-    // Build event body - attendees will be notified through PairUX system
+    // Build event body - attendees will be notified through SquadX Live system
     // Note: Google Calendar attendees require email, which we don't always have
     let event_body = serde_json::json!({
         "summary": meeting.title,

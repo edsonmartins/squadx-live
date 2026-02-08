@@ -1,8 +1,8 @@
-# PairUX WebRTC Flow
+# SquadX Live WebRTC Flow
 
 ## Overview
 
-This document details the WebRTC implementation for PairUX, including signaling, media streaming, and data channel communication.
+This document details the WebRTC implementation for SquadX Live, including signaling, media streaming, and data channel communication.
 
 ---
 
@@ -260,7 +260,7 @@ graph LR
 
 ### Signaling via Supabase Realtime
 
-PairUX uses Supabase Realtime Channels for WebRTC signaling instead of a custom signaling server.
+SquadX Live uses Supabase Realtime Channels for WebRTC signaling instead of a custom signaling server.
 
 ```mermaid
 sequenceDiagram
@@ -401,11 +401,11 @@ const iceServers: RTCIceServer[] = [
   // Self-hosted TURN server
   {
     urls: [
-      'turn:turn.pairux.com:3478?transport=udp',
-      'turn:turn.pairux.com:3478?transport=tcp',
-      'turns:turn.pairux.com:5349?transport=tcp',
+      'turn:turn.squadx-live.com:3478?transport=udp',
+      'turn:turn.squadx-live.com:3478?transport=tcp',
+      'turns:turn.squadx-live.com:5349?transport=tcp',
     ],
-    username: 'pairux',
+    username: 'squadx-live',
     credential: 'secret', // Should be time-limited credential
   },
 ];

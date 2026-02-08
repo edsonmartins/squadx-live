@@ -7,7 +7,7 @@
       "developmentClient": true,
       "distribution": "internal",
       "env": {
-        "PAIRUX_API_URL": "http://localhost:3000"
+        "SQUADX_API_URL": "http://localhost:3000"
       }
     },
     "preview": {

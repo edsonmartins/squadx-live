@@ -61,7 +61,7 @@ export default function LoginScreen() {
             resizeMode="contain"
           />
           <Text className="text-2xl font-bold text-gray-900">Welcome back</Text>
-          <Text className="mt-1 text-gray-500">Sign in to your PairUX account</Text>
+          <Text className="mt-1 text-gray-500">Sign in to your SquadX Live account</Text>
         </View>
 
         {/* Error */}

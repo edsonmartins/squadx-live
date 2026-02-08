@@ -1,5 +1,5 @@
 # ===========================================
-# PairUX Installer Service - Dockerfile
+# SquadX Live Installer Service - Dockerfile
 # ===========================================
 # Lightweight Hono-based installer service
 # ===========================================

@@ -1,8 +1,8 @@
-# PairUX Technology Stack
+# SquadX Live Technology Stack
 
 ## Overview
 
-This document details the technology choices for PairUX and the rationale behind each decision.
+This document details the technology choices for SquadX Live and the rationale behind each decision.
 
 ---
 
@@ -244,7 +244,7 @@ module.exports = {
 const pc = new RTCPeerConnection({
   iceServers: [
     { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'turn:turn.pairux.com:3478', username: '...', credential: '...' },
+    { urls: 'turn:turn.squadx-live.com:3478', username: '...', credential: '...' },
   ],
 });
 
@@ -354,12 +354,12 @@ channel.on('broadcast', { event: 'signal' }, (payload) => {
 ```ini
 listening-port=3478
 tls-listening-port=5349
-realm=pairux.com
-server-name=turn.pairux.com
+realm=squadx-live.com
+server-name=turn.squadx-live.com
 
 # Authentication
 lt-cred-mech
-user=pairux:password
+user=squadx-live:password
 
 # TLS
 cert=/etc/ssl/turn.pem

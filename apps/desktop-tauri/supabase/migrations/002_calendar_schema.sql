@@ -1,5 +1,5 @@
 -- =============================================
--- PairUX Calendar System - Database Schema
+-- SquadX Live Calendar System - Database Schema
 -- =============================================
 -- Run this migration in your Supabase SQL Editor
 -- =============================================

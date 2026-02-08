@@ -2,11 +2,11 @@
  * SSE (Server-Sent Events) wrapper for React Native.
  *
  * Wraps react-native-sse's EventSource with proper typing
- * for PairUX signaling events.
+ * for SquadX Live signaling events.
  */
 import RNEventSource from 'react-native-sse';
 
-type PairUXEvents = 'connected' | 'signal' | 'presence-join' | 'presence-leave';
+type SquadX LiveEvents = 'connected' | 'signal' | 'presence-join' | 'presence-leave';
 
 export type SSEEventHandler = (event: { data: string }) => void;
 
@@ -16,7 +16,7 @@ export interface SSEConnection {
 }
 
 export function createEventSource(url: string): SSEConnection {
-  const es = new RNEventSource<PairUXEvents>(url);
+  const es = new RNEventSource<SquadX LiveEvents>(url);
 
   return {
     addEventListener(event: string, handler: SSEEventHandler) {

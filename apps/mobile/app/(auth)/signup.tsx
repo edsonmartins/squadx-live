@@ -123,7 +123,7 @@ export default function SignupScreen() {
             resizeMode="contain"
           />
           <Text className="text-2xl font-bold text-gray-900">Create your account</Text>
-          <Text className="mt-1 text-gray-500">Start sharing your screen with PairUX</Text>
+          <Text className="mt-1 text-gray-500">Start sharing your screen with SquadX Live</Text>
         </View>
 
         {/* Error */}

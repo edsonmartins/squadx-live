@@ -60,7 +60,7 @@ export default function AboutPage() {
                 SquadX Live is released under the MIT license. You can view, modify, and contribute to
                 the code on{' '}
                 <Link
-                  href="https://github.com/profullstack/pairux.com"
+                  href="https://github.com/squadx/squadx-live"
                   className="text-primary-600 hover:underline"
                 >
                   GitHub

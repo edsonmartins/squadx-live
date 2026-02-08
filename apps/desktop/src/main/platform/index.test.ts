@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 // Mock electron before importing the module
 vi.mock('electron', () => ({
   app: {
-    getName: vi.fn().mockReturnValue('PairUX'),
+    getName: vi.fn().mockReturnValue('SquadX Live'),
     getVersion: vi.fn().mockReturnValue('0.0.0-test'),
     getPath: vi.fn().mockReturnValue('/test/path'),
     isPackaged: false,

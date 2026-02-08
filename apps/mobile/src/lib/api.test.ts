@@ -4,7 +4,7 @@ import * as secureStorage from './secure-storage';
 
 vi.mock('./secure-storage');
 vi.mock('../config', () => ({
-  API_BASE_URL: 'https://pairux.com',
+  API_BASE_URL: 'https://squadx.live',
 }));
 
 const mockAuth = {
@@ -56,7 +56,7 @@ describe('api', () => {
 
       const result = await apiRequest<{ id: string }>('/api/test');
       expect(result.data).toEqual({ id: '1' });
-      expect(fetch).toHaveBeenCalledWith('https://pairux.com/api/test', {
+      expect(fetch).toHaveBeenCalledWith('https://squadx.live/api/test', {
         headers: {
           'Content-Type': 'application/json',
           Authorization: 'Bearer test-token',
@@ -81,7 +81,7 @@ describe('api', () => {
       const result = await apiRequest('/api/public', {}, false);
       expect(result.data).toBe('public');
       expect(fetch).toHaveBeenCalledWith(
-        'https://pairux.com/api/public',
+        'https://squadx.live/api/public',
         expect.objectContaining({
           headers: expect.not.objectContaining({
             Authorization: expect.any(String),
@@ -142,7 +142,7 @@ describe('api', () => {
         body: JSON.stringify({ key: 'value' }),
       });
 
-      expect(fetch).toHaveBeenCalledWith('https://pairux.com/api/test', {
+      expect(fetch).toHaveBeenCalledWith('https://squadx.live/api/test', {
         method: 'POST',
         body: JSON.stringify({ key: 'value' }),
         headers: {

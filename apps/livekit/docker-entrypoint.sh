@@ -2,7 +2,7 @@
 set -e
 
 # ===========================================
-# PairUX LiveKit Server Entrypoint
+# SquadX Live LiveKit Server Entrypoint
 # ===========================================
 # Substitutes environment variables into config
 # ===========================================

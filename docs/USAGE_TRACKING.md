@@ -1,10 +1,10 @@
 # Usage Tracking & Billing
 
-This document describes the usage tracking system for PairUX, designed to support usage-based billing for screen sharing sessions.
+This document describes the usage tracking system for SquadX Live, designed to support usage-based billing for screen sharing sessions.
 
 ## Overview
 
-PairUX tracks bandwidth usage for each screen sharing session. This data is used for:
+SquadX Live tracks bandwidth usage for each screen sharing session. This data is used for:
 
 1. **Usage-based billing** - Charge users based on data transferred
 2. **Analytics** - Understand usage patterns and optimize performance

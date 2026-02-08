@@ -10,7 +10,7 @@ vi.mock('electron', () => {
 
   return {
     app: {
-      getName: vi.fn().mockReturnValue('PairUX'),
+      getName: vi.fn().mockReturnValue('SquadX Live'),
       isPackaged: false,
       showAboutPanel: vi.fn(),
     },
@@ -72,7 +72,7 @@ describe('Menu Module', () => {
 
       // On macOS, first menu should be the app menu with the app name
       const appMenu = template[0] as { label: string };
-      expect(appMenu.label).toBe('PairUX');
+      expect(appMenu.label).toBe('SquadX Live');
     });
 
     it('should create Windows/Linux-style menu on win32', async () => {
@@ -209,13 +209,13 @@ describe('Menu Module', () => {
       expect(helpMenu).toBeDefined();
 
       // Find and click the help item
-      const helpItem = helpMenu?.submenu?.find((item) => item.label === 'PairUX Help');
+      const helpItem = helpMenu?.submenu?.find((item) => item.label === 'SquadX Live Help');
       expect(helpItem).toBeDefined();
 
       if (helpItem?.click) {
         helpItem.click();
       }
-      expect(vi.mocked(shell.openExternal)).toHaveBeenCalledWith('https://pairux.com/docs');
+      expect(vi.mocked(shell.openExternal)).toHaveBeenCalledWith('https://squadx.live/docs');
     });
   });
 

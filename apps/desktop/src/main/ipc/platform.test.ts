@@ -209,9 +209,9 @@ describe('Platform IPC Handlers', () => {
       const handler = mockHandlers.get('platform:open-external');
       expect(handler).toBeDefined();
 
-      const result = await handler?.({}, 'https://pairux.com');
+      const result = await handler?.({}, 'https://squadx.live');
 
-      expect(shell.openExternal).toHaveBeenCalledWith('https://pairux.com');
+      expect(shell.openExternal).toHaveBeenCalledWith('https://squadx.live');
       expect(result).toEqual({ success: true });
     });
   });

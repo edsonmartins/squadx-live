@@ -44,9 +44,9 @@ export async function requestAccessibilityPermission(): Promise<boolean> {
     const result = await dialog.showMessageBox({
       type: 'info',
       title: 'Accessibility Permission Required',
-      message: 'PairUX needs Accessibility permission to control mouse and keyboard.',
+      message: 'SquadX Live needs Accessibility permission to control mouse and keyboard.',
       detail:
-        'Please enable PairUX in System Preferences → Security & Privacy → Privacy → Accessibility.\n\nClick "Open Settings" to go there now.',
+        'Please enable SquadX Live in System Preferences → Security & Privacy → Privacy → Accessibility.\n\nClick "Open Settings" to go there now.',
       buttons: ['Open Settings', 'Later'],
       defaultId: 0,
     });
@@ -95,9 +95,9 @@ export async function requestScreenCapturePermission(): Promise<boolean> {
     const result = await dialog.showMessageBox({
       type: 'info',
       title: 'Screen Recording Permission Required',
-      message: 'PairUX needs Screen Recording permission to share your screen.',
+      message: 'SquadX Live needs Screen Recording permission to share your screen.',
       detail:
-        'Please enable PairUX in System Preferences → Security & Privacy → Privacy → Screen Recording.\n\nYou may need to restart the app after granting permission.',
+        'Please enable SquadX Live in System Preferences → Security & Privacy → Privacy → Screen Recording.\n\nYou may need to restart the app after granting permission.',
       buttons: ['Open Settings', 'Later'],
       defaultId: 0,
     });

@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{Error, Result};
 
-const SERVICE_NAME: &str = "com.pairux.desktop";
+const SERVICE_NAME: &str = "live.squadx.desktop";
 
 /// Keys for stored credentials
 #[derive(Debug, Clone, Copy)]

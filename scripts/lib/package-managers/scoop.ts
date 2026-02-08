@@ -1,14 +1,14 @@
 /**
  * Scoop Package Manager
  *
- * Submits to a Scoop bucket repository (profullstack/scoop-pairux).
+ * Submits to a Scoop bucket repository (squadx/scoop-squadx-live).
  */
 
 import { BasePackageManager } from './base.js';
 import type { PackageManagerConfig, ReleaseInfo, SubmissionResult, Logger } from './types.js';
 
-const DEFAULT_BUCKET_OWNER = 'profullstack';
-const DEFAULT_BUCKET_REPO = 'scoop-pairux';
+const DEFAULT_BUCKET_OWNER = 'squadx';
+const DEFAULT_BUCKET_REPO = 'scoop-squadx-live';
 
 export class ScoopPackageManager extends BasePackageManager {
   readonly name = 'scoop';
@@ -36,7 +36,7 @@ export class ScoopPackageManager extends BasePackageManager {
       const file = await this.getFileContent(
         this.bucketOwner,
         this.bucketRepo,
-        'bucket/pairux.json'
+        'bucket/squadx-live.json'
       );
 
       if (!file) return false;
@@ -61,25 +61,25 @@ export class ScoopPackageManager extends BasePackageManager {
     const manifest = {
       version: release.version,
       description: 'Collaborative screen sharing with remote control',
-      homepage: 'https://pairux.com',
+      homepage: 'https://squadx.live',
       license: 'MIT',
       url:
         exe?.downloadUrl ??
-        `https://github.com/profullstack/pairux.com/releases/download/v${release.version}/PairUX-${release.version}-x64.exe`,
+        `https://github.com/squadx/squadx-live/releases/download/v${release.version}/SquadX-Live-${release.version}-x64.exe`,
       hash: exe?.sha256 ?? 'SHA256_PLACEHOLDER',
       installer: {
         args: ['/S', '/D=$dir'],
       },
       uninstaller: {
-        file: '$dir\\Uninstall PairUX.exe',
+        file: '$dir\\Uninstall SquadX Live.exe',
         args: ['/S'],
       },
-      shortcuts: [['PairUX.exe', 'PairUX']],
+      shortcuts: [['SquadX Live.exe', 'SquadX Live']],
       checkver: {
-        github: 'https://github.com/profullstack/pairux.com',
+        github: 'https://github.com/squadx/squadx-live',
       },
       autoupdate: {
-        url: `https://github.com/profullstack/pairux.com/releases/download/v$version/PairUX-$version-x64.exe`,
+        url: `https://github.com/squadx/squadx-live/releases/download/v$version/SquadX-Live-$version-x64.exe`,
       },
     };
 
@@ -110,7 +110,7 @@ export class ScoopPackageManager extends BasePackageManager {
     }
 
     // Ensure the bucket repository exists
-    await this.ensureRepo(this.bucketOwner, this.bucketRepo, 'Scoop bucket for PairUX', false);
+    await this.ensureRepo(this.bucketOwner, this.bucketRepo, 'Scoop bucket for SquadX Live', false);
 
     // Ensure bucket directory exists
     const bucketDir = await this.getFileContent(
@@ -138,11 +138,11 @@ export class ScoopPackageManager extends BasePackageManager {
       this.bucketRepo,
       [
         {
-          path: 'bucket/pairux.json',
+          path: 'bucket/squadx-live.json',
           content: manifest,
         },
       ],
-      `pairux: Update to ${release.version}`
+      `squadx-live: Update to ${release.version}`
     );
   }
 }

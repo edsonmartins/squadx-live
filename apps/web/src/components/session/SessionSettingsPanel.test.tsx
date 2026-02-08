@@ -10,7 +10,7 @@ vi.mock('lucide-react', () => ({
   Palette: () => <span data-testid="palette-icon" />,
 }));
 
-const SETTINGS_KEY = 'pairux-web-settings';
+const SETTINGS_KEY = 'squadx-live-web-settings';
 
 describe('SessionSettingsPanel', () => {
   const defaultProps = {

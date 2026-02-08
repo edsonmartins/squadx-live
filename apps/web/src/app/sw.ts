@@ -52,7 +52,7 @@ sw.addEventListener('push', (event) => {
         body: payload.body,
         icon: '/icons/icon-192x192.png',
         badge: '/icons/apple-touch-icon-72x72.png',
-        tag: payload.tag ?? 'pairux-notification',
+        tag: payload.tag ?? 'squadx-live-notification',
         data: { url: payload.url ?? '/' },
       })
     );

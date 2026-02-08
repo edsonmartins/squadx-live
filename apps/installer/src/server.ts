@@ -22,8 +22,8 @@ function getPackageVersion(): string {
 // Configuration
 const PORT = parseInt(process.env.PORT ?? '8080', 10);
 const SCRIPTS_DIR = process.env.SCRIPTS_DIR ?? join(__dirname, '../scripts');
-const BASE_URL = process.env.BASE_URL ?? 'https://installer.pairux.com';
-const GITHUB_REPO = process.env.GITHUB_REPO ?? 'profullstack/pairux.com';
+const BASE_URL = process.env.BASE_URL ?? 'https://installer.squadx.live';
+const GITHUB_REPO = process.env.GITHUB_REPO ?? 'squadx/squadx-live';
 const FALLBACK_VERSION = process.env.LATEST_VERSION ?? getPackageVersion();
 
 // Cache for GitHub version
@@ -41,7 +41,7 @@ async function getLatestVersion(): Promise<string> {
     const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`, {
       headers: {
         Accept: 'application/vnd.github.v3+json',
-        'User-Agent': 'PairUX-Installer',
+        'User-Agent': 'SquadX Live-Installer',
       },
     });
 
@@ -66,15 +66,15 @@ function getGitHubDownloadUrl(version: string, platform: string): string {
   // These must match the artifactName pattern in electron-builder.yml
   switch (platform) {
     case 'darwin-x64':
-      return `${baseUrl}/PairUX-${version}-mac.zip`;
+      return `${baseUrl}/SquadX Live-${version}-mac.zip`;
     case 'darwin-arm64':
-      return `${baseUrl}/PairUX-${version}-arm64-mac.zip`;
+      return `${baseUrl}/SquadX Live-${version}-arm64-mac.zip`;
     case 'linux-x64':
-      return `${baseUrl}/PairUX-${version}-x86_64.AppImage`;
+      return `${baseUrl}/SquadX Live-${version}-x86_64.AppImage`;
     case 'linux-arm64':
-      return `${baseUrl}/PairUX-${version}-arm64.AppImage`;
+      return `${baseUrl}/SquadX Live-${version}-arm64.AppImage`;
     case 'windows-x64':
-      return `${baseUrl}/PairUX.Setup.${version}.exe`;
+      return `${baseUrl}/SquadX Live.Setup.${version}.exe`;
     default:
       return '';
   }
@@ -111,7 +111,7 @@ app.get('/health', async (c) => {
 app.get('/', async (c) => {
   const latestVersion = await getLatestVersion();
   return c.json({
-    name: 'PairUX Installer Service',
+    name: 'SquadX Live Installer Service',
     version: getPackageVersion(),
     latestRelease: latestVersion,
     install: {
@@ -249,7 +249,7 @@ app.onError((err, c) => {
 });
 
 // Start server
-console.log('PairUX Installer Service starting...');
+console.log('SquadX Live Installer Service starting...');
 console.log(`  Port: ${String(PORT)}`);
 console.log(`  GitHub repo: ${GITHUB_REPO}`);
 console.log(`  Fallback version: ${FALLBACK_VERSION}`);

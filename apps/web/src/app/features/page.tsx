@@ -24,7 +24,7 @@ import { Footer } from '@/components/footer';
 export const metadata: Metadata = {
   title: 'Features',
   description:
-    'Explore all the features of PairUX: real-time screen sharing, remote control, multi-cursor collaboration, cross-platform support, and more.',
+    'Explore all the features of SquadX Live: real-time screen sharing, remote control, multi-cursor collaboration, cross-platform support, and more.',
 };
 
 const mainFeatures = [
@@ -162,18 +162,18 @@ const technicalFeatures = [
 ];
 
 const comparisonFeatures = [
-  { feature: 'Screen sharing', pairux: true, others: true },
-  { feature: 'Remote control', pairux: true, others: true },
-  { feature: 'Simultaneous control', pairux: true, others: false },
-  { feature: 'Screen recording (local)', pairux: 'soon', others: 'partial' },
-  { feature: 'Text chat', pairux: 'soon', others: true },
-  { feature: 'No account for viewers', pairux: true, others: false },
-  { feature: 'Open source', pairux: true, others: false },
-  { feature: 'Self-hostable', pairux: true, others: false },
-  { feature: 'E2E encrypted', pairux: true, others: 'partial' },
-  { feature: 'Native apps', pairux: true, others: true },
-  { feature: 'Browser viewer', pairux: true, others: false },
-  { feature: 'Free tier', pairux: 'unlimited', others: 'limited' },
+  { feature: 'Screen sharing', squadxLive: true, others: true },
+  { feature: 'Remote control', squadxLive: true, others: true },
+  { feature: 'Simultaneous control', squadxLive: true, others: false },
+  { feature: 'Screen recording (local)', squadxLive: 'soon', others: 'partial' },
+  { feature: 'Text chat', squadxLive: 'soon', others: true },
+  { feature: 'No account for viewers', squadxLive: true, others: false },
+  { feature: 'Open source', squadxLive: true, others: false },
+  { feature: 'Self-hostable', squadxLive: true, others: false },
+  { feature: 'E2E encrypted', squadxLive: true, others: 'partial' },
+  { feature: 'Native apps', squadxLive: true, others: true },
+  { feature: 'Browser viewer', squadxLive: true, others: false },
+  { feature: 'Free tier', squadxLive: 'unlimited', others: 'limited' },
 ];
 
 export default function FeaturesPage() {
@@ -251,7 +251,7 @@ export default function FeaturesPage() {
             <div className="text-center">
               <h2 className="text-3xl font-bold text-gray-900">Built on Modern Technology</h2>
               <p className="mx-auto mt-4 max-w-2xl text-gray-600">
-                PairUX uses industry-standard WebRTC for reliable, low-latency streaming.
+                SquadX Live uses industry-standard WebRTC for reliable, low-latency streaming.
               </p>
             </div>
 
@@ -271,9 +271,9 @@ export default function FeaturesPage() {
         <section className="bg-white py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              <h2 className="text-3xl font-bold text-gray-900">How PairUX Compares</h2>
+              <h2 className="text-3xl font-bold text-gray-900">How SquadX Live Compares</h2>
               <p className="mx-auto mt-4 max-w-2xl text-gray-600">
-                See how PairUX stacks up against other screen sharing solutions.
+                See how SquadX Live stacks up against other screen sharing solutions.
               </p>
             </div>
 
@@ -282,7 +282,7 @@ export default function FeaturesPage() {
                 <thead>
                   <tr className="border-b border-gray-200">
                     <th className="py-4 pr-4 text-left font-semibold text-gray-900">Feature</th>
-                    <th className="text-primary-600 px-4 py-4 text-center font-semibold">PairUX</th>
+                    <th className="text-primary-600 px-4 py-4 text-center font-semibold">SquadX Live</th>
                     <th className="px-4 py-4 text-center font-semibold text-gray-500">Others</th>
                   </tr>
                 </thead>
@@ -291,10 +291,10 @@ export default function FeaturesPage() {
                     <tr key={row.feature} className="border-b border-gray-100">
                       <td className="py-4 pr-4 text-gray-700">{row.feature}</td>
                       <td className="px-4 py-4 text-center">
-                        {row.pairux === true ? (
+                        {row.squadxLive === true ? (
                           <Check className="text-accent-600 mx-auto h-5 w-5" />
                         ) : (
-                          <span className="text-accent-600 text-sm font-medium">{row.pairux}</span>
+                          <span className="text-accent-600 text-sm font-medium">{row.squadxLive}</span>
                         )}
                       </td>
                       <td className="px-4 py-4 text-center">
@@ -321,7 +321,7 @@ export default function FeaturesPage() {
               <div className="text-center sm:text-left">
                 <h2 className="text-2xl font-bold text-white">Ready to get started?</h2>
                 <p className="text-primary-100 mt-1">
-                  Download PairUX and start collaborating in seconds.
+                  Download SquadX Live and start collaborating in seconds.
                 </p>
               </div>
               <Link

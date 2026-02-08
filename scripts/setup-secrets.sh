@@ -4,11 +4,11 @@
 
 set -e
 
-REPO="profullstack/pairux.com"
-SECRETS_DIR="$HOME/.pairux-secrets"
+REPO="squadx/squadx-live"
+SECRETS_DIR="$HOME/.squadx-secrets"
 
 echo "=================================="
-echo "PairUX Package Submission Secrets Setup"
+echo "SquadX Live Package Submission Secrets Setup"
 echo "=================================="
 echo ""
 
@@ -33,8 +33,8 @@ echo ""
 echo "You need to create a Personal Access Token manually:"
 echo "  1. Go to: https://github.com/settings/tokens?type=beta"
 echo "  2. Click 'Generate new token'"
-echo "  3. Name: 'pairux-pkg-submit'"
-echo "  4. Repository access: Select repositories -> profullstack/pairux + package repos"
+echo "  3. Name: 'squadx-live-pkg-submit'"
+echo "  4. Repository access: Select repositories -> squadx/squadx-live + package repos"
 echo "  5. Permissions: Contents (Read and write)"
 echo "  6. Generate and copy the token"
 echo ""
@@ -105,12 +105,12 @@ if [ -z "$GPG_KEY_ID" ]; then
     # Generate GPG key in batch mode
     GPG_BATCH_FILE="$SECRETS_DIR/gpg_batch"
     cat > "$GPG_BATCH_FILE" << EOF
-%echo Generating GPG key for PairUX package signing
+%echo Generating GPG key for SquadX Live package signing
 Key-Type: RSA
 Key-Length: 4096
 Subkey-Type: RSA
 Subkey-Length: 4096
-Name-Real: PairUX Package Signing
+Name-Real: SquadX Live Package Signing
 Name-Email: packages@squadx.live
 Expire-Date: 0
 %no-protection
@@ -169,10 +169,10 @@ echo "  1. Verify AUR SSH key is added: https://aur.archlinux.org/account"
 echo "     (Register at https://aur.archlinux.org/register if you don't have an account)"
 echo ""
 echo "Everything else is automatic:"
-echo "  - AUR package 'pairux-bin' will be created on first push"
+echo "  - AUR package 'squadx-live-bin' will be created on first push"
 echo "  - GitHub repos will be auto-created on first release:"
-echo "     - profullstack/homebrew-pairux"
-echo "     - profullstack/scoop-pairux"
-echo "     - profullstack/pairux-apt"
-echo "     - profullstack/pairux-rpm"
+echo "     - squadx/homebrew-squadx-live"
+echo "     - squadx/scoop-squadx-live"
+echo "     - squadx/squadx-live-apt"
+echo "     - squadx/squadx-live-rpm"
 echo ""

@@ -21,7 +21,7 @@ let fileHandle: fs.WriteStream | null = null;
  */
 export function getRecordingsDirectory(): string {
   const videosDir = app.getPath('videos');
-  const recordingsDir = path.join(videosDir, 'PairUX Recordings');
+  const recordingsDir = path.join(videosDir, 'SquadX Live Recordings');
 
   // Ensure directory exists
   if (!fs.existsSync(recordingsDir)) {
@@ -37,7 +37,7 @@ export function getRecordingsDirectory(): string {
 function generateFilename(extension = 'webm'): string {
   const now = new Date();
   const timestamp = now.toISOString().replace(/[:.]/g, '-').slice(0, 19);
-  return `PairUX-Recording-${timestamp}.${extension}`;
+  return `SquadX-Live-Recording-${timestamp}.${extension}`;
 }
 
 /**

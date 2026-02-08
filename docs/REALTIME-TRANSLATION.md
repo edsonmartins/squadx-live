@@ -3,13 +3,13 @@
 **Version:** 2.0
 **Date:** January 2025
 **Status:** Draft
-**Product:** PairUX
+**Product:** SquadX Live
 
 ---
 
 ## 1. Overview
 
-This PRD defines requirements for adding accessibility and multilingual communication features to PairUX, a WebRTC-based real-time screen sharing application with remote control.
+This PRD defines requirements for adding accessibility and multilingual communication features to SquadX Live, a WebRTC-based real-time screen sharing application with remote control.
 
 The system supports:
 
@@ -29,7 +29,7 @@ The design prioritizes transcription accuracy, translation quality, and speaker 
 - Natural, context-aware translations
 - Clear speaker attribution (host identification)
 - Per-viewer language selection
-- Seamless integration with existing PairUX WebRTC architecture
+- Seamless integration with existing SquadX Live WebRTC architecture
 - Self-hosted by default, with paid upgrades allowed
 - Minimal changes to existing data channel and signaling infrastructure
 
@@ -114,9 +114,9 @@ The design prioritizes transcription accuracy, translation quality, and speaker 
 
 ## 5. System Architecture
 
-### 5.1 Integration with PairUX Architecture
+### 5.1 Integration with SquadX Live Architecture
 
-PairUX uses:
+SquadX Live uses:
 
 - **Sessions** (not rooms) as the primary organizational unit
 - **Supabase Realtime** for signaling (`session:{sessionId}` channel)

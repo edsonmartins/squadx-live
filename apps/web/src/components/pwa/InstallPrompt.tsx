@@ -53,7 +53,7 @@ export function InstallPrompt({ className = '', variant = 'banner' }: InstallPro
         onClick={handleInstall}
         disabled={isInstalling}
         className={`fixed right-4 bottom-4 z-50 flex items-center gap-2 rounded-full bg-blue-600 px-4 py-3 font-medium text-white shadow-lg transition-all hover:bg-blue-700 hover:shadow-xl disabled:opacity-75 ${className}`}
-        aria-label="Install PairUX app"
+        aria-label="Install SquadX Live app"
       >
         <Download className="h-5 w-5" />
         <span className="hidden sm:inline">Install App</span>
@@ -74,7 +74,7 @@ export function InstallPrompt({ className = '', variant = 'banner' }: InstallPro
             <Icon className="h-5 w-5 text-white" />
           </div>
           <div>
-            <p className="font-medium text-white">Install PairUX</p>
+            <p className="font-medium text-white">Install SquadX Live</p>
             <p className="text-sm text-gray-400">
               {isMobile
                 ? 'Add to your home screen for quick access'

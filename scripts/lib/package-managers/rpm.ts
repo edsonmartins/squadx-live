@@ -11,8 +11,8 @@ import { tmpdir } from 'node:os';
 import { BasePackageManager } from './base.js';
 import type { PackageManagerConfig, ReleaseInfo, SubmissionResult, Logger } from './types.js';
 
-const DEFAULT_REPO_OWNER = 'profullstack';
-const DEFAULT_REPO_NAME = 'pairux-rpm';
+const DEFAULT_REPO_OWNER = 'squadx';
+const DEFAULT_REPO_NAME = 'squadx-live-rpm';
 
 export class RPMPackageManager extends BasePackageManager {
   readonly name = 'rpm';
@@ -40,8 +40,8 @@ export class RPMPackageManager extends BasePackageManager {
   async checkExisting(version: string): Promise<boolean> {
     try {
       // Check if the .rpm file exists in the Packages directory
-      // RPM filename format: pairux-{version}-1.x86_64.rpm
-      const path = `Packages/pairux-${version}-1.x86_64.rpm`;
+      // RPM filename format: squadx-live-{version}-1.x86_64.rpm
+      const path = `Packages/squadx-live-${version}-1.x86_64.rpm`;
       const file = await this.getFileContent(this.repoOwner, this.repoName, path);
       return file !== null;
     } catch {
@@ -55,11 +55,11 @@ export class RPMPackageManager extends BasePackageManager {
     return Promise.resolve(`RPM Repository Update for ${release.version}
 
 Repository structure:
-  Packages/pairux-${release.version}-1.x86_64.rpm
+  Packages/squadx-live-${release.version}-1.x86_64.rpm
   repodata/repomd.xml
   repodata/repomd.xml.asc
-  RPM-GPG-KEY-pairux
-  pairux.repo
+  RPM-GPG-KEY-squadx-live
+  squadx-live.repo
 `);
   }
 
@@ -110,7 +110,7 @@ Repository structure:
       this.logger.info('Cloning RPM repository...');
 
       // Ensure repo exists
-      await this.ensureRepo(this.repoOwner, this.repoName, 'RPM repository for PairUX', false);
+      await this.ensureRepo(this.repoOwner, this.repoName, 'RPM repository for SquadX Live', false);
 
       execSync(
         `git clone https://${token ?? ''}@github.com/${this.repoOwner}/${this.repoName}.git ${repoDir}`,
@@ -124,7 +124,7 @@ Repository structure:
       // Download the .rpm file
       this.logger.info('Downloading .rpm package...');
       const rpmData = await this.downloadFile(rpmAsset.downloadUrl);
-      const rpmFilename = `pairux-${release.version}-1.x86_64.rpm`;
+      const rpmFilename = `squadx-live-${release.version}-1.x86_64.rpm`;
       const rpmPath = join(packagesDir, rpmFilename);
       writeFileSync(rpmPath, rpmData);
 
@@ -151,21 +151,21 @@ Repository structure:
       // Export public key
       const gpgPublicKey = this.exportGPGPublicKey();
       if (gpgPublicKey) {
-        writeFileSync(join(repoDir, 'RPM-GPG-KEY-pairux'), gpgPublicKey);
+        writeFileSync(join(repoDir, 'RPM-GPG-KEY-squadx-live'), gpgPublicKey);
       }
 
       // Create .repo file for easy installation
-      const repoFileContent = `[pairux]
-name=PairUX Repository
+      const repoFileContent = `[squadx-live]
+name=SquadX Live Repository
 baseurl=https://${this.repoOwner}.github.io/${this.repoName}/
 enabled=1
 gpgcheck=1
-gpgkey=https://${this.repoOwner}.github.io/${this.repoName}/RPM-GPG-KEY-pairux
+gpgkey=https://${this.repoOwner}.github.io/${this.repoName}/RPM-GPG-KEY-squadx-live
 `;
-      writeFileSync(join(repoDir, 'pairux.repo'), repoFileContent);
+      writeFileSync(join(repoDir, 'squadx-live.repo'), repoFileContent);
 
       // Create README with installation instructions
-      const readmeContent = `# PairUX RPM Repository
+      const readmeContent = `# SquadX Live RPM Repository
 
 ## Installation
 
@@ -173,13 +173,13 @@ gpgkey=https://${this.repoOwner}.github.io/${this.repoName}/RPM-GPG-KEY-pairux
 
 \`\`\`bash
 # Add repository
-sudo dnf config-manager --add-repo https://${this.repoOwner}.github.io/${this.repoName}/pairux.repo
+sudo dnf config-manager --add-repo https://${this.repoOwner}.github.io/${this.repoName}/squadx-live.repo
 
 # Import GPG key
-sudo rpm --import https://${this.repoOwner}.github.io/${this.repoName}/RPM-GPG-KEY-pairux
+sudo rpm --import https://${this.repoOwner}.github.io/${this.repoName}/RPM-GPG-KEY-squadx-live
 
 # Install
-sudo dnf install pairux
+sudo dnf install squadx-live
 \`\`\`
 
 ### Manual Download
@@ -190,12 +190,12 @@ You can also download the RPM directly from the [Packages](./Packages) directory
 
       // Commit and push
       this.logger.info('Committing changes...');
-      execSync('git config user.email "hello@pairux.com"', { cwd: repoDir, stdio: 'pipe' });
-      execSync('git config user.name "PairUX Bot"', { cwd: repoDir, stdio: 'pipe' });
+      execSync('git config user.email "hello@squadx.live"', { cwd: repoDir, stdio: 'pipe' });
+      execSync('git config user.name "SquadX Bot"', { cwd: repoDir, stdio: 'pipe' });
       execSync('git add -A', { cwd: repoDir, stdio: 'pipe' });
 
       try {
-        execSync(`git commit -m "Add PairUX ${release.version}"`, {
+        execSync(`git commit -m "Add SquadX Live ${release.version}"`, {
           cwd: repoDir,
           stdio: 'pipe',
         });
@@ -273,7 +273,7 @@ You can also download the RPM directly from the [Packages](./Packages) directory
 
   private exportGPGPublicKey(): string | null {
     try {
-      return execSync('gpg --armor --export PairUX', { encoding: 'utf-8' });
+      return execSync('gpg --armor --export SquadX', { encoding: 'utf-8' });
     } catch {
       return null;
     }

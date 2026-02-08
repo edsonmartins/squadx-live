@@ -1,8 +1,8 @@
 #!/bin/bash
 # ===========================================
-# PairUX Desktop App Installer
+# SquadX Live Desktop App Installer
 # ===========================================
-# Usage: curl -fsSL https://installer.pairux.com/install.sh | bash
+# Usage: curl -fsSL https://installer.squadx.live/install.sh | bash
 # ===========================================
 
 set -e
@@ -15,10 +15,10 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-GITHUB_REPO="profullstack/pairux.com"
-INSTALLER_URL="${PAIRUX_INSTALLER_URL:-https://installer.pairux.com}"
-INSTALL_DIR="${PAIRUX_INSTALL_DIR:-$HOME/.pairux}"
-BIN_DIR="${PAIRUX_BIN_DIR:-$HOME/.local/bin}"
+GITHUB_REPO="squadx/squadx-live"
+INSTALLER_URL="${SQUADX_INSTALLER_URL:-https://installer.squadx.live}"
+INSTALL_DIR="${SQUADX_INSTALL_DIR:-$HOME/.squadx-live}"
+BIN_DIR="${SQUADX_BIN_DIR:-$HOME/.local/bin}"
 APPLICATIONS_DIR="/Applications"
 
 # Print banner
@@ -144,17 +144,17 @@ get_download_url() {
         darwin)
             # macOS uses zip files
             if [ "$arch" = "arm64" ]; then
-                filename="PairUX-${version}-arm64-mac.zip"
+                filename="SquadX Live-${version}-arm64-mac.zip"
             else
-                filename="PairUX-${version}-mac.zip"
+                filename="SquadX Live-${version}-mac.zip"
             fi
             ;;
         linux)
             # Linux uses AppImage
             if [ "$arch" = "arm64" ]; then
-                filename="PairUX-${version}-arm64.AppImage"
+                filename="SquadX Live-${version}-arm64.AppImage"
             else
-                filename="PairUX-${version}-x86_64.AppImage"
+                filename="SquadX Live-${version}-x86_64.AppImage"
             fi
             ;;
         *)
@@ -234,10 +234,10 @@ install_macos() {
     local download_url
     download_url=$(get_download_url "darwin-${arch}" "$version")
 
-    info "Downloading PairUX ${version} for macOS ${arch}..."
-    local archive_path="${temp_dir}/PairUX.zip"
+    info "Downloading SquadX Live ${version} for macOS ${arch}..."
+    local archive_path="${temp_dir}/SquadX Live.zip"
 
-    download_with_progress "$download_url" "$archive_path" || error "Failed to download PairUX"
+    download_with_progress "$download_url" "$archive_path" || error "Failed to download SquadX Live"
 
     info "Extracting..."
     # Use ditto to preserve macOS file attributes, permissions, and code signing
@@ -245,49 +245,49 @@ install_macos() {
     ditto -xk "$archive_path" "$temp_dir"
 
     # Move to Applications
-    if [ -d "${APPLICATIONS_DIR}/PairUX.app" ]; then
+    if [ -d "${APPLICATIONS_DIR}/SquadX Live.app" ]; then
         info "Removing existing installation..."
-        rm -rf "${APPLICATIONS_DIR}/PairUX.app"
+        rm -rf "${APPLICATIONS_DIR}/SquadX Live.app"
     fi
 
-    mv "${temp_dir}/PairUX.app" "${APPLICATIONS_DIR}/"
+    mv "${temp_dir}/SquadX Live.app" "${APPLICATIONS_DIR}/"
 
     # Create CLI wrapper script
     info "Creating launcher script..."
     mkdir -p "$BIN_DIR"
-    cat > "$BIN_DIR/pairux" << WRAPPER
+    cat > "$BIN_DIR/squadx-live" << WRAPPER
 #!/bin/bash
-# PairUX launcher (macOS)
+# SquadX Live launcher (macOS)
 
 VERSION="$version"
-APP_PATH="/Applications/PairUX.app"
-APP_BIN="\$APP_PATH/Contents/MacOS/PairUX"
+APP_PATH="/Applications/SquadX Live.app"
+APP_BIN="\$APP_PATH/Contents/MacOS/SquadX Live"
 BIN_DIR="\$HOME/.local/bin"
 
 case "\${1-}" in
     -h|--help)
-        echo "Usage: pairux [options]"
+        echo "Usage: squadx-live [options]"
         echo ""
-        echo "PairUX - collaborative screen sharing desktop app"
+        echo "SquadX Live - collaborative screen sharing desktop app"
         echo ""
         echo "Options:"
         echo "  -h, --help       Show this help message"
         echo "  -v, --version    Show version number"
         echo "  update           Check for updates and install the latest version"
-        echo "  uninstall        Remove PairUX completely"
+        echo "  uninstall        Remove SquadX Live completely"
         exit 0
         ;;
     -v|--version)
-        echo "pairux \$VERSION"
+        echo "squadx-live \$VERSION"
         exit 0
         ;;
     update)
         echo "Checking for updates..."
 
-        LATEST=\$(curl -fsSL "https://api.github.com/repos/profullstack/pairux.com/releases/latest" 2>/dev/null | grep -o '"tag_name": *"[^"]*"' | head -1 | cut -d'"' -f4 | sed 's/^v//')
+        LATEST=\$(curl -fsSL "https://api.github.com/repos/squadx/squadx-live/releases/latest" 2>/dev/null | grep -o '"tag_name": *"[^"]*"' | head -1 | cut -d'"' -f4 | sed 's/^v//')
 
         if [ -z "\$LATEST" ]; then
-            LATEST=\$(curl -fsSL "https://installer.pairux.com/api/version" 2>/dev/null || echo "")
+            LATEST=\$(curl -fsSL "https://installer.squadx.live/api/version" 2>/dev/null || echo "")
         fi
 
         if [ -z "\$LATEST" ]; then
@@ -300,21 +300,21 @@ case "\${1-}" in
 
         if [ "\$VERSION" = "\$LATEST" ]; then
             echo ""
-            echo "PairUX is already up to date."
+            echo "SquadX Live is already up to date."
             exit 0
         fi
 
         echo ""
-        echo "Updating PairUX to v\$LATEST..."
-        curl -fsSL https://installer.pairux.com/install.sh | bash
+        echo "Updating SquadX Live to v\$LATEST..."
+        curl -fsSL https://installer.squadx.live/install.sh | bash
         exit \$?
         ;;
     uninstall)
-        echo "Uninstalling PairUX..."
+        echo "Uninstalling SquadX Live..."
         echo ""
 
         # Kill running instances
-        pkill -f "PairUX" 2>/dev/null && echo "  Stopped running instance"
+        pkill -f "SquadX Live" 2>/dev/null && echo "  Stopped running instance"
 
         # Remove app bundle
         if [ -d "\$APP_PATH" ]; then
@@ -323,10 +323,10 @@ case "\${1-}" in
         fi
 
         # Remove this launcher script last
-        echo "  Removed \$BIN_DIR/pairux"
+        echo "  Removed \$BIN_DIR/squadx-live"
         echo ""
-        echo "PairUX has been uninstalled."
-        rm -f "\$BIN_DIR/pairux"
+        echo "SquadX Live has been uninstalled."
+        rm -f "\$BIN_DIR/squadx-live"
         exit 0
         ;;
 esac
@@ -334,14 +334,14 @@ esac
 if [ -x "\$APP_BIN" ]; then
     exec "\$APP_BIN" "\$@"
 else
-    echo "Error: PairUX app not found at \$APP_PATH"
-    echo "Please reinstall: curl -fsSL https://installer.pairux.com/install.sh | bash"
+    echo "Error: SquadX Live app not found at \$APP_PATH"
+    echo "Please reinstall: curl -fsSL https://installer.squadx.live/install.sh | bash"
     exit 1
 fi
 WRAPPER
-    chmod +x "$BIN_DIR/pairux"
+    chmod +x "$BIN_DIR/squadx-live"
 
-    success "PairUX ${version} installed to ${APPLICATIONS_DIR}/PairUX.app"
+    success "SquadX Live ${version} installed to ${APPLICATIONS_DIR}/SquadX Live.app"
 }
 
 # Install on Linux
@@ -356,52 +356,52 @@ install_linux() {
     local download_url
     download_url=$(get_download_url "linux-${arch}" "$version")
 
-    info "Downloading PairUX ${version} for Linux..."
-    local appimage_path="${INSTALL_DIR}/PairUX.AppImage"
+    info "Downloading SquadX Live ${version} for Linux..."
+    local appimage_path="${INSTALL_DIR}/SquadX Live.AppImage"
 
     mkdir -p "$INSTALL_DIR"
-    download_with_progress "$download_url" "$appimage_path" || error "Failed to download PairUX"
+    download_with_progress "$download_url" "$appimage_path" || error "Failed to download SquadX Live"
 
     chmod +x "$appimage_path"
 
     # Create wrapper script that handles sandbox issues
     info "Creating launcher script..."
     mkdir -p "$BIN_DIR"
-    cat > "$BIN_DIR/pairux" << WRAPPER
+    cat > "$BIN_DIR/squadx-live" << WRAPPER
 #!/bin/bash
-# PairUX launcher
+# SquadX Live launcher
 # ELECTRON_DISABLE_SANDBOX is required for AppImages without SUID chrome-sandbox
 
 VERSION="$version"
-APPIMAGE="\$HOME/.pairux/PairUX.AppImage"
-INSTALL_DIR="\$HOME/.pairux"
+APPIMAGE="\$HOME/.squadx-live/SquadX Live.AppImage"
+INSTALL_DIR="\$HOME/.squadx-live"
 BIN_DIR="\$HOME/.local/bin"
-DESKTOP_FILE="\$HOME/.local/share/applications/pairux.desktop"
-ICON_FILE="\$HOME/.local/share/icons/hicolor/256x256/apps/pairux.png"
+DESKTOP_FILE="\$HOME/.local/share/applications/squadx-live.desktop"
+ICON_FILE="\$HOME/.local/share/icons/hicolor/256x256/apps/squadx-live.png"
 
 case "\${1-}" in
     -h|--help)
-        echo "Usage: pairux [options]"
+        echo "Usage: squadx-live [options]"
         echo ""
-        echo "PairUX - collaborative screen sharing desktop app"
+        echo "SquadX Live - collaborative screen sharing desktop app"
         echo ""
         echo "Options:"
         echo "  -h, --help       Show this help message"
         echo "  -v, --version    Show version number"
         echo "  update           Check for updates and install the latest version"
-        echo "  uninstall        Remove PairUX completely"
+        echo "  uninstall        Remove SquadX Live completely"
         exit 0
         ;;
     -v|--version)
-        echo "pairux \$VERSION"
+        echo "squadx-live \$VERSION"
         exit 0
         ;;
     uninstall)
-        echo "Uninstalling PairUX..."
+        echo "Uninstalling SquadX Live..."
         echo ""
 
         # Kill running instances
-        pkill -f "PairUX.AppImage" 2>/dev/null && echo "  Stopped running instance"
+        pkill -f "SquadX Live.AppImage" 2>/dev/null && echo "  Stopped running instance"
 
         # Remove AppImage and install directory
         if [ -d "\$INSTALL_DIR" ]; then
@@ -423,19 +423,19 @@ case "\${1-}" in
         fi
 
         # Remove this launcher script last
-        echo "  Removed \$BIN_DIR/pairux"
+        echo "  Removed \$BIN_DIR/squadx-live"
         echo ""
-        echo "PairUX has been uninstalled."
-        rm -f "\$BIN_DIR/pairux"
+        echo "SquadX Live has been uninstalled."
+        rm -f "\$BIN_DIR/squadx-live"
         exit 0
         ;;
     update)
         echo "Checking for updates..."
 
-        LATEST=\$(curl -fsSL "https://api.github.com/repos/profullstack/pairux.com/releases/latest" 2>/dev/null | grep -o '"tag_name": *"[^"]*"' | head -1 | cut -d'"' -f4 | sed 's/^v//')
+        LATEST=\$(curl -fsSL "https://api.github.com/repos/squadx/squadx-live/releases/latest" 2>/dev/null | grep -o '"tag_name": *"[^"]*"' | head -1 | cut -d'"' -f4 | sed 's/^v//')
 
         if [ -z "\$LATEST" ]; then
-            LATEST=\$(curl -fsSL "https://installer.pairux.com/api/version" 2>/dev/null || echo "")
+            LATEST=\$(curl -fsSL "https://installer.squadx.live/api/version" 2>/dev/null || echo "")
         fi
 
         if [ -z "\$LATEST" ]; then
@@ -448,13 +448,13 @@ case "\${1-}" in
 
         if [ "\$VERSION" = "\$LATEST" ]; then
             echo ""
-            echo "PairUX is already up to date."
+            echo "SquadX Live is already up to date."
             exit 0
         fi
 
         echo ""
-        echo "Updating PairUX to v\$LATEST..."
-        curl -fsSL https://installer.pairux.com/install.sh | bash
+        echo "Updating SquadX Live to v\$LATEST..."
+        curl -fsSL https://installer.squadx.live/install.sh | bash
         exit \$?
         ;;
 esac
@@ -466,12 +466,12 @@ if [ -x "\$APPIMAGE" ]; then
     unset ELECTRON_RUN_AS_NODE
     exec "\$APPIMAGE" "\$@"
 else
-    echo "Error: PairUX AppImage not found at \$APPIMAGE"
-    echo "Please reinstall: curl -fsSL https://installer.pairux.com/install.sh | bash"
+    echo "Error: SquadX Live AppImage not found at \$APPIMAGE"
+    echo "Please reinstall: curl -fsSL https://installer.squadx.live/install.sh | bash"
     exit 1
 fi
 WRAPPER
-    chmod +x "$BIN_DIR/pairux"
+    chmod +x "$BIN_DIR/squadx-live"
 
     # Create .desktop file for application menu integration
     info "Creating desktop entry..."
@@ -484,25 +484,25 @@ WRAPPER
         # Try to extract the icon
         cd "$temp_dir"
         "$appimage_path" --appimage-extract "*.png" 2>/dev/null || true
-        if [ -f "squashfs-root/pairux.png" ]; then
-            cp "squashfs-root/pairux.png" "$icon_dir/"
-        elif [ -f "squashfs-root/usr/share/icons/hicolor/256x256/apps/pairux.png" ]; then
-            cp "squashfs-root/usr/share/icons/hicolor/256x256/apps/pairux.png" "$icon_dir/"
+        if [ -f "squashfs-root/squadx-live.png" ]; then
+            cp "squashfs-root/squadx-live.png" "$icon_dir/"
+        elif [ -f "squashfs-root/usr/share/icons/hicolor/256x256/apps/squadx-live.png" ]; then
+            cp "squashfs-root/usr/share/icons/hicolor/256x256/apps/squadx-live.png" "$icon_dir/"
         fi
         cd - > /dev/null
     fi
 
     # Create .desktop file
-    cat > "$desktop_dir/pairux.desktop" << DESKTOP
+    cat > "$desktop_dir/squadx-live.desktop" << DESKTOP
 [Desktop Entry]
-Name=PairUX
+Name=SquadX Live
 Comment=Screen sharing with remote control
-Exec=$BIN_DIR/pairux %U
-Icon=pairux
+Exec=$BIN_DIR/squadx-live %U
+Icon=squadx-live
 Terminal=false
 Type=Application
 Categories=Network;RemoteAccess;
-StartupWMClass=PairUX
+StartupWMClass=SquadX Live
 Keywords=screen;share;remote;control;
 DESKTOP
 
@@ -511,12 +511,12 @@ DESKTOP
         update-desktop-database "$desktop_dir" 2>/dev/null || true
     fi
 
-    success "PairUX ${version} installed to ${INSTALL_DIR}"
-    info "Desktop entry created - PairUX should appear in your applications menu"
+    success "SquadX Live ${version} installed to ${INSTALL_DIR}"
+    info "Desktop entry created - SquadX Live should appear in your applications menu"
 }
 
 # Download and install
-install_pairux() {
+install_squadx-live() {
     local platform="$1"
     local version="$2"
     local os arch
@@ -560,7 +560,7 @@ setup_path() {
         if [ -n "$shell_config" ]; then
             if ! grep -q "$BIN_DIR" "$shell_config" 2>/dev/null; then
                 echo "" >> "$shell_config"
-                echo "# PairUX" >> "$shell_config"
+                echo "# SquadX Live" >> "$shell_config"
                 echo "$path_line" >> "$shell_config"
                 warn "Added $BIN_DIR to PATH in $shell_config"
                 warn "Run 'source $shell_config' or restart your terminal"
@@ -588,14 +588,14 @@ main() {
     version=$(get_latest_version)
     info "Latest version: ${version}"
 
-    install_pairux "$platform" "$version"
+    install_squadx-live "$platform" "$version"
     setup_path
 
     echo ""
     success "Installation complete!"
     echo ""
-    echo "  Run 'pairux --help' to get started"
-    echo "  Or visit https://pairux.com/docs for documentation"
+    echo "  Run 'squadx-live --help' to get started"
+    echo "  Or visit https://squadx.live/docs for documentation"
     echo ""
 }
 

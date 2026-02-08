@@ -1,8 +1,8 @@
 import { ForgotPasswordForm } from '@/components/auth';
 
 export const metadata = {
-  title: 'Forgot Password - PairUX',
-  description: 'Reset your PairUX account password',
+  title: 'Forgot Password - SquadX Live',
+  description: 'Reset your SquadX Live account password',
 };
 
 export default function ForgotPasswordPage() {

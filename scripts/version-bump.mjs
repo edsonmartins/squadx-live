@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Version Bump Script for PairUX Monorepo
+ * Version Bump Script for SquadX Live Monorepo
  *
  * Usage:
  *   pnpm version:bump major|minor|patch

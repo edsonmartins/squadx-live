@@ -2,7 +2,7 @@
  * WebRTC Host Hook using LiveKit SFU with API-based token fetching
  *
  * Desktop variant of useWebRTCHostSFU. Uses HTTP Bearer token auth
- * to fetch LiveKit tokens from the PairUX API, matching the pattern
+ * to fetch LiveKit tokens from the SquadX Live API, matching the pattern
  * used by useWebRTCHostAPI for P2P sessions.
  */
 
@@ -239,7 +239,7 @@ export function useWebRTCHostSFUAPI({
       }
       authTokenRef.current = token;
 
-      // Fetch LiveKit token from PairUX API with Bearer auth
+      // Fetch LiveKit token from SquadX Live API with Bearer auth
       const tokenRes = await fetch(`${API_BASE_URL}/api/livekit/token`, {
         method: 'POST',
         headers: {

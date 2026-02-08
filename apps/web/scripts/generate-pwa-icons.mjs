@@ -20,7 +20,7 @@ if (!existsSync(iconsDir)) {
   mkdirSync(iconsDir, { recursive: true });
 }
 
-// PairUX logo SVG template (simple geometric design)
+// SquadX Live logo SVG template (simple geometric design)
 // Blue theme matching the app (#3b82f6)
 const createSvg = (size, padding = 0) => {
   const innerSize = size - padding * 2;

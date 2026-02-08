@@ -1,8 +1,8 @@
-# PairUX Architecture
+# SquadX Live Architecture
 
 ## Overview
 
-PairUX is a cross-platform collaborative screen sharing application with simultaneous local and remote mouse/keyboard control. This document describes the high-level system architecture.
+SquadX Live is a cross-platform collaborative screen sharing application with simultaneous local and remote mouse/keyboard control. This document describes the high-level system architecture.
 
 ## System Components
 
@@ -57,7 +57,7 @@ graph TB
 ## Monorepo Structure
 
 ```
-pairux/
+squadx-live/
 ├── apps/
 │   ├── web/                    # Next.js marketing + join UI
 │   │   ├── src/
@@ -204,7 +204,7 @@ graph LR
     end
 
     subgraph HostNetwork [Host Network]
-        HostApp[PairUX Desktop]
+        HostApp[SquadX Live Desktop]
     end
 
     subgraph ViewerNetwork [Viewer Network]
@@ -225,7 +225,7 @@ graph LR
 ```mermaid
 graph TB
     subgraph TrustBoundary1 [Host Machine - Full Trust]
-        HostApp[PairUX Desktop App]
+        HostApp[SquadX Live Desktop App]
         OSPerms[OS Permissions<br/>Screen Recording + Accessibility]
     end
 

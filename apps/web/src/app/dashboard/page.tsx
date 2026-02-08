@@ -6,8 +6,8 @@ import { Footer } from '@/components/footer';
 import { RecentSessions } from './components/RecentSessions';
 
 export const metadata: Metadata = {
-  title: 'Dashboard - PairUX',
-  description: 'PairUX Dashboard - Manage your sessions, billing, and settings.',
+  title: 'Dashboard - SquadX Live',
+  description: 'SquadX Live Dashboard - Manage your sessions, billing, and settings.',
 };
 
 const plans = [
@@ -62,7 +62,7 @@ export default function DashboardPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Welcome Banner */}
           <div className="from-primary-600 to-primary-700 mb-8 rounded-xl bg-gradient-to-r p-6 text-white shadow-lg">
-            <h1 className="text-3xl font-bold">Welcome to PairUX</h1>
+            <h1 className="text-3xl font-bold">Welcome to SquadX Live</h1>
             <p className="text-primary-100 mt-2">
               Share your screen, collaborate in real-time, and get remote assistance.
             </p>

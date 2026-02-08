@@ -31,7 +31,7 @@ export interface SessionSettingsPanelProps {
   participantCount: number;
 }
 
-const SETTINGS_KEY = 'pairux-web-settings';
+const SETTINGS_KEY = 'squadx-live-web-settings';
 
 const networkQualityLabel: Record<NetworkQuality, string> = {
   excellent: 'Excellent',

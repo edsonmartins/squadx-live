@@ -1,5 +1,5 @@
 # ===========================================
-# PairUX LiveKit Server Configuration
+# SquadX Live LiveKit Server Configuration
 # ===========================================
 # API keys are injected via environment variables
 # See docker-entrypoint.sh for env var substitution

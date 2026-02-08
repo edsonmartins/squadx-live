@@ -29,29 +29,29 @@ const footerLinks = {
   install: [
     {
       name: 'Homebrew (macOS)',
-      href: 'https://github.com/profullstack/homebrew-pairux',
+      href: 'https://github.com/squadx/homebrew-squadx-live',
       external: true,
     },
     {
       name: 'Scoop (Windows)',
-      href: 'https://github.com/profullstack/scoop-pairux',
+      href: 'https://github.com/squadx/scoop-squadx-live',
       external: true,
     },
     {
       name: 'WinGet (Windows)',
-      href: 'https://github.com/microsoft/winget-pkgs/tree/master/manifests/p/PairUX/PairUX',
+      href: 'https://github.com/microsoft/winget-pkgs/tree/master/manifests/s/SquadX/SquadXLive',
       external: true,
     },
     {
       name: 'Chocolatey (Windows)',
-      href: 'https://community.chocolatey.org/packages/pairux',
+      href: 'https://community.chocolatey.org/packages/squadx-live',
       external: true,
     },
-    { name: 'AUR (Arch)', href: 'https://aur.archlinux.org/packages/pairux-bin', external: true },
-    { name: 'APT (Debian)', href: 'https://github.com/profullstack/pairux-apt', external: true },
-    { name: 'RPM (Fedora)', href: 'https://github.com/profullstack/pairux-rpm', external: true },
-    { name: 'Gentoo', href: 'https://github.com/profullstack/gentoo-pairux', external: true },
-    { name: 'Nix', href: 'https://github.com/profullstack/pairux-nix', external: true },
+    { name: 'AUR (Arch)', href: 'https://aur.archlinux.org/packages/squadx-live-bin', external: true },
+    { name: 'APT (Debian)', href: 'https://github.com/squadx/squadx-live-apt', external: true },
+    { name: 'RPM (Fedora)', href: 'https://github.com/squadx/squadx-live-rpm', external: true },
+    { name: 'Gentoo', href: 'https://github.com/squadx/gentoo-squadx-live', external: true },
+    { name: 'Nix', href: 'https://github.com/squadx/squadx-live-nix', external: true },
   ],
   resources: [
     { name: 'Documentation', href: '/docs' },
@@ -70,12 +70,12 @@ const footerLinks = {
 const socialLinks = [
   {
     name: 'GitHub',
-    href: 'https://github.com/profullstack/pairux.com',
+    href: 'https://github.com/squadx/squadx-live',
     icon: GitHubIcon,
   },
   {
     name: 'X',
-    href: 'https://x.com/profullstackinc',
+    href: 'https://x.com/squadxlive',
     icon: TwitterIcon,
   },
 ];
@@ -184,12 +184,12 @@ export function Footer() {
           <p className="text-center text-sm text-gray-500">
             &copy; {new Date().getFullYear()}{' '}
             <a
-              href="https://profullstack.com"
+              href="https://squadx.live"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-gray-700"
             >
-              Profullstack, Inc.
+              SquadX Team
             </a>{' '}
             Open source under MIT License.
           </p>

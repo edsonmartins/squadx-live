@@ -2,9 +2,9 @@ import type { ExpoConfig, ConfigContext } from 'expo/config';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: 'PairUX',
-  slug: 'pairux',
-  scheme: 'pairux',
+  name: 'SquadX Live',
+  slug: 'squadx-live',
+  scheme: 'squadx-live',
   version: '0.1.0',
   orientation: 'portrait',
   icon: './assets/icon.png',
@@ -15,16 +15,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     backgroundColor: '#0f172a',
   },
   ios: {
-    bundleIdentifier: 'com.pairux.mobile',
+    bundleIdentifier: 'live.squadx.mobile',
     supportsTablet: true,
     infoPlist: {
       UIBackgroundModes: ['voip'],
       NSMicrophoneUsageDescription:
-        'PairUX needs microphone access for voice chat during sessions.',
+        'SquadX Live needs microphone access for voice chat during sessions.',
     },
   },
   android: {
-    package: 'com.pairux.mobile',
+    package: 'live.squadx.mobile',
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
       backgroundColor: '#0f172a',
@@ -38,9 +38,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: ['expo-router', 'expo-secure-store'],
   extra: {
-    PAIRUX_API_URL: process.env.PAIRUX_API_URL,
+    SQUADX_API_URL: process.env.SQUADX_API_URL,
     eas: {
-      projectId: 'pairux-mobile',
+      projectId: 'squadx-live-mobile',
     },
   },
   experiments: {
