@@ -1,0 +1,77 @@
+[package]
+name = "squadx-live-desktop"
+version = "0.1.0"
+description = "SquadX Live Desktop - Collaborative development platform with AI"
+authors = ["SquadX Team"]
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/squadx/squadx-live"
+
+[lib]
+name = "squadx_live_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[[bin]]
+name = "squadx-live-desktop"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+thiserror = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Screen capture
+xcap = "0.8"
+
+# Input injection
+enigo = { version = "0.2", features = ["serde"] }
+
+# Secure storage
+keyring = "3"
+
+# Utilities
+uuid = { version = "1", features = ["v4"] }
+image = "0.25"
+chrono = { version = "0.4", features = ["serde"] }
+chrono-tz = "0.10"
+rand = "0.8"
+urlencoding = "2"
+
+# RRULE parsing for recurring events
+rrule = "0.13"
+
+# Regex for validation
+regex = "1"
+
+# HTTP client for Supabase API
+reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
+
+# WebSocket for Supabase Realtime
+tokio-tungstenite = { version = "0.24", features = ["rustls-tls-webpki-roots"] }
+futures-util = "0.3"
+
+# WebRTC (will add later)
+# webrtc = "0.11"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+cocoa = "0.26"
+objc = "0.2"
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

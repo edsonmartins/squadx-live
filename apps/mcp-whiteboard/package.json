@@ -1,0 +1,36 @@
+{
+  "name": "@squadx/mcp-whiteboard",
+  "version": "0.5.3",
+  "private": true,
+  "description": "MCP Server for SquadX Live Whiteboard - AI Agent Integration",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "clean": "rm -rf dist node_modules"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "lib0": "^0.2.0",
+    "mermaid": "^11.12.2",
+    "uuid": "^11.0.0",
+    "y-websocket": "^2.0.0",
+    "yjs": "^13.6.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/uuid": "^10.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

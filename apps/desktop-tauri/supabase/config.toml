@@ -1,0 +1,40 @@
+# Supabase Configuration for PairUX Desktop
+
+[project]
+name = "pairux-desktop"
+
+# Edge Functions
+[functions.send-meeting-notification]
+# Endpoint: /functions/v1/send-meeting-notification
+# Called by: process-notification-queue or directly from backend
+# Sends email notifications for meeting events
+
+[functions.process-notification-queue]
+# Endpoint: /functions/v1/process-notification-queue
+# Cron: Every 5 minutes
+# Processes pending notifications from the queue
+
+# Cron Jobs Configuration
+# Note: Set up via Supabase Dashboard > Database > Extensions > pg_cron
+#
+# Run the following SQL to set up the cron job:
+#
+# SELECT cron.schedule(
+#   'process-notification-queue',
+#   '*/5 * * * *',  -- Every 5 minutes
+#   $$
+#   SELECT net.http_post(
+#     url:='https://<project-ref>.supabase.co/functions/v1/process-notification-queue',
+#     headers:='{"Content-Type": "application/json", "Authorization": "Bearer <service_role_key>"}'::jsonb
+#   );
+#   $$
+# );
+
+# Environment Variables Required:
+# SUPABASE_URL - Your Supabase project URL
+# SUPABASE_SERVICE_ROLE_KEY - Service role key for admin access
+# RESEND_API_KEY - Resend.com API key for sending emails
+# EMAIL_FROM - From email address (e.g., reunioes@pairux.com)
+# APP_URL - Application URL for links in emails
+# GOOGLE_CLIENT_ID - Google OAuth client ID
+# GOOGLE_CLIENT_SECRET - Google OAuth client secret

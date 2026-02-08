@@ -1,0 +1,170 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+/* Custom theme configuration */
+@theme {
+  /* Colors - PairUX brand */
+  --color-primary-50: oklch(0.97 0.01 250);
+  --color-primary-100: oklch(0.93 0.02 250);
+  --color-primary-200: oklch(0.86 0.04 250);
+  --color-primary-300: oklch(0.76 0.08 250);
+  --color-primary-400: oklch(0.64 0.14 250);
+  --color-primary-500: oklch(0.55 0.18 250);
+  --color-primary-600: oklch(0.48 0.18 250);
+  --color-primary-700: oklch(0.42 0.16 250);
+  --color-primary-800: oklch(0.36 0.12 250);
+  --color-primary-900: oklch(0.3 0.08 250);
+  --color-primary-950: oklch(0.22 0.06 250);
+
+  /* Accent green */
+  --color-accent-50: oklch(0.97 0.02 160);
+  --color-accent-100: oklch(0.93 0.04 160);
+  --color-accent-200: oklch(0.86 0.08 160);
+  --color-accent-300: oklch(0.76 0.12 160);
+  --color-accent-400: oklch(0.64 0.16 160);
+  --color-accent-500: oklch(0.55 0.18 160);
+  --color-accent-600: oklch(0.48 0.16 160);
+  --color-accent-700: oklch(0.42 0.14 160);
+  --color-accent-800: oklch(0.36 0.1 160);
+  --color-accent-900: oklch(0.3 0.08 160);
+
+  /* Fonts */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* Base styles */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-white text-gray-900 antialiased;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
+  }
+
+  /* Focus styles */
+  :focus-visible {
+    @apply outline-primary-500 outline-2 outline-offset-2;
+  }
+
+  /* Selection */
+  ::selection {
+    @apply bg-primary-500/20 text-primary-900;
+  }
+}
+
+/* Custom utility classes */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .gradient-text {
+    @apply from-primary-600 to-accent-500 bg-gradient-to-r bg-clip-text text-transparent;
+  }
+
+  .gradient-bg {
+    @apply from-primary-50 to-accent-50 bg-gradient-to-br via-white;
+  }
+}
+
+/* Keyframe animations */
+@keyframes gradient-x {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-gradient-x {
+  animation: gradient-x 3s ease infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+/* Typewriter cursor styling */
+.type-animation-cursor::after {
+  content: '|';
+  animation: blink 1s step-end infinite;
+  @apply text-primary-600 ml-0.5;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Prose styling for content pages */
+.prose {
+  --tw-prose-body: theme(colors.gray.700);
+  --tw-prose-headings: theme(colors.gray.900);
+  --tw-prose-lead: theme(colors.gray.600);
+  --tw-prose-links: theme(colors.primary.600);
+  --tw-prose-bold: theme(colors.gray.900);
+  --tw-prose-counters: theme(colors.gray.500);
+  --tw-prose-bullets: theme(colors.gray.400);
+  --tw-prose-hr: theme(colors.gray.200);
+  --tw-prose-quotes: theme(colors.gray.900);
+  --tw-prose-quote-borders: theme(colors.primary.500);
+  --tw-prose-captions: theme(colors.gray.500);
+  --tw-prose-code: theme(colors.primary.700);
+  --tw-prose-pre-code: theme(colors.gray.200);
+  --tw-prose-pre-bg: theme(colors.gray.900);
+  --tw-prose-th-borders: theme(colors.gray.300);
+  --tw-prose-td-borders: theme(colors.gray.200);
+}
+
+.prose h2 {
+  @apply mt-12 mb-6 border-b border-gray-200 pb-3 text-2xl font-bold text-gray-900;
+}
+
+.prose h3 {
+  @apply mt-8 mb-4 text-xl font-semibold text-gray-900;
+}
+
+.prose p {
+  @apply mb-6 leading-relaxed text-gray-700;
+}
+
+.prose ul {
+  @apply my-6 ml-6 list-disc space-y-2;
+}
+
+.prose li {
+  @apply leading-relaxed text-gray-700;
+}
+
+.prose a {
+  @apply text-primary-600 hover:text-primary-700 font-medium transition-colors hover:underline;
+}
+
+.prose strong {
+  @apply font-semibold text-gray-900;
+}
+
+.prose blockquote {
+  @apply border-primary-500 my-6 rounded-r-lg border-l-4 bg-gray-50 py-4 pr-4 pl-6 text-gray-700 italic;
+}

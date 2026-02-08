@@ -1,0 +1,11 @@
+{
+  "name": "@squadx/turn",
+  "version": "0.5.3",
+  "private": true,
+  "description": "SquadX Live TURN/STUN Server (coturn)",
+  "scripts": {
+    "start": "echo 'TURN server runs via Docker'",
+    "docker:build": "docker build -t squadx-turn .",
+    "docker:run": "docker run -d --name squadx-turn -p 3478:3478 -p 3478:3478/udp -p 5349:5349 -p 49152-49252:49152-49252/udp squadx-turn"
+  }
+}

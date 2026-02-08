@@ -1,0 +1,15 @@
+export { WhiteboardPanel } from './WhiteboardPanel';
+export { WhiteboardCanvas } from './WhiteboardCanvas';
+export { CursorOverlay } from './CursorOverlay';
+export { AgentPresenceOverlay } from './AgentPresenceOverlay';
+export { PermissionBar } from './PermissionBar';
+export { BoardSidebar } from './BoardSidebar';
+export { MermaidImporter } from './MermaidImporter';
+export { WhiteboardModeSelector } from './WhiteboardModeSelector';
+export { SplitViewContainer } from './SplitViewContainer';
+export { OverlayContainer } from './OverlayContainer';
+export { SnapshotManager } from './SnapshotManager';
+export { SnapshotDiff } from './SnapshotDiff';
+export { ExportDialog } from './ExportDialog';
+export { TemplateGallery } from './TemplateGallery';
+export { ComponentPalette } from './ComponentPalette';

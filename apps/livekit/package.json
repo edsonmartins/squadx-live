@@ -1,0 +1,12 @@
+{
+  "name": "@squadx/livekit",
+  "version": "0.3.1",
+  "private": true,
+  "description": "SquadX Live LiveKit SFU Server",
+  "scripts": {
+    "start": "echo 'LiveKit server runs via Docker'",
+    "docker:build": "docker build -t squadx-livekit .",
+    "docker:run": "docker run -d --name squadx-livekit -p 7880:7880 -p 7881:7881 -p 7882:7882/udp -e LIVEKIT_KEYS=\"devkey: secret\" squadx-livekit",
+    "dev": "docker compose up"
+  }
+}

@@ -1,0 +1,29 @@
+# ===========================================
+# PairUX Web App - Railway Configuration
+# ===========================================
+# Railway will use this config for deployment
+# Docs: https://docs.railway.app/reference/config-as-code
+# ===========================================
+
+[build]
+# Use Dockerfile for build
+builder = "DOCKERFILE"
+dockerfilePath = "apps/web/Dockerfile"
+
+# Build context is the repo root
+watchPatterns = ["apps/web/**", "packages/**", "pnpm-lock.yaml"]
+
+[deploy]
+# Number of replicas
+numReplicas = 1
+
+# Health check endpoint
+healthcheckPath = "/api/health"
+healthcheckTimeout = 30
+
+# Restart policy
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+
+# Start command (defined in Dockerfile CMD, but explicit here)
+startCommand = "node apps/web/server.js"
