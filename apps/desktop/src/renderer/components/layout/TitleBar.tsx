@@ -24,8 +24,8 @@ export function TitleBar() {
     >
       <div className="no-drag flex items-center gap-2">
         <img
-          src={`${import.meta.env.BASE_URL}logo.light.svg`}
-          alt="PairUX"
+          src={`${import.meta.env.BASE_URL}logo.png`}
+          alt="SquadX Live"
           className="h-7 w-auto"
         />
       </div>

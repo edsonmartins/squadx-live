@@ -19,14 +19,15 @@ const sizes = {
 
 export function Logo({ size = 'md', variant = 'default', asLink = true, className }: LogoProps) {
   const sizeConfig = sizes[size];
-  // Logo aspect ratio is approximately 2.83:1 (512.75 / 181.44)
-  const width = Math.round(sizeConfig.height * 2.83);
-  const src = variant === 'light' ? '/logo.light.svg' : '/logo.svg';
+  // Logo is 1:1 aspect ratio (square)
+  const width = sizeConfig.height;
+  // Use PNG logo (same for both variants)
+  const src = '/logo.png';
 
   const image = (
     <Image
       src={src}
-      alt="PairUX"
+      alt="SquadX Live"
       width={width}
       height={sizeConfig.height}
       className="h-auto"

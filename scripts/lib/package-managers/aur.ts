@@ -12,7 +12,7 @@ import { BasePackageManager } from './base.js';
 import type { ReleaseInfo, SubmissionResult } from './types.js';
 
 const AUR_SSH_HOST = 'aur@aur.archlinux.org';
-const PACKAGE_NAME = 'pairux-bin';
+const PACKAGE_NAME = 'squadx-live-bin';
 
 export class AURPackageManager extends BasePackageManager {
   readonly name = 'aur';
@@ -52,54 +52,54 @@ export class AURPackageManager extends BasePackageManager {
 
     const sha256 = appImage?.sha256 ?? 'SKIP';
 
-    const pkgbuild = `# Maintainer: PairUX Team <hello@pairux.com>
+    const pkgbuild = `# Maintainer: SquadX Team <hello@squadx.live>
 pkgname=${PACKAGE_NAME}
 pkgver=${release.version}
 pkgrel=1
 pkgdesc="Collaborative screen sharing with remote control"
 arch=('x86_64')
-url="https://pairux.com"
+url="https://squadx.live"
 license=('MIT')
 depends=('gtk3' 'libnotify' 'nss' 'libxss' 'libxtst' 'xdg-utils' 'at-spi2-core' 'util-linux-libs' 'fuse2')
-provides=('pairux')
-conflicts=('pairux' 'pairux-git')
+provides=('squadx-live')
+conflicts=('squadx-live' 'squadx-live-git')
 options=('!strip')
-source=("PairUX-\${pkgver}.AppImage::https://github.com/profullstack/pairux.com/releases/download/v\${pkgver}/PairUX-\${pkgver}-x86_64.AppImage")
+source=("SquadX-Live-\${pkgver}.AppImage::https://github.com/squadx/squadx-live/releases/download/v\${pkgver}/SquadX-Live-\${pkgver}-x86_64.AppImage")
 sha256sums=('${sha256}')
 
 package() {
     cd "$srcdir"
 
     # Install AppImage
-    install -Dm755 "PairUX-\${pkgver}.AppImage" "$pkgdir/opt/pairux/pairux.AppImage"
+    install -Dm755 "SquadX-Live-\${pkgver}.AppImage" "$pkgdir/opt/squadx-live/squadx-live.AppImage"
 
     # Create wrapper script
     install -dm755 "$pkgdir/usr/bin"
-    cat > "$pkgdir/usr/bin/pairux" << 'WRAPPER'
+    cat > "$pkgdir/usr/bin/squadx-live" << 'WRAPPER'
 #!/bin/bash
 export ELECTRON_DISABLE_SANDBOX=1
-exec /opt/pairux/pairux.AppImage "$@"
+exec /opt/squadx-live/squadx-live.AppImage "$@"
 WRAPPER
-    chmod 755 "$pkgdir/usr/bin/pairux"
+    chmod 755 "$pkgdir/usr/bin/squadx-live"
 
     # Create and install desktop file
-    cat > "$srcdir/pairux.desktop" << 'DESKTOP'
+    cat > "$srcdir/squadx-live.desktop" << 'DESKTOP'
 [Desktop Entry]
-Name=PairUX
+Name=SquadX Live
 Comment=Collaborative screen sharing with remote control
-Exec=/opt/pairux/pairux.AppImage --no-sandbox %U
-Icon=pairux
+Exec=/opt/squadx-live/squadx-live.AppImage --no-sandbox %U
+Icon=squadx-live
 Type=Application
 Categories=Network;RemoteAccess;
-StartupWMClass=PairUX
+StartupWMClass=SquadX Live
 DESKTOP
-    install -Dm644 "$srcdir/pairux.desktop" "$pkgdir/usr/share/applications/pairux.desktop"
+    install -Dm644 "$srcdir/squadx-live.desktop" "$pkgdir/usr/share/applications/squadx-live.desktop"
 
     # Extract and install icon from AppImage
-    cd "$pkgdir/opt/pairux"
-    ./pairux.AppImage --appimage-extract usr/share/icons/hicolor/512x512/apps/*.png 2>/dev/null || true
+    cd "$pkgdir/opt/squadx-live"
+    ./squadx-live.AppImage --appimage-extract usr/share/icons/hicolor/512x512/apps/*.png 2>/dev/null || true
     if [ -f squashfs-root/usr/share/icons/hicolor/512x512/apps/*.png ]; then
-        install -Dm644 squashfs-root/usr/share/icons/hicolor/512x512/apps/*.png "$pkgdir/usr/share/pixmaps/pairux.png"
+        install -Dm644 squashfs-root/usr/share/icons/hicolor/512x512/apps/*.png "$pkgdir/usr/share/pixmaps/squadx-live.png"
     fi
     rm -rf squashfs-root
 }
@@ -113,7 +113,7 @@ DESKTOP
 \tpkgdesc = Collaborative screen sharing with remote control
 \tpkgver = ${version}
 \tpkgrel = 1
-\turl = https://pairux.com
+\turl = https://squadx.live
 \tarch = x86_64
 \tlicense = MIT
 \tdepends = gtk3
@@ -125,11 +125,11 @@ DESKTOP
 \tdepends = at-spi2-core
 \tdepends = util-linux-libs
 \tdepends = fuse2
-\tprovides = pairux
-\tconflicts = pairux
-\tconflicts = pairux-git
+\tprovides = squadx-live
+\tconflicts = squadx-live
+\tconflicts = squadx-live-git
 \toptions = !strip
-\tsource = PairUX-${version}.AppImage::https://github.com/profullstack/pairux.com/releases/download/v${version}/PairUX-${version}-x86_64.AppImage
+\tsource = SquadX-Live-${version}.AppImage::https://github.com/squadx/squadx-live/releases/download/v${version}/SquadX-Live-${version}-x86_64.AppImage
 
 pkgname = ${PACKAGE_NAME}
 `;
@@ -230,8 +230,8 @@ pkgname = ${PACKAGE_NAME}
       }
 
       // Configure git
-      execSync('git config user.email "hello@pairux.com"', { cwd: repoDir, env, stdio: 'pipe' });
-      execSync('git config user.name "PairUX Bot"', { cwd: repoDir, env, stdio: 'pipe' });
+      execSync('git config user.email "hello@squadx.live"', { cwd: repoDir, env, stdio: 'pipe' });
+      execSync('git config user.name "SquadX Live Bot"', { cwd: repoDir, env, stdio: 'pipe' });
 
       // Write PKGBUILD and .SRCINFO
       writeFileSync(join(repoDir, 'PKGBUILD'), pkgbuild);

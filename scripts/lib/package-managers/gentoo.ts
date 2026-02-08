@@ -2,16 +2,16 @@
  * Gentoo Package Manager (Ebuild)
  *
  * Submits ebuilds to a custom overlay repository.
- * Overlay repo: profullstack/gentoo-pairux
+ * Overlay repo: squadx/gentoo-squadx-live
  */
 
 import { BasePackageManager } from './base.js';
 import type { ReleaseInfo, SubmissionResult } from './types.js';
 
-const OVERLAY_OWNER = 'profullstack';
-const OVERLAY_REPO = 'gentoo-pairux';
+const OVERLAY_OWNER = 'squadx';
+const OVERLAY_REPO = 'gentoo-squadx-live';
 const CATEGORY = 'net-misc';
-const PACKAGE_NAME = 'pairux-bin';
+const PACKAGE_NAME = 'squadx-live-bin';
 
 export class GentooPackageManager extends BasePackageManager {
   readonly name = 'gentoo';
@@ -41,8 +41,8 @@ export class GentooPackageManager extends BasePackageManager {
 EAPI=8
 
 DESCRIPTION="Collaborative screen sharing with remote control"
-HOMEPAGE="https://pairux.com"
-SRC_URI="https://github.com/profullstack/pairux.com/releases/download/v\${PV}/PairUX-\${PV}-x86_64.AppImage -> \${P}.AppImage"
+HOMEPAGE="https://squadx.live"
+SRC_URI="https://github.com/squadx/squadx-live/releases/download/v\${PV}/SquadX-Live-\${PV}-x86_64.AppImage -> \${P}.AppImage"
 
 LICENSE="MIT"
 SLOT="0"
@@ -63,7 +63,7 @@ BDEPEND=""
 
 S="\${WORKDIR}"
 
-QA_PREBUILT="opt/pairux/*"
+QA_PREBUILT="opt/squadx-live/*"
 
 src_unpack() {
 	cp "\${DISTDIR}/\${P}.AppImage" "\${S}/" || die
@@ -71,22 +71,22 @@ src_unpack() {
 
 src_install() {
 	# Install AppImage
-	insinto /opt/pairux
+	insinto /opt/squadx-live
 	doins "\${P}.AppImage"
-	fperms 0755 "/opt/pairux/\${P}.AppImage"
+	fperms 0755 "/opt/squadx-live/\${P}.AppImage"
 
 	# Create wrapper script
-	dobin "\${FILESDIR}/pairux"
+	dobin "\${FILESDIR}/squadx-live"
 
 	# Install desktop file
 	insinto /usr/share/applications
-	doins "\${FILESDIR}/pairux.desktop"
+	doins "\${FILESDIR}/squadx-live.desktop"
 
 	# Extract and install icon
 	"\${S}/\${P}.AppImage" --appimage-extract usr/share/icons/hicolor/512x512/apps/*.png 2>/dev/null || true
 	if [[ -f squashfs-root/usr/share/icons/hicolor/512x512/apps/*.png ]]; then
 		insinto /usr/share/pixmaps
-		newins squashfs-root/usr/share/icons/hicolor/512x512/apps/*.png pairux.png
+		newins squashfs-root/usr/share/icons/hicolor/512x512/apps/*.png squadx-live.png
 	fi
 	rm -rf squashfs-root
 }
@@ -107,15 +107,15 @@ pkg_postrm() {
 <!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 	<maintainer type="person">
-		<email>hello@pairux.com</email>
-		<name>PairUX Team</name>
+		<email>hello@squadx.live</email>
+		<name>SquadX Team</name>
 	</maintainer>
 	<upstream>
-		<remote-id type="github">profullstack/pairux.com</remote-id>
-		<bugs-to>https://github.com/profullstack/pairux.com/issues</bugs-to>
+		<remote-id type="github">squadx/squadx-live</remote-id>
+		<bugs-to>https://github.com/squadx/squadx-live/issues</bugs-to>
 	</upstream>
 	<longdescription lang="en">
-		PairUX is a collaborative screen sharing application with simultaneous
+		SquadX Live is a collaborative screen sharing application with simultaneous
 		remote mouse and keyboard control. Like Screenhero, but open source.
 		Perfect for pair programming, remote support, and collaboration.
 	</longdescription>
@@ -125,24 +125,24 @@ pkg_postrm() {
     // Generate actual wrapper script with version
     const actualWrapper = `#!/bin/bash
 export ELECTRON_DISABLE_SANDBOX=1
-exec /opt/pairux/pairux-bin-${release.version}.AppImage "$@"
+exec /opt/squadx-live/squadx-live-bin-${release.version}.AppImage "$@"
 `;
 
     // Generate actual desktop file with version
     const actualDesktop = `[Desktop Entry]
-Name=PairUX
+Name=SquadX Live
 Comment=Collaborative screen sharing with remote control
-Exec=/opt/pairux/pairux-bin-${release.version}.AppImage --no-sandbox %U
-Icon=pairux
+Exec=/opt/squadx-live/squadx-live-bin-${release.version}.AppImage --no-sandbox %U
+Icon=squadx-live
 Type=Application
 Categories=Network;RemoteAccess;
-StartupWMClass=PairUX
+StartupWMClass=SquadX Live
 `;
 
     // Generate README
-    const readme = `# PairUX Gentoo Overlay
+    const readme = `# SquadX Live Gentoo Overlay
 
-Gentoo overlay for [PairUX](https://pairux.com) - Collaborative screen sharing with remote control.
+Gentoo overlay for [SquadX Live](https://squadx.live) - Collaborative screen sharing with remote control.
 
 ## Installation
 
@@ -153,37 +153,37 @@ Gentoo overlay for [PairUX](https://pairux.com) - Collaborative screen sharing w
 sudo emerge app-eselect/eselect-repository
 
 # Add the overlay
-sudo eselect repository add pairux git https://github.com/profullstack/gentoo-pairux.git
+sudo eselect repository add squadx-live git https://github.com/squadx/gentoo-squadx-live.git
 
 # Sync the overlay
-sudo emaint sync -r pairux
+sudo emaint sync -r squadx-live
 
-# Install PairUX
-sudo emerge net-misc/pairux-bin
+# Install SquadX Live
+sudo emerge net-misc/squadx-live-bin
 \`\`\`
 
 ### Using layman (deprecated)
 
 \`\`\`bash
 # Add overlay
-sudo layman -o https://raw.githubusercontent.com/profullstack/gentoo-pairux/master/repositories.xml -f -a pairux
+sudo layman -o https://raw.githubusercontent.com/squadx/gentoo-squadx-live/master/repositories.xml -f -a squadx-live
 
 # Install
-sudo emerge net-misc/pairux-bin
+sudo emerge net-misc/squadx-live-bin
 \`\`\`
 
 ## Package Info
 
 - **Category:** net-misc
-- **Package:** pairux-bin
+- **Package:** squadx-live-bin
 - **Version:** ${release.version}
 - **License:** MIT
 
 ## Uninstall
 
 \`\`\`bash
-sudo emerge --unmerge net-misc/pairux-bin
-sudo eselect repository remove pairux
+sudo emerge --unmerge net-misc/squadx-live-bin
+sudo eselect repository remove squadx-live
 \`\`\`
 
 ## License
@@ -196,14 +196,14 @@ MIT
 <!DOCTYPE repositories SYSTEM "/dtd/repositories.dtd">
 <repositories xmlns="" version="1.0">
   <repo quality="experimental" status="unofficial">
-    <name>pairux</name>
-    <description>Gentoo overlay for PairUX - collaborative screen sharing</description>
-    <homepage>https://pairux.com</homepage>
+    <name>squadx-live</name>
+    <description>Gentoo overlay for SquadX Live - collaborative screen sharing</description>
+    <homepage>https://squadx.live</homepage>
     <owner>
-      <email>hello@pairux.com</email>
-      <name>PairUX Team</name>
+      <email>hello@squadx.live</email>
+      <name>SquadX Team</name>
     </owner>
-    <source type="git">https://github.com/profullstack/gentoo-pairux.git</source>
+    <source type="git">https://github.com/squadx/gentoo-squadx-live.git</source>
   </repo>
 </repositories>
 `;
@@ -211,8 +211,8 @@ MIT
     return Promise.resolve({
       [`${CATEGORY}/${PACKAGE_NAME}/${PACKAGE_NAME}-${release.version}.ebuild`]: ebuild,
       [`${CATEGORY}/${PACKAGE_NAME}/metadata.xml`]: metadataXml,
-      [`${CATEGORY}/${PACKAGE_NAME}/files/pairux`]: actualWrapper,
-      [`${CATEGORY}/${PACKAGE_NAME}/files/pairux.desktop`]: actualDesktop,
+      [`${CATEGORY}/${PACKAGE_NAME}/files/squadx-live`]: actualWrapper,
+      [`${CATEGORY}/${PACKAGE_NAME}/files/squadx-live.desktop`]: actualDesktop,
       'README.md': readme,
       'repositories.xml': repositoriesXml,
     });
@@ -248,7 +248,7 @@ MIT
     await this.ensureRepo(
       OVERLAY_OWNER,
       OVERLAY_REPO,
-      'Gentoo overlay for PairUX - collaborative screen sharing'
+      'Gentoo overlay for SquadX Live - collaborative screen sharing'
     );
 
     // Submit directly to the overlay repo

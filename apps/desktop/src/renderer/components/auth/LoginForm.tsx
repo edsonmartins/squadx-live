@@ -65,13 +65,13 @@ export function LoginForm() {
       <CardHeader className="space-y-1 text-center">
         <div className="mb-4 flex justify-center">
           <img
-            src={`${import.meta.env.BASE_URL}logo.light.svg`}
-            alt="PairUX"
+            src={`${import.meta.env.BASE_URL}logo.png`}
+            alt="SquadX Live"
             className="h-11 w-auto"
           />
         </div>
         <CardTitle className="text-2xl font-semibold">Welcome back</CardTitle>
-        <CardDescription>Sign in to your PairUX account</CardDescription>
+        <CardDescription>Sign in to your SquadX Live account</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">

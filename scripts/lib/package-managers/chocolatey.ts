@@ -12,7 +12,7 @@ import { tmpdir } from 'node:os';
 import { BasePackageManager } from './base.js';
 import type { ReleaseInfo, SubmissionResult } from './types.js';
 
-const PACKAGE_ID = 'pairux';
+const PACKAGE_ID = 'squadx-live';
 const CHOCOLATEY_API_URL = 'https://push.chocolatey.org/';
 
 export class ChocolateyPackageManager extends BasePackageManager {
@@ -51,15 +51,15 @@ export class ChocolateyPackageManager extends BasePackageManager {
 
     const downloadUrl =
       exe?.downloadUrl ??
-      `https://github.com/profullstack/pairux.com/releases/download/v${release.version}/PairUX-${release.version}-x64.exe`;
+      `https://github.com/squadx/squadx-live/releases/download/v${release.version}/SquadX-Live-${release.version}-x64.exe`;
 
     // Get checksum from asset or from checksums map (required for Chocolatey validation - CPMR0073)
-    // Note: checksums file may have spaces in filename (e.g., "PairUX Setup 0.1.17.exe")
-    // while GitHub asset has dots (e.g., "PairUX.Setup.0.1.17.exe")
+    // Note: checksums file may have spaces in filename (e.g., "SquadX Live Setup 0.1.17.exe")
+    // while GitHub asset has dots (e.g., "SquadX.Live.Setup.0.1.17.exe")
     const checksum =
       exe?.sha256 ??
-      release.checksums.get(`PairUX Setup ${release.version}.exe`) ??
-      release.checksums.get(`PairUX-${release.version}-x64.exe`) ??
+      release.checksums.get(`SquadX Live Setup ${release.version}.exe`) ??
+      release.checksums.get(`SquadX-Live-${release.version}-x64.exe`) ??
       '';
 
     if (!checksum) {
@@ -75,19 +75,19 @@ export class ChocolateyPackageManager extends BasePackageManager {
   <metadata>
     <id>${PACKAGE_ID}</id>
     <version>${release.version}</version>
-    <title>PairUX</title>
-    <authors>Profullstack, Inc.</authors>
-    <owners>profullstack</owners>
-    <projectUrl>https://pairux.com</projectUrl>
-    <iconUrl>https://pairux.com/logo.svg</iconUrl>
-    <licenseUrl>https://github.com/profullstack/pairux.com/blob/master/LICENSE</licenseUrl>
+    <title>SquadX Live</title>
+    <authors>SquadX Team</authors>
+    <owners>squadx</owners>
+    <projectUrl>https://squadx.live</projectUrl>
+    <iconUrl>https://squadx.live/logo.png</iconUrl>
+    <licenseUrl>https://github.com/squadx/squadx-live/blob/master/LICENSE</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <projectSourceUrl>https://github.com/profullstack/pairux.com</projectSourceUrl>
-    <docsUrl>https://pairux.com/docs</docsUrl>
-    <bugTrackerUrl>https://github.com/profullstack/pairux.com/issues</bugTrackerUrl>
+    <projectSourceUrl>https://github.com/squadx/squadx-live</projectSourceUrl>
+    <docsUrl>https://squadx.live/docs</docsUrl>
+    <bugTrackerUrl>https://github.com/squadx/squadx-live/issues</bugTrackerUrl>
     <tags>screen-sharing remote-control pair-programming collaboration webrtc</tags>
     <summary>Collaborative screen sharing with remote control</summary>
-    <description>PairUX is a collaborative screen sharing application with simultaneous remote mouse and keyboard control. Like Screenhero, but open source. Perfect for pair programming, remote support, and collaboration.
+    <description>SquadX Live is a collaborative screen sharing application with simultaneous remote mouse and keyboard control. Like Screenhero, but open source. Perfect for pair programming, remote support, and collaboration.
 
 ## Features
 - Real-time screen sharing with low latency
@@ -97,7 +97,7 @@ export class ChocolateyPackageManager extends BasePackageManager {
 - Easy session sharing with join codes
 - Open source under MIT License
     </description>
-    <releaseNotes>https://github.com/profullstack/pairux.com/releases/tag/v${release.version}</releaseNotes>
+    <releaseNotes>https://github.com/squadx/squadx-live/releases/tag/v${release.version}</releaseNotes>
   </metadata>
   <files>
     <file src="tools\\**" target="tools" />
@@ -118,7 +118,7 @@ $packageArgs = @{
   unzipLocation  = $toolsDir
   fileType       = 'exe'
   url64bit       = $url64
-  softwareName   = 'PairUX*'
+  softwareName   = 'SquadX Live*'
   checksum64     = $checksum64
   checksumType64 = $checksumType64
   silentArgs     = '/S'
@@ -132,7 +132,7 @@ Install-ChocolateyPackage @packageArgs
     const uninstallScript = `$ErrorActionPreference = 'Stop'
 
 $packageName = '${PACKAGE_ID}'
-$softwareName = 'PairUX*'
+$softwareName = 'SquadX Live*'
 $installerType = 'exe'
 
 [array]$key = Get-UninstallRegistryKey -SoftwareName $softwareName
@@ -177,11 +177,11 @@ This can be verified by:
 3. Comparing the output to the checksum above
 
 The source code is available at:
-https://github.com/profullstack/pairux.com
+https://github.com/squadx/squadx-live
 `;
 
     return Promise.resolve({
-      'pairux.nuspec': nuspec,
+      'squadx-live.nuspec': nuspec,
       'tools/chocolateyInstall.ps1': installScript,
       'tools/chocolateyUninstall.ps1': uninstallScript,
       'tools/VERIFICATION.txt': verification,
@@ -244,7 +244,7 @@ https://github.com/profullstack/pairux.com
         // If choco is not installed, try using nuget
         this.logger.warn('choco not found, trying nuget pack...');
         try {
-          execSync('nuget pack pairux.nuspec', { cwd: tempDir, stdio: 'pipe' });
+          execSync('nuget pack squadx-live.nuspec', { cwd: tempDir, stdio: 'pipe' });
         } catch {
           return {
             packageManager: this.name,

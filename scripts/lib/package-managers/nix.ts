@@ -1,16 +1,16 @@
 /**
  * Nix Package Manager
  *
- * Submits packages to a custom flake repository (profullstack/pairux-nix).
- * Users can install via: nix profile install github:profullstack/pairux-nix
+ * Submits packages to a custom flake repository (squadx/squadx-live-nix).
+ * Users can install via: nix profile install github:squadx/squadx-live-nix
  */
 
 import { BasePackageManager } from './base.js';
 import type { ReleaseInfo, SubmissionResult } from './types.js';
 
-const FLAKE_OWNER = 'profullstack';
-const FLAKE_REPO = 'pairux-nix';
-const PACKAGE_NAME = 'pairux';
+const FLAKE_OWNER = 'squadx';
+const FLAKE_REPO = 'squadx-live-nix';
+const PACKAGE_NAME = 'squadx-live';
 
 export class NixPackageManager extends BasePackageManager {
   readonly name = 'nix';
@@ -46,7 +46,7 @@ export class NixPackageManager extends BasePackageManager {
 
     // Generate flake.nix
     const flakeNix = `{
-  description = "PairUX - Collaborative screen sharing with remote control";
+  description = "SquadX Live - Collaborative screen sharing with remote control";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -61,7 +61,7 @@ export class NixPackageManager extends BasePackageManager {
         version = "${release.version}";
 
         src = pkgs.fetchurl {
-          url = "https://github.com/profullstack/pairux.com/releases/download/v\${version}/PairUX-\${version}-x86_64.AppImage";
+          url = "https://github.com/squadx/squadx-live/releases/download/v\${version}/SquadX-Live-\${version}-x86_64.AppImage";
           sha256 = "${x86Sha256 !== '' ? x86Sha256 : 'sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA='}";
         };
 
@@ -73,26 +73,26 @@ export class NixPackageManager extends BasePackageManager {
             inherit pname version src;
 
             extraInstallCommands = ''
-              install -m 444 -D \${appimageContents}/pairux.desktop $out/share/applications/pairux.desktop
-              install -m 444 -D \${appimageContents}/usr/share/icons/hicolor/512x512/apps/pairux.png \\
-                $out/share/icons/hicolor/512x512/apps/pairux.png 2>/dev/null || true
-              substituteInPlace $out/share/applications/pairux.desktop \\
-                --replace 'Exec=AppRun' 'Exec=pairux' 2>/dev/null || true
+              install -m 444 -D \${appimageContents}/squadx-live.desktop $out/share/applications/squadx-live.desktop
+              install -m 444 -D \${appimageContents}/usr/share/icons/hicolor/512x512/apps/squadx-live.png \\
+                $out/share/icons/hicolor/512x512/apps/squadx-live.png 2>/dev/null || true
+              substituteInPlace $out/share/applications/squadx-live.desktop \\
+                --replace 'Exec=AppRun' 'Exec=squadx-live' 2>/dev/null || true
             '';
 
             meta = with pkgs.lib; {
               description = "Collaborative screen sharing with remote control";
               longDescription = ''
-                PairUX is a collaborative screen sharing application with simultaneous
+                SquadX Live is a collaborative screen sharing application with simultaneous
                 remote mouse and keyboard control. Like Screenhero, but open source.
                 Perfect for pair programming, remote support, and collaboration.
               '';
-              homepage = "https://pairux.com";
-              changelog = "https://github.com/profullstack/pairux.com/releases/tag/v\${version}";
+              homepage = "https://squadx.live";
+              changelog = "https://github.com/squadx/squadx-live/releases/tag/v\${version}";
               license = licenses.mit;
               maintainers = [ ];
               platforms = [ "x86_64-linux" ];
-              mainProgram = "pairux";
+              mainProgram = "squadx-live";
               sourceProvenance = with sourceTypes; [ binaryNativeCode ];
             };
           };
@@ -102,7 +102,7 @@ export class NixPackageManager extends BasePackageManager {
 
         apps.default = {
           type = "app";
-          program = "\${self.packages.\${system}.default}/bin/pairux";
+          program = "\${self.packages.\${system}.default}/bin/squadx-live";
         };
       }
     );
@@ -110,9 +110,9 @@ export class NixPackageManager extends BasePackageManager {
 `;
 
     // Generate README
-    const readme = `# PairUX Nix Flake
+    const readme = `# SquadX Live Nix Flake
 
-Nix flake for [PairUX](https://pairux.com) - Collaborative screen sharing with remote control.
+Nix flake for [SquadX Live](https://squadx.live) - Collaborative screen sharing with remote control.
 
 ## Installation
 
@@ -120,16 +120,16 @@ Nix flake for [PairUX](https://pairux.com) - Collaborative screen sharing with r
 
 \`\`\`bash
 # Install directly
-nix profile install github:profullstack/pairux-nix
+nix profile install github:squadx/squadx-live-nix
 
 # Or run without installing
-nix run github:profullstack/pairux-nix
+nix run github:squadx/squadx-live-nix
 \`\`\`
 
 ### Using nix-shell
 
 \`\`\`bash
-nix-shell -p "(builtins.getFlake \\"github:profullstack/pairux-nix\\").packages.x86_64-linux.default"
+nix-shell -p "(builtins.getFlake \\"github:squadx/squadx-live-nix\\").packages.x86_64-linux.default"
 \`\`\`
 
 ### NixOS configuration
@@ -140,15 +140,15 @@ Add to your \`flake.nix\`:
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    pairux.url = "github:profullstack/pairux-nix";
+    squadx-live.url = "github:squadx/squadx-live-nix";
   };
 
-  outputs = { self, nixpkgs, pairux }: {
+  outputs = { self, nixpkgs, squadx-live }: {
     nixosConfigurations.yourhostname = nixpkgs.lib.nixosSystem {
       modules = [
         ({ pkgs, ... }: {
           environment.systemPackages = [
-            pairux.packages.\${pkgs.system}.default
+            squadx-live.packages.\${pkgs.system}.default
           ];
         })
       ];
@@ -202,7 +202,7 @@ MIT
     await this.ensureRepo(
       FLAKE_OWNER,
       FLAKE_REPO,
-      'Nix flake for PairUX - collaborative screen sharing'
+      'Nix flake for SquadX Live - collaborative screen sharing'
     );
 
     // Submit directly to the flake repo
@@ -215,7 +215,7 @@ MIT
       FLAKE_OWNER,
       FLAKE_REPO,
       githubFiles,
-      `Update pairux to ${release.version}`
+      `Update squadx-live to ${release.version}`
     );
   }
 }
