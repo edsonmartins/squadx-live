@@ -21,32 +21,19 @@ const sizes = {
 export function Logo({ size = 'md', variant = 'default', asLink = true, iconOnly = false, className }: LogoProps) {
   const sizeConfig = sizes[size];
 
-  const content = iconOnly ? (
+  // Determine which logo to show based on variant
+  // variant='default': show dark text logo (for light backgrounds)
+  // variant='light': show white text logo (for dark backgrounds)
+  const logoSrc = variant === 'light' ? '/logo-dark-bg.png' : '/logo-light-bg.png';
+  const iconSrc = '/logo.png';
+
+  const content = (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src="/logo.png"
+      src={iconOnly ? iconSrc : logoSrc}
       alt="SquadX Live"
       style={{ height: sizeConfig.height, width: 'auto' }}
     />
-  ) : (
-    <span className={cn('flex items-center', className)}>
-      {/* Logo for light backgrounds (visible in light mode) */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/logo-light-bg.png"
-        alt="SquadX Live"
-        className={cn(variant === 'light' ? 'hidden' : 'dark:hidden')}
-        style={{ height: sizeConfig.height, width: 'auto' }}
-      />
-      {/* Logo for dark backgrounds (visible in dark mode or when variant='light') */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/logo-dark-bg.png"
-        alt="SquadX Live"
-        className={cn(variant === 'light' ? 'block' : 'hidden dark:block')}
-        style={{ height: sizeConfig.height, width: 'auto' }}
-      />
-    </span>
   );
 
   if (!asLink) {
