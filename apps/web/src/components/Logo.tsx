@@ -13,9 +13,9 @@ interface LogoProps {
 }
 
 const sizes = {
-  sm: { height: 56 },
-  md: { height: 64 },
-  lg: { height: 80 },
+  sm: { height: 32 },
+  md: { height: 40 },
+  lg: { height: 48 },
 };
 
 export function Logo({ size = 'md', variant = 'default', asLink = true, iconOnly = false, className }: LogoProps) {
