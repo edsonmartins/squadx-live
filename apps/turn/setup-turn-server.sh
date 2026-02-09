@@ -12,7 +12,7 @@ set -e
 
 TURN_PASSWORD="${1:-}"
 EXTERNAL_IP="${2:-$(curl -s ifconfig.me 2>/dev/null || curl -s icanhazip.com 2>/dev/null || echo '')}"
-REALM="${3:-turn.squadx-live.com}"
+REALM="${3:-turn.live.squadx.dev}"
 USERNAME="ubuntu"
 
 # Colors
@@ -39,7 +39,7 @@ if [ -z "$TURN_PASSWORD" ]; then
   echo ""
   echo "Example:"
   echo "  $0 'my-secure-password'"
-  echo "  $0 'my-secure-password' 143.198.96.161 turn.squadx-live.com"
+  echo "  $0 'my-secure-password' 143.198.96.161 turn.live.squadx.dev"
   exit 1
 fi
 

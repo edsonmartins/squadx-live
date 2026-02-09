@@ -12,7 +12,7 @@ set -e
 LIVEKIT_API_KEY="${1:-}"
 LIVEKIT_API_SECRET="${2:-}"
 EXTERNAL_IP="${3:-$(curl -s ifconfig.me 2>/dev/null || curl -s icanhazip.com 2>/dev/null || echo '')}"
-DOMAIN="${4:-sfu.squadx-live.com}"
+DOMAIN="${4:-sfu.live.squadx.dev}"
 
 # Colors
 RED='\033[0;31m'
@@ -38,7 +38,7 @@ if [ -z "$LIVEKIT_API_KEY" ] || [ -z "$LIVEKIT_API_SECRET" ]; then
   echo ""
   echo "Example:"
   echo "  $0 APIsquadx-live 'my-secure-secret'"
-  echo "  $0 APIsquadx-live 'my-secure-secret' 146.190.163.128 sfu.squadx-live.com"
+  echo "  $0 APIsquadx-live 'my-secure-secret' 146.190.163.128 sfu.live.squadx.dev"
   exit 1
 fi
 
@@ -282,7 +282,7 @@ cat > /var/www/squadx-live-sfu/index.html << 'INDEXEOF'
   <div class="container">
     <h1>SquadX Live SFU Server</h1>
     <p class="status">LiveKit is running</p>
-    <p class="info">Selective Forwarding Unit for <a href="https://squadx-live.com">squadx-live.com</a></p>
+    <p class="info">Selective Forwarding Unit for <a href="https://live.squadx.dev">live.squadx.dev</a></p>
   </div>
 </body>
 </html>

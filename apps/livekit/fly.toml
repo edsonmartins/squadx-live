@@ -12,7 +12,7 @@
 #    fly secrets set LIVEKIT_API_SECRET="your-api-secret"
 # 5. Deploy: fly deploy
 # 6. Allocate IP: fly ips allocate-v4
-# 7. Add DNS: livekit.squadx-live.com -> allocated IP
+# 7. Add DNS: sfu.live.squadx.dev -> allocated IP
 #
 # Cost: ~$5-10/month for shared-cpu-1x with 512MB RAM
 # ===========================================

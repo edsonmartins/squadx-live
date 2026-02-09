@@ -11,7 +11,7 @@
 #    fly secrets set TURN_PASSWORD="your-strong-password"
 # 5. Deploy: fly deploy
 # 6. Allocate IP: fly ips allocate-v4
-# 7. Add DNS: turn.squadx-live.com -> allocated IP
+# 7. Add DNS: turn.live.squadx.dev -> allocated IP
 #
 # Cost: ~$5/month for shared-cpu-1x with 256MB RAM
 # ===========================================
@@ -23,7 +23,7 @@ primary_region = "iad"
   dockerfile = "Dockerfile"
 
 [env]
-  REALM = "turn.squadx-live.com"
+  REALM = "turn.live.squadx.dev"
 
 [http_service]
   internal_port = 3478

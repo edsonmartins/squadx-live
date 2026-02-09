@@ -26,8 +26,8 @@ if [ -n "$EXTERNAL_IP" ]; then
 fi
 
 if [ -n "$REALM" ]; then
-  sed -i "s/realm=turn.squadx-live.com/realm=$REALM/g" "$CONFIG_FILE"
-  sed -i "s/server-name=turn.squadx-live.com/server-name=$REALM/g" "$CONFIG_FILE"
+  sed -i "s/realm=turn.live.squadx.dev/realm=$REALM/g" "$CONFIG_FILE"
+  sed -i "s/server-name=turn.live.squadx.dev/server-name=$REALM/g" "$CONFIG_FILE"
 fi
 
 # Auto-detect external IP if not set (for cloud deployments)

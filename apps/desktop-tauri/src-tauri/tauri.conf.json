@@ -31,19 +31,23 @@
   },
   "bundle": {
     "active": true,
-    "icon": [],
+    "icon": ["icons/icon.png"],
     "targets": "all",
     "macOS": {
-      "minimumSystemVersion": "10.15",
-      "signingIdentity": null,
+      "minimumSystemVersion": "11.0",
+      "signingIdentity": "-",
       "providerShortName": null,
-      "entitlements": null
+      "entitlements": "entitlements.plist",
+      "exceptionDomain": null,
+      "frameworks": []
     },
     "windows": {
       "certificateThumbprint": null,
-      "timestampUrl": null,
+      "timestampUrl": "http://timestamp.sectigo.com",
       "wix": null,
-      "nsis": null
+      "nsis": {
+        "installMode": "currentUser"
+      }
     },
     "linux": {
       "appimage": {

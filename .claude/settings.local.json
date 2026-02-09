@@ -253,7 +253,11 @@
       "Bash(xargs sed:*)",
       "Bash(git remote add:*)",
       "Bash(pkill -f \"git push\")",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(brew install:*)",
+      "Bash(sshpass -p 'Relevant@727204567890' ssh -o StrictHostKeyChecking=no root@31.97.240.217 'cat > /opt/squadx-live/docker-compose.yml << '\"''\"'EOF'\"''\"'\nversion: \"\"3.8\"\"\n\nservices:\n  web:\n    image: node:24-alpine\n    container_name: squadx-web\n    working_dir: /app\n    volumes:\n      - ./app:/app\n    command: sh -c \"\"cd /app && npm start\"\"\n    environment:\n      - NODE_ENV=production\n      - PORT=3000\n    labels:\n      - \"\"traefik.enable=true\"\"\n      - \"\"traefik.http.routers.squadx-web.rule=Host\\(\\\\`live.squadx.dev\\\\`\\)\"\"\n      - \"\"traefik.http.routers.squadx-web.entrypoints=websecure\"\"\n      - \"\"traefik.http.routers.squadx-web.tls.certresolver=letsencrypt\"\"\n      - \"\"traefik.http.services.squadx-web.loadbalancer.server.port=3000\"\"\n    networks:\n      - traefik-network\n    restart: unless-stopped\n\n  livekit:\n    image: livekit/livekit-server:latest\n    container_name: squadx-livekit\n    network_mode: host\n    volumes:\n      - ./livekit/livekit.yaml:/etc/livekit.yaml\n    command: --config /etc/livekit.yaml\n    restart: unless-stopped\n\nnetworks:\n  traefik-network:\n    external: true\nEOF')",
+      "Bash(sshpass -p 'Relevant@727204567890' ssh -o StrictHostKeyChecking=no root@31.97.240.217 '\n# Parar e desabilitar Caddy \\(não vamos usar\\)\nsystemctl stop caddy 2>/dev/null\nsystemctl disable caddy 2>/dev/null\n\n# Verificar credenciais geradas\necho \"\"=== Credenciais geradas ===\"\"\necho \"\"TURN Password:\"\"\ncat /opt/squadx-live/.turn-password\necho \"\"\"\"\necho \"\"LiveKit Keys:\"\"\ncat /opt/squadx-live/.livekit-keys\necho \"\"\"\"\n\n# Verificar serviços rodando\necho \"\"=== Serviços rodando ===\"\"\nsystemctl status coturn --no-pager | head -5\necho \"\"\"\"\ndocker ps | grep squadx\n')",
+      "Bash(sshpass -p 'Relevant@727204567890' ssh -o StrictHostKeyChecking=no root@31.97.240.217 '\ncd /opt/squadx-live\n\n# Clonar o repositório \\(precisa ser público ou ter credenciais\\)\nif [ ! -d \"\"app\"\" ]; then\n  echo \"\"Clonando repositório...\"\"\n  git clone https://github.com/squadx/squadx-live.git app 2>&1 || echo \"\"Clone falhou - repositório pode ser privado\"\"\nfi\n\n# Verificar se o diretório existe\nls -la /opt/squadx-live/\n')"
     ],
     "deny": [
       "Bash(npm *)",

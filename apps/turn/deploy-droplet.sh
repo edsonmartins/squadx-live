@@ -9,7 +9,7 @@ set -e
 
 DROPLET_IP="${1:-}"
 TURN_PASSWORD="${2:-}"
-DOMAIN="${3:-turn.squadx-live.com}"
+DOMAIN="${3:-turn.live.squadx.dev}"
 
 if [ -z "$DROPLET_IP" ] || [ -z "$TURN_PASSWORD" ]; then
   echo "Usage: ./deploy-droplet.sh <droplet-ip> <turn-password> [domain]"

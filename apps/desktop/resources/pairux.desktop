@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=SquadX Live
-Comment=Screen sharing with remote control
-Exec=squadx-live %U
-Icon=squadx-live
-Type=Application
-Categories=Network;RemoteAccess;
-StartupWMClass=squadx-live
-StartupNotify=true
