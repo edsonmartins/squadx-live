@@ -8,52 +8,54 @@ interface LogoProps {
   variant?: 'default' | 'light';
   /** Set to false to render without a Link wrapper (e.g. when already inside a Link). */
   asLink?: boolean;
+  /** Show only the icon without text */
+  iconOnly?: boolean;
   className?: string;
 }
 
 const sizes = {
-  sm: { width: 120, height: 28 },
-  md: { width: 155, height: 36 },
-  lg: { width: 190, height: 44 },
+  sm: { iconSize: 28, textSize: 'text-lg' },
+  md: { iconSize: 36, textSize: 'text-xl' },
+  lg: { iconSize: 44, textSize: 'text-2xl' },
 };
 
-export function Logo({ size = 'md', variant = 'default', asLink = true, className }: LogoProps) {
+export function Logo({ size = 'md', variant = 'default', asLink = true, iconOnly = false, className }: LogoProps) {
   const sizeConfig = sizes[size];
-  // Use SVG logos - logo.svg for light backgrounds, logo.light.svg for dark backgrounds
-  // In dark mode (variant='light'), we use the white text version
-  const src = variant === 'light' ? '/logo.light.svg' : '/logo.svg';
 
-  const image = (
-    <>
-      {/* Show appropriate logo based on variant or auto-detect from dark mode */}
+  const content = (
+    <span className={cn('flex items-center gap-2', className)}>
+      {/* Icon */}
       <Image
-        src="/logo.svg"
+        src="/logo.png"
         alt="SquadX Live"
-        width={sizeConfig.width}
-        height={sizeConfig.height}
-        className={cn('h-auto', variant === 'light' ? 'hidden' : 'dark:hidden')}
-        style={{ height: sizeConfig.height }}
+        width={sizeConfig.iconSize}
+        height={sizeConfig.iconSize}
+        className="h-auto"
+        style={{ height: sizeConfig.iconSize, width: sizeConfig.iconSize }}
         priority
       />
-      <Image
-        src="/logo.light.svg"
-        alt="SquadX Live"
-        width={sizeConfig.width}
-        height={sizeConfig.height}
-        className={cn('h-auto', variant === 'light' ? '' : 'hidden dark:block')}
-        style={{ height: sizeConfig.height }}
-        priority
-      />
-    </>
+      {/* Text */}
+      {!iconOnly && (
+        <span
+          className={cn(
+            'font-bold tracking-tight',
+            sizeConfig.textSize,
+            variant === 'light' ? 'text-white' : 'text-gray-900 dark:text-white'
+          )}
+        >
+          SquadX <span className="text-indigo-600 dark:text-indigo-400">Live</span>
+        </span>
+      )}
+    </span>
   );
 
   if (!asLink) {
-    return <span className={cn('flex items-center', className)}>{image}</span>;
+    return content;
   }
 
   return (
-    <Link href="/" className={cn('flex items-center', className)}>
-      {image}
+    <Link href="/" className="flex items-center">
+      {content}
     </Link>
   );
 }
