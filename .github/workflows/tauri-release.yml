@@ -221,6 +221,7 @@ jobs:
 
       - name: Trigger package submission
         if: success() && !contains(github.ref, 'alpha') && !contains(github.ref, 'beta') && !contains(github.ref, 'rc')
+        continue-on-error: true
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.PKG_SUBMIT_TOKEN }}
