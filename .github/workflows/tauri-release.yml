@@ -7,9 +7,19 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to release (e.g., 0.1.0)'
+        description: 'Version to build (e.g., 0.1.0)'
         required: true
         type: string
+      skip_release:
+        description: 'Skip creating GitHub release (build only)'
+        required: false
+        type: boolean
+        default: false
+      skip_signing:
+        description: 'Skip code signing (for testing)'
+        required: false
+        type: boolean
+        default: false
 
 concurrency:
   group: tauri-release-${{ github.ref }}
@@ -82,9 +92,9 @@ jobs:
       - name: Build shared packages
         run: pnpm --filter @squadx/shared-types build
 
-      # macOS Code Signing
+      # macOS Code Signing (skip if skip_signing is true)
       - name: Import macOS certificates
-        if: matrix.os == 'macos-latest'
+        if: matrix.os == 'macos-latest' && github.event.inputs.skip_signing != 'true'
         env:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
@@ -100,9 +110,9 @@ jobs:
 
           rm certificate.p12
 
-      # Windows Code Signing Setup
+      # Windows Code Signing Setup (skip if skip_signing is true)
       - name: Setup Windows certificate
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == 'windows-latest' && github.event.inputs.skip_signing != 'true'
         env:
           WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
           WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
@@ -111,7 +121,8 @@ jobs:
           [System.IO.File]::WriteAllBytes("$env:RUNNER_TEMP\cert.pfx", $cert)
         shell: pwsh
 
-      - name: Build Tauri app
+      - name: Build Tauri app (with signing)
+        if: github.event.inputs.skip_signing != 'true'
         working-directory: apps/desktop-tauri
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
@@ -122,6 +133,11 @@ jobs:
           # Windows signing
           TAURI_WINDOWS_CERTIFICATE: ${{ runner.temp }}\cert.pfx
           TAURI_WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+        run: pnpm tauri build --target ${{ matrix.target }}
+
+      - name: Build Tauri app (without signing)
+        if: github.event.inputs.skip_signing == 'true'
+        working-directory: apps/desktop-tauri
         run: pnpm tauri build --target ${{ matrix.target }}
 
       - name: Upload artifacts
@@ -153,6 +169,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     name: Create Release
+    if: github.event.inputs.skip_release != 'true'
 
     steps:
       - name: Download all artifacts
