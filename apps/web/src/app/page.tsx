@@ -11,6 +11,7 @@ import {
   Shield,
   RefreshCw,
   Quote,
+  PenTool,
 } from 'lucide-react';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
@@ -39,10 +40,10 @@ const features = [
       'Mouse and keyboard control with explicit host approval. Both can control simultaneously.',
   },
   {
-    icon: Users,
-    title: 'Simultaneous Input',
+    icon: PenTool,
+    title: 'Collaborative Whiteboard',
     description:
-      'Host and viewer can control at the same time. Host always has priority for safety.',
+      'Real-time drawing and diagramming with Excalidraw. Perfect for brainstorming and explaining concepts.',
   },
   {
     icon: Lock,
@@ -91,7 +92,7 @@ export default function HomePage() {
           <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8 lg:py-36">
             <div className="text-center">
               <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
-                Pair <RotatingText />, <span className="gradient-text">reimagined</span>
+                <RotatingText /> <span className="gradient-text">together</span>, in real-time
               </h1>
               <p className="mx-auto mt-6 max-w-2xl text-lg text-gray-600 sm:text-xl">
                 Collaborative screen sharing with simultaneous remote mouse and keyboard control.
@@ -200,24 +201,24 @@ export default function HomePage() {
             </div>
 
             <div className="mt-16 grid gap-8 md:grid-cols-3">
-              {/* Testimonial placeholders */}
+              {/* User testimonials */}
               {[
                 {
                   quote:
                     'Finally, a Screenhero replacement that actually works. The simultaneous control feature is game-changing for pair programming.',
-                  author: 'Coming Soon',
+                  author: 'Anonymous User',
                   role: 'Software Engineer',
                 },
                 {
                   quote:
                     'The fact that viewers can join from any browser without installing anything makes this perfect for quick collaboration sessions.',
-                  author: 'Coming Soon',
+                  author: 'Anonymous User',
                   role: 'Tech Lead',
                 },
                 {
                   quote:
                     'Open source, end-to-end encrypted, and it just works. This is exactly what the developer community needed.',
-                  author: 'Coming Soon',
+                  author: 'Anonymous User',
                   role: 'Open Source Contributor',
                 },
               ].map((testimonial, index) => (

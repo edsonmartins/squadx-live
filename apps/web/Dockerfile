@@ -20,7 +20,7 @@ COPY apps/web/package.json ./apps/web/
 COPY packages/ ./packages/
 
 # Install dependencies
-RUN pnpm install --frozen-lockfile --filter @pairux/web...
+RUN pnpm install --frozen-lockfile --filter @squadx/web...
 
 # Stage 2: Builder
 FROM node:24-alpine AS builder
@@ -50,10 +50,10 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
 # Build shared-types first (dependency of web)
-RUN pnpm --filter @pairux/shared-types build
+RUN pnpm --filter @squadx/shared-types build
 
 # Build the web application
-RUN pnpm --filter @pairux/web build
+RUN pnpm --filter @squadx/web build
 
 # Stage 3: Runner
 FROM node:24-alpine AS runner

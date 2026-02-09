@@ -18,11 +18,11 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: 'SquadX Live - Collaborative Development Platform with AI',
+    default: 'SquadX Live - Collaborative Screen Sharing with Remote Control',
     template: '%s | SquadX Live',
   },
   description:
-    'Collaborative development platform with screen sharing, remote control, real-time whiteboard, and AI agents. Pair programming reimagined with AI assistance.',
+    'Open source collaborative screen sharing with simultaneous remote mouse and keyboard control. Real-time whiteboard, WebRTC encryption, and cross-platform apps. Like Screenhero, reimagined.',
   keywords: [
     'screen sharing',
     'remote control',
@@ -30,9 +30,9 @@ export const metadata: Metadata = {
     'collaboration',
     'webrtc',
     'whiteboard',
-    'ai agents',
     'excalidraw',
     'open source',
+    'screenhero alternative',
   ],
   authors: [{ name: 'SquadX Team' }],
   creator: 'SquadX',
@@ -47,9 +47,9 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://squadx.live',
     siteName: 'SquadX Live',
-    title: 'SquadX Live - Collaborative Development Platform with AI',
+    title: 'SquadX Live - Collaborative Screen Sharing with Remote Control',
     description:
-      'Collaborative development platform with screen sharing, remote control, real-time whiteboard, and AI agents.',
+      'Open source collaborative screen sharing with simultaneous remote mouse and keyboard control. Real-time whiteboard and WebRTC encryption.',
     images: [
       {
         url: '/banner.png',
@@ -61,9 +61,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'SquadX Live - Collaborative Development Platform with AI',
+    title: 'SquadX Live - Collaborative Screen Sharing with Remote Control',
     description:
-      'Collaborative development platform with screen sharing, remote control, real-time whiteboard, and AI agents.',
+      'Open source collaborative screen sharing with simultaneous remote mouse and keyboard control. Real-time whiteboard and WebRTC encryption.',
     images: ['/banner.png'],
   },
   robots: {
