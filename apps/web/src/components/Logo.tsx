@@ -12,28 +12,39 @@ interface LogoProps {
 }
 
 const sizes = {
-  sm: { height: 28 },
-  md: { height: 36 },
-  lg: { height: 44 },
+  sm: { width: 120, height: 28 },
+  md: { width: 155, height: 36 },
+  lg: { width: 190, height: 44 },
 };
 
 export function Logo({ size = 'md', variant = 'default', asLink = true, className }: LogoProps) {
   const sizeConfig = sizes[size];
-  // Logo is 1:1 aspect ratio (square)
-  const width = sizeConfig.height;
-  // Use PNG logo (same for both variants)
-  const src = '/logo.png';
+  // Use SVG logos - logo.svg for light backgrounds, logo.light.svg for dark backgrounds
+  // In dark mode (variant='light'), we use the white text version
+  const src = variant === 'light' ? '/logo.light.svg' : '/logo.svg';
 
   const image = (
-    <Image
-      src={src}
-      alt="SquadX Live"
-      width={width}
-      height={sizeConfig.height}
-      className="h-auto"
-      style={{ height: sizeConfig.height }}
-      priority
-    />
+    <>
+      {/* Show appropriate logo based on variant or auto-detect from dark mode */}
+      <Image
+        src="/logo.svg"
+        alt="SquadX Live"
+        width={sizeConfig.width}
+        height={sizeConfig.height}
+        className={cn('h-auto', variant === 'light' ? 'hidden' : 'dark:hidden')}
+        style={{ height: sizeConfig.height }}
+        priority
+      />
+      <Image
+        src="/logo.light.svg"
+        alt="SquadX Live"
+        width={sizeConfig.width}
+        height={sizeConfig.height}
+        className={cn('h-auto', variant === 'light' ? '' : 'hidden dark:block')}
+        style={{ height: sizeConfig.height }}
+        priority
+      />
+    </>
   );
 
   if (!asLink) {
