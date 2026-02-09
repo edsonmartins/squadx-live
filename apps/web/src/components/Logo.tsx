@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
@@ -14,45 +13,38 @@ interface LogoProps {
 }
 
 const sizes = {
-  sm: { width: 140, height: 32 },
-  md: { width: 180, height: 40 },
-  lg: { width: 220, height: 50 },
+  sm: { height: 32 },
+  md: { height: 40 },
+  lg: { height: 50 },
 };
 
 export function Logo({ size = 'md', variant = 'default', asLink = true, iconOnly = false, className }: LogoProps) {
   const sizeConfig = sizes[size];
 
   const content = iconOnly ? (
-    <Image
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
       src="/logo.png"
       alt="SquadX Live"
-      width={sizeConfig.height}
-      height={sizeConfig.height}
-      className="h-auto"
-      style={{ height: sizeConfig.height, width: sizeConfig.height }}
-      priority
+      style={{ height: sizeConfig.height, width: 'auto' }}
     />
   ) : (
     <span className={cn('flex items-center', className)}>
       {/* Logo for light backgrounds (visible in light mode) */}
-      <Image
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
         src="/logo-light-bg.png"
         alt="SquadX Live"
-        width={sizeConfig.width}
-        height={sizeConfig.height}
-        className={cn('h-auto', variant === 'light' ? 'hidden' : 'dark:hidden')}
-        style={{ height: sizeConfig.height }}
-        priority
+        className={cn(variant === 'light' ? 'hidden' : 'dark:hidden')}
+        style={{ height: sizeConfig.height, width: 'auto' }}
       />
       {/* Logo for dark backgrounds (visible in dark mode or when variant='light') */}
-      <Image
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
         src="/logo-dark-bg.png"
         alt="SquadX Live"
-        width={sizeConfig.width}
-        height={sizeConfig.height}
-        className={cn('h-auto', variant === 'light' ? 'block' : 'hidden dark:block')}
-        style={{ height: sizeConfig.height }}
-        priority
+        className={cn(variant === 'light' ? 'block' : 'hidden dark:block')}
+        style={{ height: sizeConfig.height, width: 'auto' }}
       />
     </span>
   );

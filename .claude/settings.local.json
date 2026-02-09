@@ -266,7 +266,10 @@
       "Bash(sshpass -p 'Relevant@727204567890' ssh -o StrictHostKeyChecking=no root@31.97.240.217 \"cd /opt/squadx-live/app && pnpm --filter @squadx/web build\")",
       "Bash(sshpass -p 'Relevant@727204567890' ssh -o StrictHostKeyChecking=no root@31.97.240.217 \"cd /opt/squadx-live/app && cat apps/web/node_modules/@squadx/shared-types/dist/database.d.ts | grep -A 3 ''whiteboard_boards'' | head -10\")",
       "Bash(sshpass -p 'Relevant@727204567890' ssh -o StrictHostKeyChecking=no root@31.97.240.217 \"cd /opt/squadx-live/app && cat tsconfig.json | head -30\")",
-      "Bash(sshpass:*)"
+      "Bash(sshpass:*)",
+      "Bash(PGPASSWORD='Relevant@727204' psql:*)",
+      "Bash(npx supabase db push:*)",
+      "Bash(PGPASSWORD='Relevant@727204' psql -h aws-0-sa-east-1.pooler.supabase.com -p 6543 -U postgres.nqkrzwgjhqfqxvwvmufr -d postgres -c \"SELECT version\\(\\);\")"
     ],
     "deny": [
       "Bash(npm *)",
