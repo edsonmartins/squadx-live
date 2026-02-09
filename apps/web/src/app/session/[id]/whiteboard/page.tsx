@@ -22,7 +22,7 @@ interface ParticipantData {
 export default function WhiteboardPage({
   params,
 }: {
-  params: Promise<{ sessionId: string }>;
+  params: Promise<{ id: string }>;
 }) {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [session, setSession] = useState<SessionData | null>(null);
@@ -36,7 +36,7 @@ export default function WhiteboardPage({
 
   // Get sessionId from params
   useEffect(() => {
-    params.then(({ sessionId }) => setSessionId(sessionId));
+    params.then(({ id }) => setSessionId(id));
   }, [params]);
 
   // Get boardId from search params
