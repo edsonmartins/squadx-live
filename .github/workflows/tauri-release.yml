@@ -173,6 +173,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Create Release
     if: github.event.inputs.skip_release != 'true'
+    permissions:
+      contents: write
 
     steps:
       - name: Download all artifacts
