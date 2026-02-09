@@ -17,8 +17,7 @@ import {
 import { detectOS, type OS, type Arch } from '@/lib/utils';
 import { trackDownload } from '@/lib/analytics';
 
-const GITHUB_REPO = 'squadx/squadx-live';
-const INSTALLER_API = 'https://installer.squadx.live';
+const GITHUB_REPO = 'edsonmartins/squadx-live';
 
 interface ReleaseInfo {
   version: string;
@@ -41,24 +40,66 @@ interface ReleaseInfo {
   checksums: Record<string, string>;
 }
 
-function getDownloadUrls(version: string): ReleaseInfo['downloads'] {
-  const base = `https://github.com/${GITHUB_REPO}/releases/download/v${version}`;
-  return {
+interface GitHubAsset {
+  name: string;
+  browser_download_url: string;
+}
+
+interface GitHubRelease {
+  tag_name: string;
+  assets: GitHubAsset[];
+}
+
+function parseDownloadsFromAssets(assets: GitHubAsset[]): Partial<ReleaseInfo['downloads']> {
+  const downloads: Partial<ReleaseInfo['downloads']> = {};
+
+  for (const asset of assets) {
+    const name = asset.name.toLowerCase();
+    const url = asset.browser_download_url;
+
     // macOS
-    'mac-arm64-dmg': `${base}/SquadX-Live-${version}-arm64.dmg`,
-    'mac-x64-dmg': `${base}/SquadX-Live-${version}.dmg`,
-    'mac-arm64-zip': `${base}/SquadX-Live-${version}-arm64-mac.zip`,
-    'mac-x64-zip': `${base}/SquadX-Live-${version}-mac.zip`,
+    if (name.endsWith('.dmg')) {
+      if (name.includes('aarch64') || name.includes('arm64')) {
+        downloads['mac-arm64-dmg'] = url;
+      } else if (name.includes('x64') || name.includes('x86_64') || !name.includes('aarch64')) {
+        downloads['mac-x64-dmg'] = url;
+      }
+    }
+
     // Windows
-    'win-x64-exe': `${base}/SquadX-Live.Setup.${version}.exe`,
-    // Linux
-    'linux-x64-appimage': `${base}/SquadX-Live-${version}-x86_64.AppImage`,
-    'linux-arm64-appimage': `${base}/SquadX-Live-${version}-arm64.AppImage`,
-    'linux-x64-deb': `${base}/SquadX-Live-${version}-amd64.deb`,
-    'linux-arm64-deb': `${base}/SquadX-Live-${version}-arm64.deb`,
-    'linux-x64-rpm': `${base}/SquadX-Live-${version}-x86_64.rpm`,
-    'linux-arm64-rpm': `${base}/SquadX-Live-${version}-aarch64.rpm`,
-  };
+    if (name.endsWith('.msi') || (name.endsWith('.exe') && name.includes('setup'))) {
+      downloads['win-x64-exe'] = url;
+    }
+
+    // Linux AppImage
+    if (name.endsWith('.appimage')) {
+      if (name.includes('aarch64') || name.includes('arm64')) {
+        downloads['linux-arm64-appimage'] = url;
+      } else {
+        downloads['linux-x64-appimage'] = url;
+      }
+    }
+
+    // Linux DEB
+    if (name.endsWith('.deb')) {
+      if (name.includes('aarch64') || name.includes('arm64')) {
+        downloads['linux-arm64-deb'] = url;
+      } else {
+        downloads['linux-x64-deb'] = url;
+      }
+    }
+
+    // Linux RPM
+    if (name.endsWith('.rpm')) {
+      if (name.includes('aarch64') || name.includes('arm64')) {
+        downloads['linux-arm64-rpm'] = url;
+      } else {
+        downloads['linux-x64-rpm'] = url;
+      }
+    }
+  }
+
+  return downloads;
 }
 
 function CopyButton({ text }: { text: string }) {
@@ -95,35 +136,53 @@ export function DownloadSection() {
   useEffect(() => {
     setDetected(detectOS());
 
-    // Fetch latest version from installer API
+    // Fetch latest release from GitHub API
     async function fetchRelease() {
       try {
-        const response = await fetch(`${INSTALLER_API}/api/version`);
-        if (!response.ok) throw new Error('Failed to fetch version');
-        const version = (await response.text()).trim();
+        const response = await fetch(
+          `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`,
+          {
+            headers: {
+              Accept: 'application/vnd.github.v3+json',
+            },
+          }
+        );
+
+        if (!response.ok) {
+          if (response.status === 404) {
+            throw new Error('No releases available yet');
+          }
+          throw new Error('Failed to fetch release info');
+        }
+
+        const data: GitHubRelease = await response.json();
+        const version = data.tag_name.replace(/^v/, '');
+        const downloads = parseDownloadsFromAssets(data.assets);
 
         // Fetch checksums if available
         const checksums: Record<string, string> = {};
-        try {
-          const checksumsUrl = `https://github.com/${GITHUB_REPO}/releases/download/v${version}/SHA256SUMS.txt`;
-          const checksumResponse = await fetch(checksumsUrl);
-          if (checksumResponse.ok) {
-            const text = await checksumResponse.text();
-            // Parse SHA256SUMS.txt format: "hash  filename"
-            text.split('\n').forEach((line) => {
-              const match = /^([a-f0-9]{64})\s+(.+)$/.exec(line);
-              if (match?.[1] && match[2]) {
-                checksums[match[2]] = match[1];
-              }
-            });
+        const checksumAsset = data.assets.find((a) => a.name === 'SHA256SUMS.txt');
+        if (checksumAsset) {
+          try {
+            const checksumResponse = await fetch(checksumAsset.browser_download_url);
+            if (checksumResponse.ok) {
+              const text = await checksumResponse.text();
+              // Parse SHA256SUMS.txt format: "hash  filename"
+              text.split('\n').forEach((line) => {
+                const match = /^([a-f0-9]{64})\s+(.+)$/.exec(line);
+                if (match?.[1] && match[2]) {
+                  checksums[match[2]] = match[1];
+                }
+              });
+            }
+          } catch {
+            // Checksums not available, that's ok
           }
-        } catch {
-          // Checksums not available, that's ok
         }
 
         setRelease({
           version,
-          downloads: getDownloadUrls(version),
+          downloads: downloads as ReleaseInfo['downloads'],
           checksums,
         });
       } catch (err) {
@@ -156,10 +215,18 @@ export function DownloadSection() {
     return (
       <section className="bg-white py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <p className="text-red-600">{error ?? 'Failed to load release info'}</p>
+          <div className="mx-auto max-w-md rounded-2xl border border-gray-200 bg-gray-50 p-8 text-center">
+            <Download className="mx-auto h-12 w-12 text-gray-400" />
+            <h2 className="mt-4 text-xl font-semibold text-gray-900">Coming Soon</h2>
+            <p className="mt-2 text-gray-600">
+              {error === 'No releases available yet'
+                ? 'The first release is being prepared. Check back soon!'
+                : error ?? 'Failed to load release info'}
+            </p>
             <Link
               href={`https://github.com/${GITHUB_REPO}/releases`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-primary-600 mt-4 inline-flex items-center gap-2 hover:underline"
             >
               View releases on GitHub
