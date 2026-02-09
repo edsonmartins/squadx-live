@@ -14,47 +14,55 @@ interface LogoProps {
 }
 
 const sizes = {
-  sm: { iconSize: 28, textSize: 'text-lg' },
-  md: { iconSize: 36, textSize: 'text-xl' },
-  lg: { iconSize: 44, textSize: 'text-2xl' },
+  sm: { width: 140, height: 32 },
+  md: { width: 180, height: 40 },
+  lg: { width: 220, height: 50 },
 };
 
 export function Logo({ size = 'md', variant = 'default', asLink = true, iconOnly = false, className }: LogoProps) {
   const sizeConfig = sizes[size];
 
-  const content = (
-    <span className={cn('flex items-center gap-2', className)}>
-      {/* Icon */}
+  const content = iconOnly ? (
+    <Image
+      src="/logo.png"
+      alt="SquadX Live"
+      width={sizeConfig.height}
+      height={sizeConfig.height}
+      className="h-auto"
+      style={{ height: sizeConfig.height, width: sizeConfig.height }}
+      priority
+    />
+  ) : (
+    <span className={cn('flex items-center', className)}>
+      {/* Logo for light backgrounds (visible in light mode) */}
       <Image
-        src="/logo.png"
+        src="/logo-light-bg.png"
         alt="SquadX Live"
-        width={sizeConfig.iconSize}
-        height={sizeConfig.iconSize}
-        className="h-auto"
-        style={{ height: sizeConfig.iconSize, width: sizeConfig.iconSize }}
+        width={sizeConfig.width}
+        height={sizeConfig.height}
+        className={cn('h-auto', variant === 'light' ? 'hidden' : 'dark:hidden')}
+        style={{ height: sizeConfig.height }}
         priority
       />
-      {/* Text */}
-      {!iconOnly && (
-        <span
-          className={cn(
-            'font-bold tracking-tight',
-            sizeConfig.textSize,
-            variant === 'light' ? 'text-white' : 'text-gray-900 dark:text-white'
-          )}
-        >
-          SquadX <span className="text-indigo-600 dark:text-indigo-400">Live</span>
-        </span>
-      )}
+      {/* Logo for dark backgrounds (visible in dark mode or when variant='light') */}
+      <Image
+        src="/logo-dark-bg.png"
+        alt="SquadX Live"
+        width={sizeConfig.width}
+        height={sizeConfig.height}
+        className={cn('h-auto', variant === 'light' ? 'block' : 'hidden dark:block')}
+        style={{ height: sizeConfig.height }}
+        priority
+      />
     </span>
   );
 
   if (!asLink) {
-    return content;
+    return <span className={cn('flex items-center', className)}>{content}</span>;
   }
 
   return (
-    <Link href="/" className="flex items-center">
+    <Link href="/" className={cn('flex items-center', className)}>
       {content}
     </Link>
   );
