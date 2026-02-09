@@ -32,6 +32,13 @@ export type {
   MediaSessionUpdate,
   CaptureSourceInfo,
   SessionStatusResult,
+  WhiteboardBoard,
+  WhiteboardBoardInsert,
+  WhiteboardBoardUpdate,
+  WhiteboardSnapshot,
+  WhiteboardSnapshotInsert,
+  WhiteboardAgentAction,
+  WhiteboardAgentActionInsert,
   Database,
 } from './database.js';
 

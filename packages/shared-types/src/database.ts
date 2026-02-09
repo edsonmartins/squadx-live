@@ -218,6 +218,77 @@ export interface PushSubscriptionInsert {
   user_agent?: string | null;
 }
 
+// Whiteboard board table
+export interface WhiteboardBoard {
+  id: string;
+  session_id: string | null;
+  project_id: string | null;
+  title: string;
+  thumbnail_url: string | null;
+  yjs_state: string | null; // bytea stored as base64
+  elements_json: unknown[]; // Excalidraw elements
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+  is_archived: boolean;
+}
+
+export interface WhiteboardBoardInsert {
+  session_id?: string | null;
+  project_id?: string | null;
+  title?: string;
+  thumbnail_url?: string | null;
+  yjs_state?: string | null;
+  elements_json?: unknown[];
+  created_by?: string | null;
+  is_archived?: boolean;
+}
+
+export interface WhiteboardBoardUpdate {
+  title?: string;
+  thumbnail_url?: string | null;
+  yjs_state?: string | null;
+  elements_json?: unknown[];
+  updated_at?: string;
+  is_archived?: boolean;
+}
+
+// Whiteboard snapshot table
+export interface WhiteboardSnapshot {
+  id: string;
+  board_id: string;
+  elements_json: unknown[];
+  thumbnail_url: string | null;
+  label: string | null;
+  created_by: string | null;
+  created_at: string;
+}
+
+export interface WhiteboardSnapshotInsert {
+  board_id: string;
+  elements_json: unknown[];
+  thumbnail_url?: string | null;
+  label?: string | null;
+  created_by?: string | null;
+}
+
+// Whiteboard agent action table
+export interface WhiteboardAgentAction {
+  id: string;
+  board_id: string;
+  agent_id: string;
+  action_type: string;
+  action_data: unknown;
+  created_at: string;
+}
+
+export interface WhiteboardAgentActionInsert {
+  board_id: string;
+  agent_id: string;
+  action_type: string;
+  action_data?: unknown;
+}
+
 // Database schema type for Supabase client
 export interface Database {
   public: {
@@ -250,6 +321,21 @@ export interface Database {
       push_subscriptions: {
         Row: PushSubscription;
         Insert: PushSubscriptionInsert;
+        Update: never;
+      };
+      whiteboard_boards: {
+        Row: WhiteboardBoard;
+        Insert: WhiteboardBoardInsert;
+        Update: WhiteboardBoardUpdate;
+      };
+      whiteboard_snapshots: {
+        Row: WhiteboardSnapshot;
+        Insert: WhiteboardSnapshotInsert;
+        Update: never;
+      };
+      whiteboard_agent_actions: {
+        Row: WhiteboardAgentAction;
+        Insert: WhiteboardAgentActionInsert;
         Update: never;
       };
     };
