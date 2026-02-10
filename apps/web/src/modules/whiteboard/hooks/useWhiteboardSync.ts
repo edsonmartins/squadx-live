@@ -102,9 +102,15 @@ export function useWhiteboardSync({
 
   const bindingRef = useRef<YjsExcalidrawBinding | null>(null);
   const isInitializedRef = useRef(false);
+  const permissionRef = useRef<DrawPermission>(isHost ? 'granted' : 'none');
 
   // Host always has permission
   const canDraw = isHost || permission === 'granted';
+
+  // Keep permissionRef in sync with state (for use in event handlers)
+  useEffect(() => {
+    permissionRef.current = permission;
+  }, [permission]);
 
   // Initialize Yjs binding
   useEffect(() => {
@@ -167,7 +173,7 @@ export function useWhiteboardSync({
         // Update local permission if this is us
         if (clientId === myClientId && state.permission) {
           const newPermission = state.permission as DrawPermission;
-          if (newPermission !== permission) {
+          if (newPermission !== permissionRef.current) {
             setPermission(newPermission);
             onPermissionChange?.(newPermission);
           }
@@ -210,29 +216,14 @@ export function useWhiteboardSync({
 
     awareness.on('change', handleAwarenessChange);
 
-    // Set initial local state
-    awareness.setLocalStateField('user', {
-      odId: participantId,
-      odName: participantName,
-      odColor: participantColor,
-      cursor: null,
-      selectedElementIds: [],
-    });
+    // Set initial permission state (user state is already set by YjsProvider)
+    // This will trigger an awareness change event which will call handleAwarenessChange
     awareness.setLocalStateField('permission', isHost ? 'granted' : 'none');
 
     return () => {
       awareness.off('change', handleAwarenessChange);
     };
-  }, [
-    awareness,
-    excalidrawAPI,
-    isHost,
-    participantId,
-    participantName,
-    participantColor,
-    permission,
-    onPermissionChange,
-  ]);
+  }, [awareness, excalidrawAPI, isHost, onPermissionChange]);
 
   // Sync local changes to Yjs
   const syncToRemote = useCallback(
@@ -313,7 +304,7 @@ export function useWhiteboardSync({
           const granted = grants[myClientId];
           const newPermission = granted ? 'granted' : 'none';
 
-          if (newPermission !== permission) {
+          if (newPermission !== permissionRef.current) {
             awareness.setLocalStateField('permission', newPermission);
             setPermission(newPermission);
             onPermissionChange?.(newPermission);
@@ -327,7 +318,7 @@ export function useWhiteboardSync({
     return () => {
       awareness.off('change', handleAwarenessChange);
     };
-  }, [awareness, isHost, permission, onPermissionChange]);
+  }, [awareness, isHost, onPermissionChange]);
 
   return {
     isSynced,
