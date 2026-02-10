@@ -118,10 +118,12 @@ function WhiteboardContentWithSync({
   useEffect(() => {
     async function fetchBoards() {
       try {
-        const response = await fetch(`/api/whiteboard/boards?sessionId=${sessionId}`);
+        const response = await fetch(`/api/whiteboard/boards?sessionId=${sessionId}`, {
+          credentials: 'include',
+        });
         if (response.ok) {
-          const data = await response.json();
-          setBoards(data.boards || []);
+          const result = await response.json() as { data?: { boards?: WhiteboardBoard[] } };
+          setBoards(result.data?.boards || []);
         }
       } catch (err) {
         console.error('Failed to fetch boards:', err);

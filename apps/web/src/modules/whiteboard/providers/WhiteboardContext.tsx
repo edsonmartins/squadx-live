@@ -66,7 +66,12 @@ export function WhiteboardProvider({
       if (!response.ok) {
         throw new Error('Failed to load board');
       }
-      const board: WhiteboardBoard = await response.json();
+      const result = await response.json() as { data?: WhiteboardBoard };
+      const board = result.data;
+
+      if (!board) {
+        throw new Error('Board not found');
+      }
 
       setState((prev) => ({
         ...prev,
@@ -91,6 +96,7 @@ export function WhiteboardProvider({
         const response = await fetch('/api/whiteboard/boards', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify({
             sessionId,
             title: title || 'Untitled Board',
@@ -102,7 +108,12 @@ export function WhiteboardProvider({
           throw new Error('Failed to create board');
         }
 
-        const board: WhiteboardBoard = await response.json();
+        const result = await response.json() as { data?: WhiteboardBoard };
+        const board = result.data;
+
+        if (!board) {
+          throw new Error('Failed to create board - no data returned');
+        }
 
         setState((prev) => ({
           ...prev,
