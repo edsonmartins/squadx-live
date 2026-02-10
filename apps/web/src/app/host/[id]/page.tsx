@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, use, useCallback } from 'react';
+import { useState, useEffect, use, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -182,6 +182,7 @@ function HostContent({
   const [copied, setCopied] = useState(false);
   const [isPausing, setIsPausing] = useState(false);
   const [isEnding, setIsEnding] = useState(false);
+  const hasStartedHostingRef = useRef(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [captureQuality, setCaptureQuality] = useState<CaptureQuality>('1080p');
@@ -297,11 +298,13 @@ function HostContent({
   }, [disposeMixer]);
 
   // Start hosting (voice channel) as soon as session is loaded -- no stream required
+  // Uses ref to ensure startHosting is only called once per mount
   useEffect(() => {
-    if (!isHosting) {
+    if (!hasStartedHostingRef.current) {
+      hasStartedHostingRef.current = true;
       void startHosting();
     }
-  }, [isHosting, startHosting]);
+  }, [startHosting]);
 
   // Publish screen share stream when capture starts
   useEffect(() => {
