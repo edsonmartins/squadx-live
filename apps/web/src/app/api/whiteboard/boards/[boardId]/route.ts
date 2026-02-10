@@ -56,10 +56,10 @@ export async function GET(
   }
 }
 
-// PATCH /api/whiteboard/boards/[boardId] - Update a board
-export async function PATCH(
+// Internal update function used by both PATCH and POST
+async function updateBoard(
   request: Request,
-  { params }: { params: Promise<{ boardId: string }> }
+  params: Promise<{ boardId: string }>
 ) {
   try {
     const { boardId } = await params;
@@ -128,6 +128,22 @@ export async function PATCH(
   } catch (error) {
     return handleApiError(error);
   }
+}
+
+// POST /api/whiteboard/boards/[boardId] - Update a board (for sendBeacon)
+export async function POST(
+  request: Request,
+  { params }: { params: Promise<{ boardId: string }> }
+) {
+  return updateBoard(request, params);
+}
+
+// PATCH /api/whiteboard/boards/[boardId] - Update a board
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ boardId: string }> }
+) {
+  return updateBoard(request, params);
 }
 
 // DELETE /api/whiteboard/boards/[boardId] - Archive a board
