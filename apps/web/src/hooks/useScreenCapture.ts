@@ -60,13 +60,13 @@ export function useScreenCapture({
     setCaptureState('idle');
     onStreamEnd?.();
 
-    // Restore window in Tauri desktop app
+    // Show window in screen capture again in Tauri desktop app
     if (isTauri) {
       try {
         const { invoke } = await import('@tauri-apps/api/core');
-        await invoke('restore_window');
+        await invoke('show_in_capture');
       } catch (err) {
-        console.warn('[useScreenCapture] Failed to restore Tauri window:', err);
+        console.warn('[useScreenCapture] Failed to show Tauri window in capture:', err);
       }
     }
   }, [onStreamEnd]);
@@ -89,13 +89,14 @@ export function useScreenCapture({
       const preset = QUALITY_PRESETS[quality];
       const displaySurface = SHARE_TYPE_MAP[shareType];
 
-      // Minimize window in Tauri desktop app to avoid mirror effect
-      if (isTauri && shareType === 'screen') {
+      // Hide window from screen capture in Tauri desktop app (like Google Meet)
+      // This makes the window invisible to screen recording while still visible to user
+      if (isTauri) {
         try {
           const { invoke } = await import('@tauri-apps/api/core');
-          await invoke('minimize_window');
+          await invoke('hide_from_capture');
         } catch (err) {
-          console.warn('[useScreenCapture] Failed to minimize Tauri window:', err);
+          console.warn('[useScreenCapture] Failed to hide Tauri window from capture:', err);
         }
       }
 

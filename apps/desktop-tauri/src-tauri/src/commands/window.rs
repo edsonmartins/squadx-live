@@ -22,3 +22,27 @@ pub async fn restore_window(app: AppHandle) -> Result<()> {
     }
     Ok(())
 }
+
+/// Hide window from screen capture (Windows: WDA_EXCLUDEFROMCAPTURE, macOS: setSharingType)
+/// This makes the window invisible to screen recording/sharing
+#[tauri::command]
+pub async fn hide_from_capture(app: AppHandle) -> Result<()> {
+    if let Some(window) = app.get_webview_window("main") {
+        // set_content_protected(true) uses native APIs to exclude window from capture:
+        // - Windows: SetWindowDisplayAffinity with WDA_EXCLUDEFROMCAPTURE
+        // - macOS: setSharingType(.none) on NSWindow
+        window.set_content_protected(true)?;
+        tracing::info!("Window hidden from screen capture");
+    }
+    Ok(())
+}
+
+/// Show window in screen capture again (restore normal behavior)
+#[tauri::command]
+pub async fn show_in_capture(app: AppHandle) -> Result<()> {
+    if let Some(window) = app.get_webview_window("main") {
+        window.set_content_protected(false)?;
+        tracing::info!("Window visible in screen capture again");
+    }
+    Ok(())
+}

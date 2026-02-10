@@ -159,6 +159,8 @@ pub fn run() {
             // Window commands
             commands::window::minimize_window,
             commands::window::restore_window,
+            commands::window::hide_from_capture,
+            commands::window::show_in_capture,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
