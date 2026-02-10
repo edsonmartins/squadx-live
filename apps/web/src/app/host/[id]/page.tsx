@@ -68,7 +68,7 @@ type HostHookFn = (options: {
   viewers: Map<string, ViewerConnection>;
   error: string | null;
   startHosting: () => Promise<void>;
-  stopHosting: () => void;
+  stopHosting: () => Promise<void>;
   publishStream: (stream: MediaStream) => Promise<void>;
   unpublishStream: () => Promise<void>;
   grantControl: (viewerId: string) => void;
@@ -180,7 +180,8 @@ function HostContent({
   const router = useRouter();
   const [currentSession, setCurrentSession] = useState(session);
   const [copied, setCopied] = useState(false);
-  const [isLeaving, setIsLeaving] = useState(false);
+  const [isPausing, setIsPausing] = useState(false);
+  const [isEnding, setIsEnding] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [captureQuality, setCaptureQuality] = useState<CaptureQuality>('1080p');
@@ -392,29 +393,77 @@ function HostContent({
     void startCapture({ quality: captureQuality });
   }, [startCapture, captureQuality]);
 
-  // Handle leave session (room stays alive for viewers)
-  const handleLeaveSession = useCallback(async () => {
-    if (isLeaving) return;
+  // Helper to cleanup media before leaving
+  const cleanupMedia = useCallback(async () => {
+    // Stop recording first
+    if (isRecording) {
+      stopRecording();
+    }
 
-    setIsLeaving(true);
+    // Stop screen capture
+    stopCapture();
+
+    // Dispose audio mixer BEFORE stopping hosting
+    disposeMixer();
+
+    // Stop hosting (this stops the microphone and disconnects from LiveKit)
+    await stopHosting();
+  }, [isRecording, stopRecording, stopCapture, disposeMixer, stopHosting]);
+
+  // Handle pause session (can be resumed later)
+  const handlePauseSession = useCallback(async () => {
+    if (isPausing || isEnding) return;
+
+    setIsPausing(true);
     try {
-      stopCapture();
-      stopHosting();
+      await cleanupMedia();
 
+      // Update session status to paused
+      const res = await fetch(`/api/sessions/${sessionId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'paused' }),
+      });
+
+      if (!res.ok) {
+        console.error('Failed to pause session');
+      }
+
+      router.push('/dashboard');
+    } catch (err) {
+      console.error('Error pausing session:', err);
+      router.push('/dashboard');
+    }
+  }, [sessionId, isPausing, isEnding, cleanupMedia, router]);
+
+  // Handle end session (permanently ends, cannot be resumed)
+  const handleEndSession = useCallback(async () => {
+    if (isPausing || isEnding) return;
+
+    const confirmed = confirm(
+      'Are you sure you want to end this session? This action cannot be undone and the session cannot be resumed.'
+    );
+    if (!confirmed) return;
+
+    setIsEnding(true);
+    try {
+      await cleanupMedia();
+
+      // Delete/end the session permanently
       const res = await fetch(`/api/sessions/${sessionId}`, {
         method: 'DELETE',
       });
 
       if (!res.ok) {
-        console.error('Failed to leave session');
+        console.error('Failed to end session');
       }
 
-      router.push('/');
+      router.push('/dashboard');
     } catch (err) {
-      console.error('Error leaving session:', err);
-      router.push('/');
+      console.error('Error ending session:', err);
+      router.push('/dashboard');
     }
-  }, [sessionId, isLeaving, stopCapture, stopHosting, router]);
+  }, [sessionId, isPausing, isEnding, cleanupMedia, router]);
 
   // Handle regenerating join code (invalidates old invite URL)
   const handleRegenerateCode = useCallback(async () => {
@@ -586,20 +635,36 @@ function HostContent({
                 {viewerCount} {viewerCount === 1 ? 'viewer' : 'viewers'}
               </div>
 
-              {/* Leave session button */}
+              {/* Pause session button */}
               <button
                 type="button"
-                onClick={() => void handleLeaveSession()}
-                disabled={isLeaving || isRecording}
-                title={isRecording ? 'Stop recording first' : undefined}
+                onClick={() => void handlePauseSession()}
+                disabled={isPausing || isEnding || isRecording}
+                title={isRecording ? 'Stop recording first' : 'Pause session (can resume later)'}
                 className="flex items-center gap-1.5 rounded-lg border border-gray-700 bg-gray-800 px-3 py-1.5 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700 disabled:opacity-50"
               >
-                {isLeaving ? (
+                {isPausing ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <LogOut className="h-4 w-4" />
+                  <Pause className="h-4 w-4" />
                 )}
-                <span className="hidden sm:inline">Leave</span>
+                <span className="hidden sm:inline">Pause</span>
+              </button>
+
+              {/* End session button */}
+              <button
+                type="button"
+                onClick={() => void handleEndSession()}
+                disabled={isPausing || isEnding || isRecording}
+                title={isRecording ? 'Stop recording first' : 'End session permanently'}
+                className="flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+              >
+                {isEnding ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <StopCircle className="h-4 w-4" />
+                )}
+                <span className="hidden sm:inline">End</span>
               </button>
             </div>
           </div>

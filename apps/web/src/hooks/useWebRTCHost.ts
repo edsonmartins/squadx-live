@@ -97,7 +97,7 @@ interface UseWebRTCHostReturn {
   controllingViewer: string | null;
   error: string | null;
   startHosting: () => Promise<void>;
-  stopHosting: () => void;
+  stopHosting: () => Promise<void>;
   publishStream: (stream: MediaStream) => Promise<void>;
   unpublishStream: () => Promise<void>;
   grantControl: (viewerId: string) => void;
@@ -134,6 +134,7 @@ export function useWebRTCHost({
   const statsIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const hostMicStreamRef = useRef<MediaStream | null>(null);
   const localStreamRef = useRef<MediaStream | null>(localStream);
+  const isStartingRef = useRef(false); // Prevents concurrent startHosting calls
   // Buffer ICE candidates per viewer until their remote description is set
   const pendingCandidatesRef = useRef<Map<string, RTCIceCandidateInit[]>>(new Map());
   const onControlRequestRef = useRef(onControlRequest);
@@ -607,6 +608,22 @@ export function useWebRTCHost({
 
   // Start hosting (sets up signaling channel and voice -- screen sharing is optional)
   const startHosting = useCallback(async () => {
+    // Prevent concurrent calls using ref (avoids race condition)
+    if (isStartingRef.current || channelRef.current) {
+      console.log('[WebRTCHost] Already starting/hosting, skipping');
+      return;
+    }
+    isStartingRef.current = true;
+
+    // Stop any existing mic stream before capturing new one
+    if (hostMicStreamRef.current) {
+      hostMicStreamRef.current.getTracks().forEach((track) => {
+        console.log('[WebRTCHost] Stopping existing track before recapture:', track.kind, track.label);
+        track.stop();
+      });
+      hostMicStreamRef.current = null;
+    }
+
     // Capture host microphone before setting up signaling
     try {
       const micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
@@ -696,16 +713,17 @@ export function useWebRTCHost({
   }, [micEnabled]);
 
   // Stop hosting
-  const stopHosting = useCallback(() => {
+  const stopHosting = useCallback(async () => {
     // Stop adaptive bitrate monitoring
     if (statsIntervalRef.current) {
       clearInterval(statsIntervalRef.current);
       statsIntervalRef.current = null;
     }
 
-    // Stop host mic tracks
+    // Stop host mic tracks FIRST to release browser indicator
     if (hostMicStreamRef.current) {
       hostMicStreamRef.current.getTracks().forEach((track) => {
+        console.log('[WebRTCHost] Stopping track:', track.kind, track.label);
         track.stop();
       });
       hostMicStreamRef.current = null;
@@ -724,13 +742,15 @@ export function useWebRTCHost({
 
     // Unsubscribe from channel
     if (channelRef.current) {
-      void channelRef.current.unsubscribe();
+      await channelRef.current.unsubscribe();
       channelRef.current = null;
     }
 
+    isStartingRef.current = false;
     setIsHosting(false);
     setMicEnabled(false);
     setHasMic(false);
+    console.log('[WebRTCHost] Stopped hosting');
   }, []);
 
   // Publish a screen share stream to all connected viewers

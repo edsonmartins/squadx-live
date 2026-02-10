@@ -54,7 +54,7 @@ interface UseWebRTCHostSFUReturn {
   controllingViewer: string | null;
   error: string | null;
   startHosting: () => Promise<void>;
-  stopHosting: () => void;
+  stopHosting: () => Promise<void>;
   publishStream: (stream: MediaStream) => Promise<void>;
   unpublishStream: () => Promise<void>;
   grantControl: (viewerId: string) => void;
@@ -86,6 +86,7 @@ export function useWebRTCHostSFU({
 
   const roomRef = useRef<Room | null>(null);
   const viewersRef = useRef<Map<string, ViewerConnection>>(new Map());
+  const isStartingRef = useRef(false); // Prevents concurrent startHosting calls
 
   const onControlRequestRef = useRef(onControlRequest);
   const onInputReceivedRef = useRef(onInputReceived);
@@ -189,6 +190,13 @@ export function useWebRTCHostSFU({
 
   // Start hosting (sets up LiveKit room and voice -- screen sharing is optional)
   const startHosting = useCallback(async () => {
+    // Prevent concurrent calls using ref (avoids race condition)
+    if (isStartingRef.current || roomRef.current) {
+      console.log('[WebRTCHostSFU] Already starting/hosting, skipping');
+      return;
+    }
+    isStartingRef.current = true;
+
     try {
       // Fetch LiveKit token
       const tokenRes = await fetch('/api/livekit/token', {
@@ -286,17 +294,40 @@ export function useWebRTCHostSFU({
     }
   }, [sessionId, hostId, addViewer, removeViewer, handleDataReceived]);
 
-  // Stop hosting
-  const stopHosting = useCallback(() => {
+  // Stop hosting - returns a promise that resolves when cleanup is complete
+  const stopHosting = useCallback(async () => {
     const room = roomRef.current;
     if (room) {
-      // Unpublish all tracks but keep room alive for viewers
+      // Collect all media stream tracks to stop them
+      const tracksToStop: MediaStreamTrack[] = [];
+
+      // First, collect all underlying MediaStreamTracks
       room.localParticipant.trackPublications.forEach((pub: LocalTrackPublication) => {
         if (pub.track) {
-          void room.localParticipant.unpublishTrack(pub.track);
+          const mediaTrack = pub.track.mediaStreamTrack;
+          if (mediaTrack) {
+            tracksToStop.push(mediaTrack);
+          }
         }
       });
-      void room.disconnect();
+
+      // Stop all media tracks FIRST - this releases the browser's mic indicator
+      tracksToStop.forEach((track) => {
+        console.log('[WebRTCHostSFU] Stopping track:', track.kind, track.label);
+        track.stop();
+      });
+
+      // Then unpublish tracks from room
+      const unpublishPromises: Promise<void>[] = [];
+      room.localParticipant.trackPublications.forEach((pub: LocalTrackPublication) => {
+        if (pub.track) {
+          unpublishPromises.push(room.localParticipant.unpublishTrack(pub.track));
+        }
+      });
+      await Promise.all(unpublishPromises);
+
+      // Finally disconnect from room and wait for it
+      await room.disconnect();
       roomRef.current = null;
     }
 
@@ -309,9 +340,11 @@ export function useWebRTCHostSFU({
     viewersRef.current.clear();
     setViewers(new Map());
 
+    isStartingRef.current = false;
     setIsHosting(false);
     setMicEnabled(false);
     setHasMic(false);
+    console.log('[WebRTCHostSFU] Stopped hosting');
   }, []);
 
   // Publish a screen share stream to the LiveKit room
@@ -356,10 +389,25 @@ export function useWebRTCHostSFU({
     }
   }, []);
 
-  // Cleanup on unmount
+  // Cleanup on unmount and page unload
   useEffect(() => {
+    const handleBeforeUnload = () => {
+      // Synchronous cleanup for beforeunload - stop tracks directly
+      const room = roomRef.current;
+      if (room) {
+        room.localParticipant.trackPublications.forEach((pub: LocalTrackPublication) => {
+          if (pub.track?.mediaStreamTrack) {
+            pub.track.mediaStreamTrack.stop();
+          }
+        });
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
     return () => {
-      stopHosting();
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      void stopHosting();
     };
   }, [stopHosting]);
 
