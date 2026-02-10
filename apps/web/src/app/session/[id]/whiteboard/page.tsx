@@ -60,7 +60,9 @@ export default function WhiteboardPage({
         const participantId = searchParams.get('p');
 
         // Fetch session data
-        const sessionResponse = await fetch(`/api/sessions/${sessionId}`);
+        const sessionResponse = await fetch(`/api/sessions/${sessionId}`, {
+          credentials: 'include',
+        });
         if (!sessionResponse.ok) {
           throw new Error('Session not found');
         }
@@ -81,16 +83,20 @@ export default function WhiteboardPage({
             role: 'viewer',
           });
         } else {
-          // Check if current user is the host
-          const authResponse = await fetch('/api/auth/session');
+          // Check if current user is authenticated
+          const authResponse = await fetch('/api/auth/session', {
+            credentials: 'include',
+          });
           if (authResponse.ok) {
             const authResult = await authResponse.json() as { data?: { user?: { id: string; email?: string } } };
             const authData = authResult.data;
-            if (authData?.user && authData.user.id === sessionData.host_user_id) {
+            if (authData?.user) {
+              // Check if user is the host or just an authenticated user
+              const isHost = authData.user.id === sessionData.host_user_id;
               setParticipant({
                 id: authData.user.id,
-                display_name: authData.user.email?.split('@')[0] || 'Host',
-                role: 'host',
+                display_name: authData.user.email?.split('@')[0] || (isHost ? 'Host' : 'Participant'),
+                role: isHost ? 'host' : 'viewer',
               });
             }
           }

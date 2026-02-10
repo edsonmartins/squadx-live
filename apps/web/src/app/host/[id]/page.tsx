@@ -282,6 +282,24 @@ function HostContentP2P({
     };
   }, [startHosting]);
 
+  // Signal host presence to database so viewers know host is online
+  useEffect(() => {
+    async function signalHostPresence() {
+      try {
+        await fetch(`/api/sessions/${sessionId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ action: 'host_join' }),
+        });
+        console.log('[HostContentP2P] Host presence signaled');
+      } catch (err) {
+        console.warn('[HostContentP2P] Failed to signal host presence:', err);
+      }
+    }
+    void signalHostPresence();
+  }, [sessionId]);
+
   // Publish screen share stream when capture starts
   useEffect(() => {
     if (stream && isHosting) {
@@ -954,6 +972,24 @@ function HostContentSFU({
       globalMicCaptureInProgress = false;
     };
   }, [startHosting]);
+
+  // Signal host presence to database so viewers know host is online
+  useEffect(() => {
+    async function signalHostPresence() {
+      try {
+        await fetch(`/api/sessions/${sessionId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ action: 'host_join' }),
+        });
+        console.log('[HostContentSFU] Host presence signaled');
+      } catch (err) {
+        console.warn('[HostContentSFU] Failed to signal host presence:', err);
+      }
+    }
+    void signalHostPresence();
+  }, [sessionId]);
 
   // Publish screen share stream when capture starts
   useEffect(() => {
