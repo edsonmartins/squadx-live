@@ -156,6 +156,9 @@ pub fn run() {
             commands::calendar::filter_meetings,
             commands::calendar::get_meetings_for_date,
             commands::calendar::search_meetings,
+            // Window commands
+            commands::window::minimize_window,
+            commands::window::restore_window,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

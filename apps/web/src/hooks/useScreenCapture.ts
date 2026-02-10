@@ -2,6 +2,7 @@ import { useState, useCallback, useRef } from 'react';
 
 export type CaptureState = 'idle' | 'requesting' | 'active' | 'error';
 export type CaptureQuality = '720p' | '1080p' | '4k';
+export type ShareType = 'window' | 'screen' | 'browser';
 
 // Quality presets for video constraints
 const QUALITY_PRESETS: Record<CaptureQuality, { width: number; height: number }> = {
@@ -9,6 +10,16 @@ const QUALITY_PRESETS: Record<CaptureQuality, { width: number; height: number }>
   '1080p': { width: 1920, height: 1080 },
   '4k': { width: 3840, height: 2160 },
 };
+
+// Map share type to displaySurface constraint
+const SHARE_TYPE_MAP: Record<ShareType, DisplayCaptureSurfaceType> = {
+  window: 'window',
+  screen: 'monitor',
+  browser: 'browser',
+};
+
+// Check if running in Tauri desktop app
+const isTauri = typeof window !== 'undefined' && '__TAURI__' in window;
 
 interface UseScreenCaptureOptions {
   onStreamStart?: (stream: MediaStream) => void;
@@ -18,6 +29,7 @@ interface UseScreenCaptureOptions {
 interface CaptureOptions {
   quality?: CaptureQuality;
   includeAudio?: boolean;
+  shareType?: ShareType;
 }
 
 interface UseScreenCaptureReturn {
@@ -25,7 +37,7 @@ interface UseScreenCaptureReturn {
   captureState: CaptureState;
   error: string | null;
   startCapture: (options?: CaptureOptions) => Promise<void>;
-  stopCapture: () => void;
+  stopCapture: () => Promise<void>;
 }
 
 export function useScreenCapture({
@@ -37,7 +49,7 @@ export function useScreenCapture({
   const [error, setError] = useState<string | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  const stopCapture = useCallback(() => {
+  const stopCapture = useCallback(async () => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => {
         track.stop();
@@ -47,11 +59,21 @@ export function useScreenCapture({
     setStream(null);
     setCaptureState('idle');
     onStreamEnd?.();
+
+    // Restore window in Tauri desktop app
+    if (isTauri) {
+      try {
+        const { invoke } = await import('@tauri-apps/api/core');
+        await invoke('restore_window');
+      } catch (err) {
+        console.warn('[useScreenCapture] Failed to restore Tauri window:', err);
+      }
+    }
   }, [onStreamEnd]);
 
   const startCapture = useCallback(
     async (options: CaptureOptions = {}) => {
-      const { quality = '1080p', includeAudio = true } = options;
+      const { quality = '1080p', includeAudio = true, shareType = 'window' } = options;
 
       // Check if getDisplayMedia is supported
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -65,11 +87,22 @@ export function useScreenCapture({
       setError(null);
 
       const preset = QUALITY_PRESETS[quality];
+      const displaySurface = SHARE_TYPE_MAP[shareType];
+
+      // Minimize window in Tauri desktop app to avoid mirror effect
+      if (isTauri && shareType === 'screen') {
+        try {
+          const { invoke } = await import('@tauri-apps/api/core');
+          await invoke('minimize_window');
+        } catch (err) {
+          console.warn('[useScreenCapture] Failed to minimize Tauri window:', err);
+        }
+      }
 
       try {
         const mediaStream = await navigator.mediaDevices.getDisplayMedia({
           video: {
-            displaySurface: 'monitor',
+            displaySurface,
             width: { ideal: preset.width, max: preset.width },
             height: { ideal: preset.height, max: preset.height },
             frameRate: { ideal: 30, max: 60 },

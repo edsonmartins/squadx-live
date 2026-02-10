@@ -27,7 +27,7 @@ import { VideoPreview } from '@/components/video';
 import { HostParticipantList } from '@/components/participants/HostParticipantList';
 import { ChatPanel } from '@/components/chat/ChatPanel';
 import { useParticipants } from '@/components/chat/useParticipants';
-import { useScreenCapture, type CaptureQuality } from '@/hooks/useScreenCapture';
+import { useScreenCapture, type CaptureQuality, type ShareType } from '@/hooks/useScreenCapture';
 import { useRecording, formatDuration, type RecordingQuality } from '@/hooks/useRecording';
 import { useWebRTCHost, type ViewerConnection } from '@/hooks/useWebRTCHost';
 import { useWebRTCHostSFU } from '@/hooks/useWebRTCHostSFU';
@@ -155,6 +155,7 @@ function HostContentP2P({
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [captureQuality, setCaptureQuality] = useState<CaptureQuality>('1080p');
+  const [shareType, setShareType] = useState<ShareType>('window');
   const [recordingQuality, setRecordingQuality] = useState<RecordingQuality>('1080p');
   const [recordingBlob, setRecordingBlob] = useState<Blob | null>(null);
 
@@ -368,8 +369,8 @@ function HostContentP2P({
 
   // Handle start capture with quality
   const handleStartCapture = useCallback(() => {
-    void startCapture({ quality: captureQuality });
-  }, [startCapture, captureQuality]);
+    void startCapture({ quality: captureQuality, shareType });
+  }, [startCapture, captureQuality, shareType]);
 
   // Helper to cleanup media before leaving
   const cleanupMedia = useCallback(async () => {
@@ -653,23 +654,39 @@ function HostContentP2P({
       <div className="flex flex-1 overflow-hidden">
         {/* Video area */}
         <main className="flex flex-1 flex-col">
-          {/* Quality selection bar - show before capture starts */}
+          {/* Share options bar - show before capture starts */}
           {captureState === 'idle' && (
             <div className="border-b border-gray-800 bg-gray-900 px-4 py-2">
-              <div className="flex items-center gap-3">
-                <label className="text-sm text-gray-400">Quality:</label>
-                <select
-                  value={captureQuality}
-                  onChange={(e) => {
-                    setCaptureQuality(e.target.value as CaptureQuality);
-                  }}
-                  className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-1.5 text-sm text-gray-200 focus:border-blue-500 focus:outline-none"
-                >
-                  <option value="720p">720p (HD)</option>
-                  <option value="1080p">1080p (Full HD)</option>
-                  <option value="4k">4K (where available)</option>
-                </select>
-                <span className="text-xs text-gray-500">Higher quality uses more bandwidth</span>
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-400">Share:</label>
+                  <select
+                    value={shareType}
+                    onChange={(e) => setShareType(e.target.value as ShareType)}
+                    className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-1.5 text-sm text-gray-200 focus:border-blue-500 focus:outline-none"
+                  >
+                    <option value="window">Window (Recommended)</option>
+                    <option value="screen">Entire Screen</option>
+                    <option value="browser">Browser Tab</option>
+                  </select>
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-400">Quality:</label>
+                  <select
+                    value={captureQuality}
+                    onChange={(e) => setCaptureQuality(e.target.value as CaptureQuality)}
+                    className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-1.5 text-sm text-gray-200 focus:border-blue-500 focus:outline-none"
+                  >
+                    <option value="720p">720p (HD)</option>
+                    <option value="1080p">1080p (Full HD)</option>
+                    <option value="4k">4K (where available)</option>
+                  </select>
+                </div>
+                {shareType === 'screen' && (
+                  <span className="text-xs text-yellow-400">
+                    Tip: Minimize this window to avoid mirror effect
+                  </span>
+                )}
               </div>
             </div>
           )}
@@ -864,6 +881,7 @@ function HostContentSFU({
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [captureQuality, setCaptureQuality] = useState<CaptureQuality>('1080p');
+  const [shareType, setShareType] = useState<ShareType>('window');
   const [recordingQuality, setRecordingQuality] = useState<RecordingQuality>('1080p');
   const [recordingBlob, setRecordingBlob] = useState<Blob | null>(null);
 
@@ -997,8 +1015,8 @@ function HostContentSFU({
 
   // Handle start capture with quality
   const handleStartCapture = useCallback(() => {
-    void startCapture({ quality: captureQuality });
-  }, [startCapture, captureQuality]);
+    void startCapture({ quality: captureQuality, shareType });
+  }, [startCapture, captureQuality, shareType]);
 
   // Helper to cleanup media before leaving
   const cleanupMedia = useCallback(async () => {
@@ -1225,17 +1243,36 @@ function HostContentSFU({
         <main className="flex flex-1 flex-col">
           {captureState === 'idle' && (
             <div className="border-b border-gray-800 bg-gray-900 px-4 py-2">
-              <div className="flex items-center gap-3">
-                <label className="text-sm text-gray-400">Quality:</label>
-                <select
-                  value={captureQuality}
-                  onChange={(e) => setCaptureQuality(e.target.value as CaptureQuality)}
-                  className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-1.5 text-sm text-gray-200"
-                >
-                  <option value="720p">720p (HD)</option>
-                  <option value="1080p">1080p (Full HD)</option>
-                  <option value="4k">4K</option>
-                </select>
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-400">Share:</label>
+                  <select
+                    value={shareType}
+                    onChange={(e) => setShareType(e.target.value as ShareType)}
+                    className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-1.5 text-sm text-gray-200"
+                  >
+                    <option value="window">Window (Recommended)</option>
+                    <option value="screen">Entire Screen</option>
+                    <option value="browser">Browser Tab</option>
+                  </select>
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-400">Quality:</label>
+                  <select
+                    value={captureQuality}
+                    onChange={(e) => setCaptureQuality(e.target.value as CaptureQuality)}
+                    className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-1.5 text-sm text-gray-200"
+                  >
+                    <option value="720p">720p (HD)</option>
+                    <option value="1080p">1080p (Full HD)</option>
+                    <option value="4k">4K</option>
+                  </select>
+                </div>
+                {shareType === 'screen' && (
+                  <span className="text-xs text-yellow-400">
+                    Tip: Minimize this window to avoid mirror effect
+                  </span>
+                )}
               </div>
             </div>
           )}
