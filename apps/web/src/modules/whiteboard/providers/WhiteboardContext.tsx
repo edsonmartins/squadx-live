@@ -62,7 +62,9 @@ export function WhiteboardProvider({
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      const response = await fetch(`/api/whiteboard/boards/${boardId}`);
+      const response = await fetch(`/api/whiteboard/boards/${boardId}`, {
+        credentials: 'include',
+      });
       if (!response.ok) {
         throw new Error('Failed to load board');
       }
