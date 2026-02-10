@@ -55,30 +55,8 @@ interface ApiResponse<T> {
   error?: string;
 }
 
-// Common type for both P2P and SFU host hooks (subset used by this page)
-type HostHookFn = (options: {
-  sessionId: string;
-  hostId: string;
-  localStream: MediaStream | null;
-  onViewerJoined?: (viewerId: string) => void;
-  onViewerLeft?: (viewerId: string) => void;
-}) => {
-  isHosting: boolean;
-  viewerCount: number;
-  viewers: Map<string, ViewerConnection>;
-  error: string | null;
-  startHosting: () => Promise<void>;
-  stopHosting: () => Promise<void>;
-  publishStream: (stream: MediaStream) => Promise<void>;
-  unpublishStream: () => Promise<void>;
-  grantControl: (viewerId: string) => void;
-  revokeControl: (viewerId: string) => void;
-  kickViewer: (viewerId: string) => void;
-  micEnabled: boolean;
-  hasMic: boolean;
-  toggleMic: () => void;
-  micStream: MediaStream | null;
-};
+// Module-level flag to prevent multiple mic captures across component instances
+let globalMicCaptureInProgress = false;
 
 export default function HostSessionPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: sessionId } = use(params);
@@ -152,30 +130,21 @@ export default function HostSessionPage({ params }: { params: Promise<{ id: stri
     );
   }
 
-  // Branch on session mode — use key to force remount when mode differs
-  const useHostHook: HostHookFn =
-    session.mode === 'sfu' ? (useWebRTCHostSFU as HostHookFn) : (useWebRTCHost as HostHookFn);
-
-  return (
-    <HostContent
-      key={session.mode ?? 'p2p'}
-      session={session}
-      sessionId={sessionId}
-      useHostHook={useHostHook}
-    />
-  );
+  // Render appropriate component based on session mode
+  if (session.mode === 'sfu') {
+    return <HostContentSFU session={session} sessionId={sessionId} />;
+  }
+  return <HostContentP2P session={session} sessionId={sessionId} />;
 }
 
-// --- Host content with pluggable WebRTC hook ---
+// --- Host content for P2P mode ---
 
-function HostContent({
+function HostContentP2P({
   session,
   sessionId,
-  useHostHook,
 }: {
   session: SessionData;
   sessionId: string;
-  useHostHook: HostHookFn;
 }) {
   const router = useRouter();
   const [currentSession, setCurrentSession] = useState(session);
@@ -215,7 +184,7 @@ function HostContent({
     },
   });
 
-  // WebRTC host hook (P2P or SFU depending on session mode)
+  // WebRTC host hook (P2P mode)
   const {
     isHosting,
     viewerCount,
@@ -232,7 +201,7 @@ function HostContent({
     hasMic,
     toggleMic,
     micStream,
-  } = useHostHook({
+  } = useWebRTCHost({
     sessionId,
     hostId: session.host_user_id,
     localStream: stream,
@@ -298,12 +267,18 @@ function HostContent({
   }, [disposeMixer]);
 
   // Start hosting (voice channel) as soon as session is loaded -- no stream required
-  // Uses ref to ensure startHosting is only called once per mount
+  // Uses both local ref and global flag to prevent multiple mic captures
   useEffect(() => {
-    if (!hasStartedHostingRef.current) {
+    if (!hasStartedHostingRef.current && !globalMicCaptureInProgress) {
       hasStartedHostingRef.current = true;
+      globalMicCaptureInProgress = true;
+      console.log('[HostContentP2P] Starting hosting...');
       void startHosting();
     }
+    return () => {
+      // Reset global flag on unmount so remounting works
+      globalMicCaptureInProgress = false;
+    };
   }, [startHosting]);
 
   // Publish screen share stream when capture starts
@@ -862,6 +837,514 @@ function HostContent({
             onToggleCollapse={() => {
               setShowChat(false);
             }}
+            className="border-l border-gray-800 bg-gray-900"
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+// --- Host content for SFU mode ---
+// Note: SFU mode uses LiveKit which manages microphone internally
+
+function HostContentSFU({
+  session,
+  sessionId,
+}: {
+  session: SessionData;
+  sessionId: string;
+}) {
+  const router = useRouter();
+  const [currentSession, setCurrentSession] = useState(session);
+  const [copied, setCopied] = useState(false);
+  const [isPausing, setIsPausing] = useState(false);
+  const [isEnding, setIsEnding] = useState(false);
+  const hasStartedHostingRef = useRef(false);
+  const [isRegenerating, setIsRegenerating] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+  const [captureQuality, setCaptureQuality] = useState<CaptureQuality>('1080p');
+  const [recordingQuality, setRecordingQuality] = useState<RecordingQuality>('1080p');
+  const [recordingBlob, setRecordingBlob] = useState<Blob | null>(null);
+
+  // Screen capture hook
+  const {
+    stream,
+    captureState,
+    error: captureError,
+    startCapture,
+    stopCapture,
+  } = useScreenCapture();
+
+  // Recording hook
+  const {
+    isRecording,
+    isPaused,
+    duration,
+    error: recordingError,
+    startRecording,
+    stopRecording,
+    pauseRecording,
+    resumeRecording,
+    downloadRecording,
+  } = useRecording({
+    onStop: (blob) => {
+      setRecordingBlob(blob);
+    },
+  });
+
+  // WebRTC host hook (SFU mode via LiveKit)
+  const {
+    isHosting,
+    viewerCount,
+    viewers: hostedViewers,
+    error: hostingError,
+    startHosting,
+    stopHosting,
+    publishStream,
+    unpublishStream,
+    grantControl,
+    revokeControl,
+    kickViewer,
+    micEnabled,
+    hasMic,
+    toggleMic,
+  } = useWebRTCHostSFU({
+    sessionId,
+    hostId: session.host_user_id,
+    localStream: stream,
+    onViewerJoined: (viewerId) => {
+      console.log('Viewer joined:', viewerId);
+    },
+    onViewerLeft: (viewerId) => {
+      console.log('Viewer left:', viewerId);
+    },
+  });
+
+  // Live participant list with realtime updates
+  const { participants: liveParticipants } = useParticipants({ sessionId });
+
+  // Start hosting (voice channel) as soon as session is loaded
+  useEffect(() => {
+    if (!hasStartedHostingRef.current && !globalMicCaptureInProgress) {
+      hasStartedHostingRef.current = true;
+      globalMicCaptureInProgress = true;
+      console.log('[HostContentSFU] Starting hosting...');
+      void startHosting();
+    }
+    return () => {
+      globalMicCaptureInProgress = false;
+    };
+  }, [startHosting]);
+
+  // Publish screen share stream when capture starts
+  useEffect(() => {
+    if (stream && isHosting) {
+      void publishStream(stream);
+    }
+  }, [stream, isHosting, publishStream]);
+
+  // Unpublish screen share when capture stops
+  useEffect(() => {
+    if (!stream && isHosting) {
+      void unpublishStream();
+    }
+  }, [stream, isHosting, unpublishStream]);
+
+  // Copy join link to clipboard
+  const copyJoinLink = useCallback(async () => {
+    const joinUrl = `${window.location.origin}/join/${currentSession.join_code}`;
+    try {
+      await navigator.clipboard.writeText(joinUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  }, [currentSession]);
+
+  // Handle stop screen sharing
+  const handleStopSharing = useCallback(() => {
+    if (isRecording) stopRecording();
+    stopCapture();
+  }, [isRecording, stopRecording, stopCapture]);
+
+  // Handle start recording (SFU mode - no mixed audio, just screen + system audio)
+  const handleStartRecording = useCallback(() => {
+    if (!stream) return;
+    setRecordingBlob(null);
+    startRecording(stream, { quality: recordingQuality });
+  }, [stream, recordingQuality, startRecording]);
+
+  // Handle stop recording
+  const handleStopRecording = useCallback(() => {
+    stopRecording();
+  }, [stopRecording]);
+
+  // Handle toggle pause
+  const handleTogglePause = useCallback(() => {
+    if (isPaused) resumeRecording();
+    else pauseRecording();
+  }, [isPaused, pauseRecording, resumeRecording]);
+
+  // Handle download recording
+  const handleDownloadRecording = useCallback(() => {
+    if (recordingBlob) {
+      downloadRecording(recordingBlob);
+      setRecordingBlob(null);
+    }
+  }, [recordingBlob, downloadRecording]);
+
+  // Handle start capture with quality
+  const handleStartCapture = useCallback(() => {
+    void startCapture({ quality: captureQuality });
+  }, [startCapture, captureQuality]);
+
+  // Helper to cleanup media before leaving
+  const cleanupMedia = useCallback(async () => {
+    if (isRecording) stopRecording();
+    stopCapture();
+    await stopHosting();
+  }, [isRecording, stopRecording, stopCapture, stopHosting]);
+
+  // Handle pause session
+  const handlePauseSession = useCallback(async () => {
+    if (isPausing || isEnding) return;
+    setIsPausing(true);
+    try {
+      await cleanupMedia();
+      await fetch(`/api/sessions/${sessionId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'paused' }),
+      });
+      router.push('/dashboard');
+    } catch (err) {
+      console.error('Error pausing session:', err);
+      router.push('/dashboard');
+    }
+  }, [sessionId, isPausing, isEnding, cleanupMedia, router]);
+
+  // Handle end session
+  const handleEndSession = useCallback(async () => {
+    if (isPausing || isEnding) return;
+    const confirmed = confirm(
+      'Are you sure you want to end this session? This action cannot be undone.'
+    );
+    if (!confirmed) return;
+    setIsEnding(true);
+    try {
+      await cleanupMedia();
+      await fetch(`/api/sessions/${sessionId}`, { method: 'DELETE' });
+      router.push('/dashboard');
+    } catch (err) {
+      console.error('Error ending session:', err);
+      router.push('/dashboard');
+    }
+  }, [sessionId, isPausing, isEnding, cleanupMedia, router]);
+
+  // Handle regenerating join code
+  const handleRegenerateCode = useCallback(async () => {
+    if (isRegenerating) return;
+    setIsRegenerating(true);
+    try {
+      const res = await fetch(`/api/sessions/${sessionId}/regenerate-code`, { method: 'POST' });
+      if (res.ok) {
+        const result = (await res.json()) as ApiResponse<SessionData>;
+        if (result.data) {
+          setCurrentSession((prev) => ({ ...prev, join_code: result.data!.join_code }));
+        }
+      }
+    } catch (err) {
+      console.error('Error regenerating code:', err);
+    } finally {
+      setIsRegenerating(false);
+    }
+  }, [sessionId, isRegenerating]);
+
+  const displayError = captureError ?? hostingError ?? recordingError;
+
+  // SFU mode uses the same UI as P2P, just with different hook behavior
+  return (
+    <div className="flex min-h-screen flex-col bg-gray-900">
+      {/* Header */}
+      <header className="border-b border-gray-800 bg-gray-900">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex h-14 items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Logo size="sm" variant="light" />
+              <div className="flex items-center gap-2">
+                <span className="rounded-full bg-green-900/50 px-2 py-0.5 text-xs font-medium text-green-400">
+                  Hosting (SFU)
+                </span>
+                <span
+                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                    captureState === 'active'
+                      ? 'bg-blue-900/50 text-blue-400'
+                      : 'bg-gray-800 text-gray-400'
+                  }`}
+                >
+                  {captureState === 'active' ? 'Screen Sharing' : 'Voice Only'}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {/* Recording controls */}
+              {captureState === 'active' && (
+                <div className="flex items-center gap-1 rounded-lg bg-gray-800 px-2 py-1">
+                  {!isRecording ? (
+                    <>
+                      <select
+                        value={recordingQuality}
+                        onChange={(e) => setRecordingQuality(e.target.value as RecordingQuality)}
+                        className="rounded bg-gray-700 px-2 py-1 text-xs text-gray-200"
+                      >
+                        <option value="720p">720p</option>
+                        <option value="1080p">1080p</option>
+                        <option value="4k">4K</option>
+                      </select>
+                      <button
+                        type="button"
+                        onClick={handleStartRecording}
+                        className="flex items-center gap-1.5 rounded-md bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700"
+                      >
+                        <Circle className="h-3 w-3 fill-current" />
+                        Record
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <span className="flex items-center gap-1.5 px-2 font-mono text-xs text-gray-200">
+                        <Circle className="h-2 w-2 animate-pulse fill-red-500 text-red-500" />
+                        {formatDuration(duration)}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleTogglePause}
+                        className="rounded-md p-1.5 text-gray-400 hover:bg-gray-700"
+                      >
+                        {isPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleStopRecording}
+                        className="flex items-center gap-1.5 rounded-md bg-gray-700 px-3 py-1.5 text-xs font-medium text-gray-200 hover:bg-gray-600"
+                      >
+                        <StopCircle className="h-3 w-3" />
+                        Stop
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+
+              {recordingBlob && (
+                <button
+                  type="button"
+                  onClick={handleDownloadRecording}
+                  className="flex items-center gap-1.5 rounded-lg bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
+                >
+                  <Download className="h-4 w-4" />
+                  Download
+                </button>
+              )}
+
+              {/* Mic toggle */}
+              <button
+                type="button"
+                onClick={toggleMic}
+                disabled={!hasMic}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                  micEnabled
+                    ? 'bg-green-700 text-white hover:bg-green-600'
+                    : 'border border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700'
+                } disabled:opacity-50`}
+              >
+                {micEnabled ? <Mic className="h-4 w-4" /> : <MicOff className="h-4 w-4" />}
+                <span className="hidden sm:inline">{micEnabled ? 'Mic On' : 'Mic Off'}</span>
+              </button>
+
+              {/* Whiteboard */}
+              <Link
+                href={`/session/${sessionId}/whiteboard`}
+                className="flex items-center gap-1.5 rounded-lg border border-gray-700 bg-gray-800 px-3 py-1.5 text-sm font-medium text-gray-300 hover:bg-gray-700"
+              >
+                <PenTool className="h-4 w-4" />
+                <span className="hidden sm:inline">Whiteboard</span>
+              </Link>
+
+              {/* Chat toggle */}
+              <button
+                type="button"
+                onClick={() => setShowChat(!showChat)}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium ${
+                  showChat
+                    ? 'bg-primary-600 text-white'
+                    : 'border border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                <MessageSquare className="h-4 w-4" />
+                <span className="hidden sm:inline">Chat</span>
+              </button>
+
+              {/* Viewer count */}
+              <div className="flex items-center gap-1.5 rounded-full bg-gray-800 px-2.5 py-1 text-xs font-medium text-gray-300">
+                <Eye className="h-3.5 w-3.5" />
+                {viewerCount} {viewerCount === 1 ? 'viewer' : 'viewers'}
+              </div>
+
+              {/* Pause button */}
+              <button
+                type="button"
+                onClick={() => void handlePauseSession()}
+                disabled={isPausing || isEnding || isRecording}
+                className="flex items-center gap-1.5 rounded-lg border border-gray-700 bg-gray-800 px-3 py-1.5 text-sm font-medium text-gray-300 hover:bg-gray-700 disabled:opacity-50"
+              >
+                {isPausing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Pause className="h-4 w-4" />}
+                <span className="hidden sm:inline">Pause</span>
+              </button>
+
+              {/* End button */}
+              <button
+                type="button"
+                onClick={() => void handleEndSession()}
+                disabled={isPausing || isEnding || isRecording}
+                className="flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+              >
+                {isEnding ? <Loader2 className="h-4 w-4 animate-spin" /> : <StopCircle className="h-4 w-4" />}
+                <span className="hidden sm:inline">End</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main content */}
+      <div className="flex flex-1 overflow-hidden">
+        <main className="flex flex-1 flex-col">
+          {captureState === 'idle' && (
+            <div className="border-b border-gray-800 bg-gray-900 px-4 py-2">
+              <div className="flex items-center gap-3">
+                <label className="text-sm text-gray-400">Quality:</label>
+                <select
+                  value={captureQuality}
+                  onChange={(e) => setCaptureQuality(e.target.value as CaptureQuality)}
+                  className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-1.5 text-sm text-gray-200"
+                >
+                  <option value="720p">720p (HD)</option>
+                  <option value="1080p">1080p (Full HD)</option>
+                  <option value="4k">4K</option>
+                </select>
+              </div>
+            </div>
+          )}
+
+          <VideoPreview
+            stream={stream}
+            captureState={captureState}
+            error={displayError}
+            onStartCapture={handleStartCapture}
+            onStopCapture={handleStopSharing}
+            className="flex-1"
+          />
+
+          {/* Info bar */}
+          <div className="border-t border-gray-800 bg-gray-900 px-4 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div>
+                  <p className="text-xs text-gray-500">Join Code</p>
+                  <p className="font-mono text-lg font-bold text-white">{currentSession.join_code}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => void copyJoinLink()}
+                  className="flex items-center gap-1.5 rounded-lg bg-gray-800 px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="h-4 w-4 text-green-400" />
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4" />
+                      Copy Link
+                    </>
+                  )}
+                </button>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => void copyJoinLink()}
+                  className="bg-primary-600 hover:bg-primary-700 flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white"
+                >
+                  <Share2 className="h-4 w-4" />
+                  Share Session
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (confirm('This will invalidate the current join link. Continue?')) {
+                      void handleRegenerateCode();
+                    }
+                  }}
+                  disabled={isRegenerating}
+                  className="flex items-center gap-2 rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 disabled:opacity-50"
+                >
+                  <RefreshCw className={`h-4 w-4 ${isRegenerating ? 'animate-spin' : ''}`} />
+                  Reset Link
+                </button>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        {/* Sidebar */}
+        <aside className="hidden w-72 flex-shrink-0 border-l border-gray-800 bg-gray-900 lg:block">
+          <div className="flex h-full flex-col">
+            <div className="border-b border-gray-800 p-4">
+              <HostParticipantList
+                participants={liveParticipants}
+                viewers={hostedViewers}
+                currentUserId={session.host_user_id}
+                onGrantControl={grantControl}
+                onRevokeControl={revokeControl}
+                onKickParticipant={kickViewer}
+              />
+            </div>
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="mb-6">
+                <h3 className="text-sm font-semibold text-white">Session Info</h3>
+                <div className="mt-3 space-y-3">
+                  <div>
+                    <p className="text-xs text-gray-500">Status</p>
+                    <p className="text-sm text-white">
+                      {captureState === 'active' ? 'Sharing Screen' : 'Voice Only'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Mode</p>
+                    <p className="text-sm text-white">SFU (LiveKit)</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Viewers</p>
+                    <p className="text-sm text-white">{viewerCount} connected</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        {showChat && (
+          <ChatPanel
+            sessionId={session.id}
+            participantId={session.host_user_id}
+            isCollapsed={false}
+            onToggleCollapse={() => setShowChat(false)}
             className="border-l border-gray-800 bg-gray-900"
           />
         )}
