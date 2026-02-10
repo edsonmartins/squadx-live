@@ -21,6 +21,18 @@ const SHARE_TYPE_MAP: Record<ShareType, DisplayCaptureSurfaceType> = {
 // Check if running in Tauri desktop app
 const isTauri = typeof window !== 'undefined' && '__TAURI__' in window;
 
+// Helper to safely invoke Tauri commands (only works in Tauri environment)
+async function invokeTauri(command: string): Promise<void> {
+  if (!isTauri) return;
+  try {
+    // Dynamic import with webpackIgnore to prevent bundling issues
+    const tauri = await (Function('return import("@tauri-apps/api/core")')() as Promise<{ invoke: (cmd: string) => Promise<void> }>);
+    await tauri.invoke(command);
+  } catch (err) {
+    console.warn(`[useScreenCapture] Tauri command ${command} failed:`, err);
+  }
+}
+
 interface UseScreenCaptureOptions {
   onStreamStart?: (stream: MediaStream) => void;
   onStreamEnd?: () => void;
@@ -61,14 +73,7 @@ export function useScreenCapture({
     onStreamEnd?.();
 
     // Show window in screen capture again in Tauri desktop app
-    if (isTauri) {
-      try {
-        const { invoke } = await import('@tauri-apps/api/core');
-        await invoke('show_in_capture');
-      } catch (err) {
-        console.warn('[useScreenCapture] Failed to show Tauri window in capture:', err);
-      }
-    }
+    await invokeTauri('show_in_capture');
   }, [onStreamEnd]);
 
   const startCapture = useCallback(
@@ -91,14 +96,7 @@ export function useScreenCapture({
 
       // Hide window from screen capture in Tauri desktop app (like Google Meet)
       // This makes the window invisible to screen recording while still visible to user
-      if (isTauri) {
-        try {
-          const { invoke } = await import('@tauri-apps/api/core');
-          await invoke('hide_from_capture');
-        } catch (err) {
-          console.warn('[useScreenCapture] Failed to hide Tauri window from capture:', err);
-        }
-      }
+      await invokeTauri('hide_from_capture');
 
       try {
         const mediaStream = await navigator.mediaDevices.getDisplayMedia({
