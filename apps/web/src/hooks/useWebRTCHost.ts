@@ -805,36 +805,21 @@ export function useWebRTCHost({
         continue;
 
       try {
-        // Remove video senders (keep audio -- mic stays)
+        // Replace video tracks with null instead of removing them
+        // This preserves the m-line order in SDP and avoids renegotiation errors
         const senders = viewer.peerConnection.getSenders();
         for (const sender of senders) {
           if (sender.track?.kind === 'video') {
-            viewer.peerConnection.removeTrack(sender);
+            await sender.replaceTrack(null);
           }
         }
-
-        // Renegotiate so viewer sees track removal
-        const offer = await viewer.peerConnection.createOffer();
-        await viewer.peerConnection.setLocalDescription(offer);
-
-        if (offer.sdp) {
-          void channelRef.current?.send({
-            type: 'broadcast',
-            event: 'signal',
-            payload: {
-              type: 'offer',
-              sdp: offer.sdp,
-              senderId: hostId,
-              targetId: viewer.id,
-              timestamp: Date.now(),
-            },
-          });
-        }
+        // No need to renegotiate - replaceTrack doesn't require it
+        console.log(`[WebRTCHost] Unpublished video stream from ${viewer.id}`);
       } catch (err) {
         console.error(`[WebRTCHost] Failed to unpublish stream from ${viewer.id}:`, err);
       }
     }
-  }, [hostId]);
+  }, []);
 
   // Cleanup on unmount
   useEffect(() => {
