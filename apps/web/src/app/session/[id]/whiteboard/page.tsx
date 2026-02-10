@@ -42,7 +42,8 @@ export default function WhiteboardPage({
   // Get boardId from search params
   useEffect(() => {
     const boardIdParam = searchParams.get('boardId');
-    if (boardIdParam) {
+    // Only set boardId if it's a valid value (not null, empty, or 'undefined' string)
+    if (boardIdParam && boardIdParam !== 'undefined') {
       setBoardId(boardIdParam);
     }
   }, [searchParams]);
@@ -112,6 +113,11 @@ export default function WhiteboardPage({
   }, [sessionId, searchParams]);
 
   const handleBoardChange = (newBoardId: string) => {
+    // Ignore invalid board IDs
+    if (!newBoardId || newBoardId === 'undefined') {
+      console.warn('[Whiteboard] Ignoring invalid boardId:', newBoardId);
+      return;
+    }
     setBoardId(newBoardId);
     // Update URL without reloading the page
     const url = new URL(window.location.href);

@@ -207,6 +207,10 @@ function WhiteboardContentWithSync({
   const handleCreateBoard = async () => {
     try {
       const newBoard = await createBoard(sessionId);
+      if (!newBoard?.id) {
+        console.error('Failed to create board: no ID returned');
+        return;
+      }
       setBoards((prev) => [...prev, newBoard]);
       onBoardChange?.(newBoard.id);
     } catch (err) {
