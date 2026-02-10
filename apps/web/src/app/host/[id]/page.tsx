@@ -22,11 +22,13 @@ import {
   Mic,
   MicOff,
   PenTool,
+  X,
 } from 'lucide-react';
 import { VideoPreview } from '@/components/video';
 import { HostParticipantList } from '@/components/participants/HostParticipantList';
 import { ChatPanel } from '@/components/chat/ChatPanel';
 import { useParticipants } from '@/components/chat/useParticipants';
+import { WhiteboardPanel } from '@/modules/whiteboard';
 import { useScreenCapture, type CaptureQuality, type ShareType } from '@/hooks/useScreenCapture';
 import { useRecording, formatDuration, type RecordingQuality } from '@/hooks/useRecording';
 import { useWebRTCHost, type ViewerConnection } from '@/hooks/useWebRTCHost';
@@ -154,6 +156,8 @@ function HostContentP2P({
   const hasStartedHostingRef = useRef(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [showChat, setShowChat] = useState(false);
+  const [showWhiteboard, setShowWhiteboard] = useState(false);
+  const [whiteboardBoardId, setWhiteboardBoardId] = useState<string | undefined>(undefined);
   const [captureQuality, setCaptureQuality] = useState<CaptureQuality>('1080p');
   const [shareType, setShareType] = useState<ShareType>('window');
   const [recordingQuality, setRecordingQuality] = useState<RecordingQuality>('1080p');
@@ -602,13 +606,18 @@ function HostContentP2P({
               </button>
 
               {/* Whiteboard button */}
-              <Link
-                href={`/session/${sessionId}/whiteboard`}
-                className="flex items-center gap-1.5 rounded-lg border border-gray-700 bg-gray-800 px-3 py-1.5 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700"
+              <button
+                type="button"
+                onClick={() => setShowWhiteboard(true)}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                  showWhiteboard
+                    ? 'bg-primary-600 text-white'
+                    : 'border border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700'
+                }`}
               >
                 <PenTool className="h-4 w-4" />
                 <span className="hidden sm:inline">Whiteboard</span>
-              </Link>
+              </button>
 
               {/* Chat toggle */}
               <button
@@ -876,6 +885,38 @@ function HostContentP2P({
           />
         )}
       </div>
+
+      {/* Whiteboard overlay */}
+      {showWhiteboard && (
+        <div className="fixed inset-0 z-50 bg-gray-900">
+          <div className="relative h-full w-full">
+            {/* Close button */}
+            <button
+              type="button"
+              onClick={() => setShowWhiteboard(false)}
+              className="absolute right-4 top-4 z-10 flex items-center gap-1.5 rounded-lg bg-gray-800 px-3 py-1.5 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700"
+            >
+              <X className="h-4 w-4" />
+              <span>Fechar</span>
+            </button>
+
+            <WhiteboardPanel
+              sessionId={sessionId}
+              boardId={whiteboardBoardId}
+              participantId={session.host_user_id}
+              participantName="Host"
+              participantColor="#6366f1"
+              isHost={true}
+              onBoardChange={(boardId) => {
+                if (boardId && boardId !== 'undefined') {
+                  setWhiteboardBoardId(boardId);
+                }
+              }}
+              className="h-full"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -898,6 +939,8 @@ function HostContentSFU({
   const hasStartedHostingRef = useRef(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [showChat, setShowChat] = useState(false);
+  const [showWhiteboard, setShowWhiteboard] = useState(false);
+  const [whiteboardBoardId, setWhiteboardBoardId] = useState<string | undefined>(undefined);
   const [captureQuality, setCaptureQuality] = useState<CaptureQuality>('1080p');
   const [shareType, setShareType] = useState<ShareType>('window');
   const [recordingQuality, setRecordingQuality] = useState<RecordingQuality>('1080p');
@@ -1220,13 +1263,18 @@ function HostContentSFU({
               </button>
 
               {/* Whiteboard */}
-              <Link
-                href={`/session/${sessionId}/whiteboard`}
-                className="flex items-center gap-1.5 rounded-lg border border-gray-700 bg-gray-800 px-3 py-1.5 text-sm font-medium text-gray-300 hover:bg-gray-700"
+              <button
+                type="button"
+                onClick={() => setShowWhiteboard(true)}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                  showWhiteboard
+                    ? 'bg-primary-600 text-white'
+                    : 'border border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700'
+                }`}
               >
                 <PenTool className="h-4 w-4" />
                 <span className="hidden sm:inline">Whiteboard</span>
-              </Link>
+              </button>
 
               {/* Chat toggle */}
               <button
@@ -1422,6 +1470,38 @@ function HostContentSFU({
           />
         )}
       </div>
+
+      {/* Whiteboard overlay */}
+      {showWhiteboard && (
+        <div className="fixed inset-0 z-50 bg-gray-900">
+          <div className="relative h-full w-full">
+            {/* Close button */}
+            <button
+              type="button"
+              onClick={() => setShowWhiteboard(false)}
+              className="absolute right-4 top-4 z-10 flex items-center gap-1.5 rounded-lg bg-gray-800 px-3 py-1.5 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700"
+            >
+              <X className="h-4 w-4" />
+              <span>Fechar</span>
+            </button>
+
+            <WhiteboardPanel
+              sessionId={sessionId}
+              boardId={whiteboardBoardId}
+              participantId={session.host_user_id}
+              participantName="Host"
+              participantColor="#6366f1"
+              isHost={true}
+              onBoardChange={(boardId) => {
+                if (boardId && boardId !== 'undefined') {
+                  setWhiteboardBoardId(boardId);
+                }
+              }}
+              className="h-full"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

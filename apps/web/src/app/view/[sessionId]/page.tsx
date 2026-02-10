@@ -13,6 +13,7 @@ import {
   Mic,
   MicOff,
   PenTool,
+  X,
 } from 'lucide-react';
 import { Wifi, WifiOff, RefreshCw } from 'lucide-react';
 import { HostPresenceIndicator } from '@/components/session/HostPresenceIndicator';
@@ -35,6 +36,7 @@ import {
   CursorOverlay,
 } from '@/components/control';
 import { Logo } from '@/components/Logo';
+import { WhiteboardPanel } from '@/modules/whiteboard';
 
 interface Participant {
   id: string;
@@ -297,6 +299,8 @@ function GuestViewerContent({
   const videoContainerRef = useRef<HTMLDivElement>(null);
   const allowControl = session.settings.allowControl ?? false;
   const activeParticipants = session.session_participants.filter((p) => p.role !== 'left');
+  const [showWhiteboard, setShowWhiteboard] = useState(false);
+  const [whiteboardBoardId, setWhiteboardBoardId] = useState<string | undefined>(undefined);
 
   // Track host presence in real-time
   const { status: sessionStatus, currentHostId, hostOnline } = useSessionPresence(session.id);
@@ -399,13 +403,18 @@ function GuestViewerContent({
               {micEnabled ? <Mic className="h-4 w-4" /> : <MicOff className="h-4 w-4" />}
               {micEnabled ? 'Mic On' : 'Mic Off'}
             </button>
-            <Link
-              href={`/session/${sessionId}/whiteboard?p=${participant.id}`}
-              className="flex items-center gap-2 rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700"
+            <button
+              type="button"
+              onClick={() => setShowWhiteboard(true)}
+              className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                showWhiteboard
+                  ? 'bg-primary-600 text-white'
+                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+              }`}
             >
               <PenTool className="h-4 w-4" />
               Whiteboard
-            </Link>
+            </button>
             <button
               type="button"
               className="flex items-center gap-2 rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700"
@@ -460,6 +469,38 @@ function GuestViewerContent({
           </div>
         </aside>
       </div>
+
+      {/* Whiteboard overlay */}
+      {showWhiteboard && (
+        <div className="fixed inset-0 z-50 bg-gray-900">
+          <div className="relative h-full w-full">
+            {/* Close button */}
+            <button
+              type="button"
+              onClick={() => setShowWhiteboard(false)}
+              className="absolute right-4 top-4 z-10 flex items-center gap-1.5 rounded-lg bg-gray-800 px-3 py-1.5 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700"
+            >
+              <X className="h-4 w-4" />
+              <span>Fechar</span>
+            </button>
+
+            <WhiteboardPanel
+              sessionId={sessionId}
+              boardId={whiteboardBoardId}
+              participantId={participant.id}
+              participantName={participant.display_name}
+              participantColor="#6366f1"
+              isHost={false}
+              onBoardChange={(boardId) => {
+                if (boardId && boardId !== 'undefined') {
+                  setWhiteboardBoardId(boardId);
+                }
+              }}
+              className="h-full"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
