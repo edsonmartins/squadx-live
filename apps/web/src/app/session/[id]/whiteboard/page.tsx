@@ -64,7 +64,11 @@ export default function WhiteboardPage({
         if (!sessionResponse.ok) {
           throw new Error('Session not found');
         }
-        const sessionData = await sessionResponse.json();
+        const sessionResult = await sessionResponse.json() as { data?: SessionData; error?: string };
+        if (!sessionResult.data) {
+          throw new Error(sessionResult.error || 'Session not found');
+        }
+        const sessionData = sessionResult.data;
         setSession(sessionData);
 
         // If we have a participant ID, fetch participant data
@@ -80,8 +84,9 @@ export default function WhiteboardPage({
           // Check if current user is the host
           const authResponse = await fetch('/api/auth/session');
           if (authResponse.ok) {
-            const authData = await authResponse.json();
-            if (authData.user && authData.user.id === sessionData.host_user_id) {
+            const authResult = await authResponse.json() as { data?: { user?: { id: string; email?: string } } };
+            const authData = authResult.data;
+            if (authData?.user && authData.user.id === sessionData.host_user_id) {
               setParticipant({
                 id: authData.user.id,
                 display_name: authData.user.email?.split('@')[0] || 'Host',
