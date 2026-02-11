@@ -103,6 +103,8 @@ export function useWhiteboardSync({
   const bindingRef = useRef<YjsExcalidrawBinding | null>(null);
   const isInitializedRef = useRef(false);
   const permissionRef = useRef<DrawPermission>(isHost ? 'granted' : 'none');
+  const excalidrawAPIRef = useRef<ExcalidrawImperativeAPI | null>(null);
+  const isProcessingRef = useRef(false); // Guard against cascading updates
 
   // Host always has permission
   const canDraw = isHost || permission === 'granted';
@@ -111,6 +113,11 @@ export function useWhiteboardSync({
   useEffect(() => {
     permissionRef.current = permission;
   }, [permission]);
+
+  // Keep excalidrawAPIRef in sync (avoids having excalidrawAPI in effect dependencies)
+  useEffect(() => {
+    excalidrawAPIRef.current = excalidrawAPI;
+  }, [excalidrawAPI]);
 
   // Initialize Yjs binding
   useEffect(() => {
@@ -146,70 +153,94 @@ export function useWhiteboardSync({
     };
   }, [doc, excalidrawAPI]);
 
-  // Handle awareness changes (collaborators + permissions)
+  // Handle awareness changes (collaborators + permissions) - CONSOLIDATED
+  // This single effect handles all awareness events to avoid cascading updates
   useEffect(() => {
     if (!awareness) return;
 
     const handleAwarenessChange = () => {
-      const states = awareness.getStates();
-      const myClientId = awareness.clientID;
-      const newCollaborators: CollaboratorWithPermission[] = [];
-      const newExcalidrawCollaborators = new Map<string, Collaborator>();
+      // Guard against cascading updates
+      if (isProcessingRef.current) return;
+      isProcessingRef.current = true;
 
-      states.forEach((state, clientId) => {
-        const user = state.user as WhiteboardPresence | undefined;
-        if (!user) return;
+      try {
+        const states = awareness.getStates();
+        const myClientId = awareness.clientID;
+        const newCollaborators: CollaboratorWithPermission[] = [];
+        const newExcalidrawCollaborators = new Map<string, Collaborator>();
 
-        // Build collaborator with permission info
-        const collaborator: CollaboratorWithPermission = {
-          ...user,
-          clientId,
-          permission: (state.permission as DrawPermission) || 'none',
-          agentStatus: (state.status as CollaboratorWithPermission['agentStatus']) || undefined,
-          currentAction: (state.currentAction as string) || undefined,
-          permissionReason: (state.permissionReason as string) || undefined,
-        };
+        states.forEach((state, clientId) => {
+          const user = state.user as WhiteboardPresence | undefined;
+          if (!user) return;
 
-        // Update local permission if this is us
-        if (clientId === myClientId && state.permission) {
-          const newPermission = state.permission as DrawPermission;
-          if (newPermission !== permissionRef.current) {
-            setPermission(newPermission);
-            onPermissionChange?.(newPermission);
+          // Build collaborator with permission info
+          const collaborator: CollaboratorWithPermission = {
+            ...user,
+            clientId,
+            permission: (state.permission as DrawPermission) || 'none',
+            agentStatus: (state.status as CollaboratorWithPermission['agentStatus']) || undefined,
+            currentAction: (state.currentAction as string) || undefined,
+            permissionReason: (state.permissionReason as string) || undefined,
+          };
+
+          // Update local permission if this is us
+          if (clientId === myClientId && state.permission) {
+            const newPermission = state.permission as DrawPermission;
+            if (newPermission !== permissionRef.current) {
+              setPermission(newPermission);
+            }
           }
-        }
 
-        // Only include others in collaborators list
-        if (clientId !== myClientId) {
-          newCollaborators.push(collaborator);
-
-          // Build Excalidraw collaborator format for cursor display
-          if (user.cursor) {
-            newExcalidrawCollaborators.set(user.odId, {
-              pointer: {
-                x: user.cursor.x,
-                y: user.cursor.y,
-                tool: 'pointer',
-              },
-              username: user.odName,
-              color: {
-                background: user.odColor,
-                stroke: user.odColor,
-              },
-              id: user.odId,
-              isCurrentUser: false,
-            });
+          // For non-hosts: check host's permission grants
+          if (!isHost) {
+            const grants = state.permissionGrants as Record<number, boolean> | undefined;
+            if (grants && typeof grants[myClientId] !== 'undefined') {
+              const granted = grants[myClientId];
+              const newPermission = granted ? 'granted' : 'none';
+              if (newPermission !== permissionRef.current) {
+                awareness.setLocalStateField('permission', newPermission);
+                setPermission(newPermission);
+              }
+            }
           }
+
+          // Only include others in collaborators list
+          if (clientId !== myClientId) {
+            newCollaborators.push(collaborator);
+
+            // Build Excalidraw collaborator format for cursor display
+            if (user.cursor) {
+              newExcalidrawCollaborators.set(user.odId, {
+                pointer: {
+                  x: user.cursor.x,
+                  y: user.cursor.y,
+                  tool: 'pointer',
+                },
+                username: user.odName,
+                color: {
+                  background: user.odColor,
+                  stroke: user.odColor,
+                },
+                id: user.odId,
+                isCurrentUser: false,
+              });
+            }
+          }
+        });
+
+        setCollaborators(newCollaborators);
+        setExcalidrawCollaborators(newExcalidrawCollaborators);
+
+        // Update Excalidraw with collaborator cursors (use ref to avoid dependency)
+        if (excalidrawAPIRef.current) {
+          excalidrawAPIRef.current.updateScene({
+            collaborators: newExcalidrawCollaborators,
+          });
         }
-      });
-
-      setCollaborators(newCollaborators);
-      setExcalidrawCollaborators(newExcalidrawCollaborators);
-
-      // Update Excalidraw with collaborator cursors
-      if (excalidrawAPI) {
-        excalidrawAPI.updateScene({
-          collaborators: newExcalidrawCollaborators,
+      } finally {
+        // Release guard after microtask to allow next event processing
+        queueMicrotask(() => {
+          isProcessingRef.current = false;
         });
       }
     };
@@ -217,13 +248,12 @@ export function useWhiteboardSync({
     awareness.on('change', handleAwarenessChange);
 
     // Set initial permission state (user state is already set by YjsProvider)
-    // This will trigger an awareness change event which will call handleAwarenessChange
     awareness.setLocalStateField('permission', isHost ? 'granted' : 'none');
 
     return () => {
       awareness.off('change', handleAwarenessChange);
     };
-  }, [awareness, excalidrawAPI, isHost, onPermissionChange]);
+  }, [awareness, isHost]); // Minimal dependencies - refs used for other values
 
   // Sync local changes to Yjs
   const syncToRemote = useCallback(
@@ -289,36 +319,8 @@ export function useWhiteboardSync({
     [awareness, isHost]
   );
 
-  // Listen for permission grants from host (for non-hosts)
-  useEffect(() => {
-    if (!awareness || isHost) return;
-
-    const handleAwarenessChange = () => {
-      const states = awareness.getStates();
-      const myClientId = awareness.clientID;
-
-      // Look for host's permission grants
-      states.forEach((state) => {
-        const grants = state.permissionGrants as Record<number, boolean> | undefined;
-        if (grants && typeof grants[myClientId] !== 'undefined') {
-          const granted = grants[myClientId];
-          const newPermission = granted ? 'granted' : 'none';
-
-          if (newPermission !== permissionRef.current) {
-            awareness.setLocalStateField('permission', newPermission);
-            setPermission(newPermission);
-            onPermissionChange?.(newPermission);
-          }
-        }
-      });
-    };
-
-    awareness.on('change', handleAwarenessChange);
-
-    return () => {
-      awareness.off('change', handleAwarenessChange);
-    };
-  }, [awareness, isHost, onPermissionChange]);
+  // NOTE: Permission grants from host are now handled in the consolidated
+  // awareness change handler above (Effect #1) to avoid duplicate event handlers
 
   return {
     isSynced,
