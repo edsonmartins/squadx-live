@@ -57,9 +57,6 @@ function WhiteboardContentWithSync({
     error,
     loadBoard,
     createBoard,
-    updateElements,
-    updateAppState,
-    updateFiles,
     setExcalidrawAPI,
   } = useWhiteboard();
 
@@ -114,6 +111,7 @@ function WhiteboardContentWithSync({
     return () => mediaQuery.removeEventListener('change', handler);
   }, []);
 
+
   // Load board list for session
   useEffect(() => {
     async function fetchBoards() {
@@ -141,25 +139,23 @@ function WhiteboardContentWithSync({
   }, [boardId, loadBoard]);
 
   // Handle canvas changes - sync to Yjs if allowed
+  // NOTE: We intentionally DO NOT update React state (updateElements/updateAppState/updateFiles)
+  // on every change because it causes infinite render loops. Excalidraw's internal state
+  // is the source of truth, and we sync via Yjs for collaboration.
   const handleChange = useCallback(
     (
       newElements: readonly ExcalidrawElement[],
       appState: AppState,
       files: BinaryFiles
     ) => {
-      // Always update local state
-      updateElements(newElements);
-      updateAppState(appState);
-      updateFiles(files);
-
-      // Sync to remote if we have permission
+      // Sync to remote via Yjs if we have permission
       if (canDraw) {
         syncToRemote(newElements, appState, files);
         // Trigger debounced auto-save to database
         triggerAutoSave(newElements, files);
       }
     },
-    [updateElements, updateAppState, updateFiles, canDraw, syncToRemote, triggerAutoSave]
+    [canDraw, syncToRemote, triggerAutoSave]
   );
 
   // Handle restoring a snapshot

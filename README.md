@@ -5,8 +5,8 @@
 <h1 align="center">SquadX Live</h1>
 
 <p align="center">
-  <strong>Collaborative Development Platform with AI Agents</strong><br>
-  Screen sharing, remote control, real-time whiteboard, and AI agents working alongside your team.
+  <strong>Plataforma de Desenvolvimento Colaborativo com Agentes de IA</strong><br>
+  Compartilhamento de tela, controle remoto, whiteboard em tempo real e agentes de IA trabalhando junto com sua equipe.
 </p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -14,72 +14,72 @@
 
 ---
 
-## Vision
+## Visão
 
-SquadX Live transforms software development into a truly collaborative experience where humans and AI agents work together in real-time. Whether you're pair programming, designing architecture, or brainstorming solutions, SquadX Live provides the tools your squad needs.
-
----
-
-## Features
-
-### Live Sessions
-- **Real-time screen sharing** - Low-latency WebRTC streaming
-- **Remote control** - Mouse + keyboard with explicit host approval
-- **Simultaneous input** - Host and viewer can control at the same time
-- **Voice & video** - Integrated audio/video communication
-- **Chat with mentions** - Team communication with @mentions
-
-### Collaborative Whiteboard
-- **Infinite canvas** - Powered by Excalidraw
-- **Real-time sync** - CRDT-based collaboration via Yjs
-- **Templates** - C4 diagrams, ERD, flowcharts, sprint boards
-- **Component palette** - Drag-and-drop architecture components
-- **Snapshot history** - Version control for your drawings
-
-### AI Agents
-- **MCP Server integration** - Agents connect via Model Context Protocol
-- **Collaborative drawing** - AI can create diagrams and sketches
-- **Permission system** - Agents must "raise hand" for drawing access
-- **Visual presence** - See agent cursors and status in real-time
-- **Action history** - Track what each agent has contributed
-
-### Security
-- **E2E encryption** - All media encrypted via WebRTC DTLS-SRTP
-- **No server storage** - Screen data never touches our servers
-- **Explicit consent** - Host must approve all control requests
-- **Emergency revoke** - `Ctrl+Shift+Escape` instantly revokes control
-- **Code signed** - All builds are signed and notarized
+O SquadX Live transforma o desenvolvimento de software em uma experiência verdadeiramente colaborativa onde humanos e agentes de IA trabalham juntos em tempo real. Seja programando em par, projetando arquitetura ou fazendo brainstorming de soluções, o SquadX Live oferece as ferramentas que seu squad precisa.
 
 ---
 
-## Tech Stack
+## Funcionalidades
 
-| Component | Technology |
+### Sessões ao Vivo
+- **Compartilhamento de tela em tempo real** - Streaming WebRTC de baixa latência
+- **Controle remoto** - Mouse + teclado com aprovação explícita do host
+- **Entrada simultânea** - Host e viewer podem controlar ao mesmo tempo
+- **Voz e vídeo** - Comunicação de áudio/vídeo integrada
+- **Chat com menções** - Comunicação da equipe com @menções
+
+### Whiteboard Colaborativo
+- **Canvas infinito** - Powered by Excalidraw
+- **Sincronização em tempo real** - Colaboração baseada em CRDT via Yjs
+- **Templates** - Diagramas C4, ERD, fluxogramas, sprint boards
+- **Paleta de componentes** - Componentes de arquitetura arrastar e soltar
+- **Histórico de snapshots** - Controle de versão para seus desenhos
+
+### Agentes de IA
+- **Integração MCP Server** - Agentes conectam via Model Context Protocol
+- **Desenho colaborativo** - IA pode criar diagramas e esboços
+- **Sistema de permissões** - Agentes devem "levantar a mão" para acesso de desenho
+- **Presença visual** - Veja cursores e status dos agentes em tempo real
+- **Histórico de ações** - Acompanhe o que cada agente contribuiu
+
+### Segurança
+- **Criptografia E2E** - Toda mídia criptografada via WebRTC DTLS-SRTP
+- **Sem armazenamento no servidor** - Dados de tela nunca tocam nossos servidores
+- **Consentimento explícito** - Host deve aprovar todas as solicitações de controle
+- **Revogação de emergência** - `Ctrl+Shift+Escape` revoga controle instantaneamente
+- **Code signed** - Todos os builds são assinados e notarizados
+
+---
+
+## Stack Tecnológica
+
+| Componente | Tecnologia |
 |-----------|------------|
 | Frontend | Next.js 16, React 19, TypeScript |
-| Desktop | Tauri 2.0 (Rust), Electron (legacy) |
+| Desktop | Tauri 2.0 (Rust), Electron (legado) |
 | Whiteboard | Excalidraw, Yjs (CRDT) |
-| Real-time | y-websocket, Supabase Realtime |
-| Media | WebRTC (native P2P), LiveKit SFU |
-| AI Integration | MCP Server, Anthropic SDK |
+| Tempo real | y-websocket, Supabase Realtime |
+| Mídia | WebRTC (P2P nativo), LiveKit SFU |
+| Integração IA | MCP Server, Anthropic SDK |
 | Backend | Supabase (Auth, PostgreSQL, Storage) |
 | Build | pnpm, Turborepo |
 
 ---
 
-## Quick Start
+## Início Rápido
 
-### Install the Desktop App
+### Instalar o App Desktop
 
 <details>
 <summary><strong>macOS</strong></summary>
 
 ```bash
-# Homebrew (Recommended)
+# Homebrew (Recomendado)
 brew tap squadx/homebrew-squadx-live
 brew install --cask squadx-live
 
-# Or download directly from releases
+# Ou baixe diretamente dos releases
 ```
 
 </details>
@@ -113,150 +113,150 @@ chmod +x SquadX-Live.AppImage
 
 </details>
 
-### Join as a Viewer
+### Entrar como Viewer
 
-Just open the session link in any modern browser. The viewer is a **Progressive Web App** - install it for quick access without downloading anything.
+Basta abrir o link da sessão em qualquer navegador moderno. O viewer é uma **Progressive Web App** - instale para acesso rápido sem baixar nada.
 
 ---
 
-## Project Structure
+## Estrutura do Projeto
 
 ```
 squadx-live/
 ├── apps/
-│   ├── web/                 # Next.js web app + PWA viewer
-│   ├── desktop-tauri/       # Tauri 2.0 desktop app (Rust)
-│   ├── desktop/             # Electron desktop app (legacy)
-│   ├── mcp-whiteboard/      # MCP Server for AI whiteboard integration
-│   └── installer/           # CLI installer service
+│   ├── web/                 # App web Next.js + PWA viewer
+│   ├── desktop-tauri/       # App desktop Tauri 2.0 (Rust)
+│   ├── desktop/             # App desktop Electron (legado)
+│   ├── mcp-whiteboard/      # MCP Server para integração IA whiteboard
+│   └── installer/           # Serviço de instalação CLI
 ├── packages/
-│   └── shared-types/        # TypeScript type definitions
-└── docs/                    # Technical documentation
+│   └── shared-types/        # Definições de tipos TypeScript
+└── docs/                    # Documentação técnica
 ```
 
 ---
 
-## Development
+## Desenvolvimento
 
-### Prerequisites
+### Pré-requisitos
 
 - Node.js 24+
 - pnpm 9+
-- Rust (for Tauri)
+- Rust (para Tauri)
 
 ### Setup
 
 ```bash
-# Clone the repo
+# Clone o repositório
 git clone https://github.com/squadx/squadx-live.git
 cd squadx-live
 
-# Install dependencies
+# Instale as dependências
 pnpm install
 
-# Start development
+# Inicie o desenvolvimento
 pnpm dev
 ```
 
-### Commands
+### Comandos
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start all apps in development mode |
-| `pnpm dev:web` | Start web app only |
-| `pnpm build` | Build all apps for production |
-| `pnpm lint` | Run linting |
-| `pnpm test` | Run tests |
-| `pnpm typecheck` | Type check all packages |
+| Comando | Descrição |
+|---------|-----------|
+| `pnpm dev` | Inicia todos os apps em modo desenvolvimento |
+| `pnpm dev:web` | Inicia apenas o app web |
+| `pnpm build` | Build de todos os apps para produção |
+| `pnpm lint` | Executa linting |
+| `pnpm test` | Executa testes |
+| `pnpm typecheck` | Verifica tipos de todos os pacotes |
 
 ---
 
-## MCP Server for AI Agents
+## MCP Server para Agentes de IA
 
-SquadX Live includes an MCP (Model Context Protocol) server that allows AI agents to participate in whiteboard sessions.
+O SquadX Live inclui um servidor MCP (Model Context Protocol) que permite que agentes de IA participem de sessões de whiteboard.
 
-### Available Tools
+### Ferramentas Disponíveis
 
-| Tool | Description |
-|------|-------------|
-| `create_rectangle` | Draw rectangles on the canvas |
-| `create_ellipse` | Draw circles and ellipses |
-| `create_text` | Add text labels |
-| `create_arrow` | Connect elements with arrows |
-| `create_diagram_mermaid` | Generate diagrams from Mermaid syntax |
-| `propose_architecture` | Create architecture diagrams |
-| `apply_template` | Use predefined templates |
-| `request_permission` | Ask host for drawing access |
+| Ferramenta | Descrição |
+|------------|-----------|
+| `create_rectangle` | Desenha retângulos no canvas |
+| `create_ellipse` | Desenha círculos e elipses |
+| `create_text` | Adiciona rótulos de texto |
+| `create_arrow` | Conecta elementos com setas |
+| `create_diagram_mermaid` | Gera diagramas a partir de sintaxe Mermaid |
+| `propose_architecture` | Cria diagramas de arquitetura |
+| `apply_template` | Usa templates predefinidos |
+| `request_permission` | Solicita acesso de desenho ao host |
 
-### Starting the MCP Server
+### Iniciando o MCP Server
 
 ```bash
 cd apps/mcp-whiteboard
 pnpm build
-pnpm start -- --session-id YOUR_SESSION_ID --board-id YOUR_BOARD_ID
+pnpm start -- --session-id SEU_SESSION_ID --board-id SEU_BOARD_ID
 ```
 
 ---
 
-## Documentation
+## Documentação
 
-| Document | Description |
-|----------|-------------|
-| [Architecture](docs/ARCHITECTURE.md) | System design and diagrams |
-| [WebRTC Flow](docs/WEBRTC-FLOW.md) | Signaling and media flow |
-| [Remote Control](docs/REMOTE-CONTROL.md) | Input injection system |
-| [Security](docs/SECURITY.md) | Security model |
-| [Whiteboard](docs/WHITEBOARD.md) | Collaborative canvas system |
-| [MCP Integration](docs/MCP-INTEGRATION.md) | AI agent integration |
+| Documento | Descrição |
+|-----------|-----------|
+| [Arquitetura](docs/ARCHITECTURE.md) | Design do sistema e diagramas |
+| [Fluxo WebRTC](docs/WEBRTC-FLOW.md) | Sinalização e fluxo de mídia |
+| [Controle Remoto](docs/REMOTE-CONTROL.md) | Sistema de injeção de entrada |
+| [Segurança](docs/SECURITY.md) | Modelo de segurança |
+| [Whiteboard](docs/WHITEBOARD.md) | Sistema de canvas colaborativo |
+| [Integração MCP](docs/MCP-INTEGRATION.md) | Integração de agentes de IA |
 
 ---
 
 ## Roadmap
 
-### Current (v0.5)
-- [x] Screen sharing with remote control
-- [x] Multi-viewer support (P2P and SFU modes)
-- [x] Session recording
-- [x] Chat and annotations
-- [x] Collaborative whiteboard (Excalidraw + Yjs)
-- [x] MCP Server for AI agents
-- [x] Agent permission system
+### Atual (v0.5)
+- [x] Compartilhamento de tela com controle remoto
+- [x] Suporte multi-viewer (modos P2P e SFU)
+- [x] Gravação de sessão
+- [x] Chat e anotações
+- [x] Whiteboard colaborativo (Excalidraw + Yjs)
+- [x] MCP Server para agentes de IA
+- [x] Sistema de permissões para agentes
 
-### Next
-- [ ] Voice/video integration
-- [ ] Mobile viewer app
-- [ ] File transfer
-- [ ] Code snippets in whiteboard
-- [ ] Agent task delegation
-
----
-
-## Contributing
-
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+### Próximo
+- [ ] Integração de voz/vídeo
+- [ ] App viewer mobile
+- [ ] Transferência de arquivos
+- [ ] Snippets de código no whiteboard
+- [ ] Delegação de tarefas para agentes
 
 ---
 
-## License
+## Contribuindo
 
-MIT License - see [LICENSE](LICENSE) for details.
+Contribuições são bem-vindas! Veja [CONTRIBUTING.md](CONTRIBUTING.md) para diretrizes.
+
+1. Faça fork do repositório
+2. Crie uma branch de feature
+3. Faça suas alterações
+4. Envie um pull request
 
 ---
 
-## Acknowledgments
+## Licença
 
-- Inspired by [Screenhero](https://screenhero.com) (RIP)
-- Built with [Tauri](https://tauri.app), [Next.js](https://nextjs.org), [Excalidraw](https://excalidraw.com), [Supabase](https://supabase.com)
-- UI components from [shadcn/ui](https://ui.shadcn.com)
-- Real-time sync powered by [Yjs](https://yjs.dev)
+Licença MIT - veja [LICENSE](LICENSE) para detalhes.
+
+---
+
+## Agradecimentos
+
+- Inspirado pelo [Screenhero](https://screenhero.com) (RIP)
+- Construído com [Tauri](https://tauri.app), [Next.js](https://nextjs.org), [Excalidraw](https://excalidraw.com), [Supabase](https://supabase.com)
+- Componentes de UI do [shadcn/ui](https://ui.shadcn.com)
+- Sincronização em tempo real powered by [Yjs](https://yjs.dev)
 
 ---
 
 <p align="center">
-  <strong>SquadX Live</strong> - Where humans and AI collaborate in real-time.
+  <strong>SquadX Live</strong> - Onde humanos e IA colaboram em tempo real.
 </p>

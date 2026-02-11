@@ -10,6 +10,9 @@ import type {
   ExcalidrawImperativeAPI,
 } from '../types';
 
+// Import Excalidraw CSS - required for toolbar and UI to display correctly
+import '@excalidraw/excalidraw/index.css';
+
 // Dynamic import to avoid SSR issues with Excalidraw
 const Excalidraw = dynamic(
   async () => {
@@ -98,7 +101,8 @@ export function WhiteboardCanvas({
           appState: {
             ...initialAppState,
             theme,
-            viewModeEnabled,
+            // Start with editing enabled - viewModeEnabled will be controlled via API
+            viewModeEnabled: false,
             zenModeEnabled,
             gridModeEnabled,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any

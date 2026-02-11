@@ -105,6 +105,8 @@ export function useWhiteboardSync({
   const permissionRef = useRef<DrawPermission>(isHost ? 'granted' : 'none');
   const excalidrawAPIRef = useRef<ExcalidrawImperativeAPI | null>(null);
   const isProcessingRef = useRef(false); // Guard against cascading updates
+  const hasSetInitialPermission = useRef(false); // Track if we've set initial permission
+  const lastCollaboratorsJson = useRef<string>(''); // Track last collaborators state
 
   // Host always has permission
   const canDraw = isHost || permission === 'granted';
@@ -119,7 +121,7 @@ export function useWhiteboardSync({
     excalidrawAPIRef.current = excalidrawAPI;
   }, [excalidrawAPI]);
 
-  // Initialize Yjs binding
+  // Initialize Yjs binding - only depends on doc, not excalidrawAPI
   useEffect(() => {
     if (!doc) return;
 
@@ -127,31 +129,37 @@ export function useWhiteboardSync({
     bindingRef.current = binding;
 
     // Handle remote changes from Yjs
+    // Use ref to avoid stale closure and dependency issues
     binding.setOnRemoteChange((elements, _appState, _files) => {
-      if (!excalidrawAPI) return;
+      const api = excalidrawAPIRef.current;
+      if (!api) return;
 
-      excalidrawAPI.updateScene({
+      // Only apply remote updates, not echo of our own changes
+      // The binding already filters local transactions, but add extra safety
+      api.updateScene({
         elements,
       });
 
       setIsSynced(true);
     });
 
-    // Initialize with current Excalidraw state if we have API
-    if (excalidrawAPI && !isInitializedRef.current) {
-      const elements = excalidrawAPI.getSceneElements();
-      const appState = excalidrawAPI.getAppState();
-      const files = excalidrawAPI.getFiles();
-
-      binding.initialize(elements, appState, files);
-      isInitializedRef.current = true;
-    }
-
     return () => {
       binding.destroy();
       bindingRef.current = null;
     };
-  }, [doc, excalidrawAPI]);
+  }, [doc]); // Remove excalidrawAPI from dependencies - use ref instead
+
+  // Initialize Yjs with current Excalidraw state when API becomes available
+  useEffect(() => {
+    if (!excalidrawAPI || !bindingRef.current || isInitializedRef.current) return;
+
+    const elements = excalidrawAPI.getSceneElements();
+    const appState = excalidrawAPI.getAppState();
+    const files = excalidrawAPI.getFiles();
+
+    bindingRef.current.initialize(elements, appState, files);
+    isInitializedRef.current = true;
+  }, [excalidrawAPI]);
 
   // Handle awareness changes (collaborators + permissions) - CONSOLIDATED
   // This single effect handles all awareness events to avoid cascading updates
@@ -228,14 +236,25 @@ export function useWhiteboardSync({
           }
         });
 
-        setCollaborators(newCollaborators);
-        setExcalidrawCollaborators(newExcalidrawCollaborators);
+        // Only update collaborators if data has actually changed
+        const collaboratorsJson = JSON.stringify(newCollaborators.map(c => ({
+          clientId: c.clientId,
+          odId: c.odId,
+          cursor: c.cursor,
+          permission: c.permission,
+        })));
 
-        // Update Excalidraw with collaborator cursors (use ref to avoid dependency)
-        if (excalidrawAPIRef.current) {
-          excalidrawAPIRef.current.updateScene({
-            collaborators: newExcalidrawCollaborators,
-          });
+        if (collaboratorsJson !== lastCollaboratorsJson.current) {
+          lastCollaboratorsJson.current = collaboratorsJson;
+          setCollaborators(newCollaborators);
+          setExcalidrawCollaborators(newExcalidrawCollaborators);
+
+          // Update Excalidraw with collaborator cursors (use ref to avoid dependency)
+          if (excalidrawAPIRef.current && newExcalidrawCollaborators.size > 0) {
+            excalidrawAPIRef.current.updateScene({
+              collaborators: newExcalidrawCollaborators,
+            });
+          }
         }
       } finally {
         // Release guard after microtask to allow next event processing
@@ -247,8 +266,11 @@ export function useWhiteboardSync({
 
     awareness.on('change', handleAwarenessChange);
 
-    // Set initial permission state (user state is already set by YjsProvider)
-    awareness.setLocalStateField('permission', isHost ? 'granted' : 'none');
+    // Set initial permission state ONLY ONCE (user state is already set by YjsProvider)
+    if (!hasSetInitialPermission.current) {
+      hasSetInitialPermission.current = true;
+      awareness.setLocalStateField('permission', isHost ? 'granted' : 'none');
+    }
 
     return () => {
       awareness.off('change', handleAwarenessChange);
