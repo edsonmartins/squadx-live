@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && npm run build:standalone",
+    "build:standalone": "cp -r public .next/standalone/apps/web/ && cp -r .next/static .next/standalone/apps/web/.next/",
     "start": "next start",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
