@@ -6,6 +6,12 @@ import { routing } from '@/i18n/routing';
 
 const intlMiddleware = createIntlMiddleware(routing);
 
+// Gate protection settings
+// TODO: Remove this when ready for public launch
+const GATE_ENABLED = process.env.GATE_ENABLED !== 'false'; // Enabled by default
+const GATE_COOKIE_NAME = 'squadx-gate-access';
+const GATE_COOKIE_VALUE = 'authorized';
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -34,6 +40,19 @@ export async function middleware(request: NextRequest) {
   // Skip middleware for static files and Next.js internals
   if (isStaticFile || isNextInternal) {
     return NextResponse.next();
+  }
+
+  // Gate protection check
+  const isGatePage = pathname === '/gate';
+  if (GATE_ENABLED && !isGatePage) {
+    const gateCookie = request.cookies.get(GATE_COOKIE_NAME);
+    const isAuthorized = gateCookie?.value === GATE_COOKIE_VALUE;
+
+    if (!isAuthorized) {
+      // Redirect to gate page
+      const gateUrl = new URL('/gate', request.url);
+      return NextResponse.redirect(gateUrl);
+    }
   }
 
   // Run i18n middleware first
