@@ -1,9 +1,10 @@
 'use client';
 
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { Menu, X, LogOut, Settings, LayoutDashboard, ChevronDown } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
 import { Logo } from './Logo';
 import type { UserData } from './header';
@@ -17,11 +18,11 @@ function GitHubIcon({ className }: { className?: string }) {
 }
 
 const navigation = [
-  { name: 'Features', href: '/features' },
-  { name: 'Download', href: '/download' },
-  { name: 'Docs', href: '/docs' },
-  { name: 'Pricing', href: '/pricing' },
-];
+  { key: 'features', href: '/features' },
+  { key: 'download', href: '/download' },
+  { key: 'docs', href: '/docs' },
+  { key: 'pricing', href: '/pricing' },
+] as const;
 
 interface HeaderClientProps {
   user: UserData | null;
@@ -29,6 +30,7 @@ interface HeaderClientProps {
 
 export function HeaderClient({ user }: HeaderClientProps) {
   const router = useRouter();
+  const t = useTranslations('nav');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -83,11 +85,11 @@ export function HeaderClient({ user }: HeaderClientProps) {
         <div className="hidden md:flex md:items-center md:gap-8">
           {navigation.map((item) => (
             <Link
-              key={item.name}
+              key={item.key}
               href={item.href}
               className="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900"
             >
-              {item.name}
+              {t(item.key)}
             </Link>
           ))}
         </div>
@@ -134,7 +136,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
                     }}
                   >
                     <LayoutDashboard className="h-4 w-4" />
-                    Dashboard
+                    {t('dashboard')}
                   </Link>
                   <Link
                     href="/settings"
@@ -144,7 +146,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
                     }}
                   >
                     <Settings className="h-4 w-4" />
-                    Settings
+                    {t('settings')}
                   </Link>
                   <div className="border-t border-gray-100">
                     <button
@@ -154,7 +156,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
                       className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                     >
                       <LogOut className="h-4 w-4" />
-                      Sign out
+                      {t('signOut')}
                     </button>
                   </div>
                 </div>
@@ -167,13 +169,13 @@ export function HeaderClient({ user }: HeaderClientProps) {
                 href="/login"
                 className="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900"
               >
-                Sign in
+                {t('signIn')}
               </Link>
               <Link
                 href="/signup"
                 className="bg-primary-600 hover:bg-primary-700 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors"
               >
-                Sign up
+                {t('signUp')}
               </Link>
             </>
           )}
@@ -187,7 +189,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
             setMobileMenuOpen(!mobileMenuOpen);
           }}
         >
-          <span className="sr-only">Open menu</span>
+          <span className="sr-only">{t('openMenu')}</span>
           {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </nav>
@@ -197,17 +199,17 @@ export function HeaderClient({ user }: HeaderClientProps) {
         <div className="space-y-1 px-4 pb-4">
           {navigation.map((item) => (
             <Link
-              key={item.name}
+              key={item.key}
               href={item.href}
               className="block rounded-lg px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900"
               onClick={() => {
                 setMobileMenuOpen(false);
               }}
             >
-              {item.name}
+              {t(item.key)}
             </Link>
           ))}
-          <Link
+          <a
             href="https://github.com/squadx/squadx-live"
             target="_blank"
             rel="noopener noreferrer"
@@ -217,8 +219,8 @@ export function HeaderClient({ user }: HeaderClientProps) {
             }}
           >
             <GitHubIcon className="h-5 w-5" />
-            <span>GitHub</span>
-          </Link>
+            <span>{t('github')}</span>
+          </a>
 
           {/* Mobile auth section */}
           <div className="mt-4 border-t border-gray-200 pt-4">
@@ -241,7 +243,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
                   }}
                 >
                   <LayoutDashboard className="h-5 w-5" />
-                  Dashboard
+                  {t('dashboard')}
                 </Link>
                 <Link
                   href="/settings"
@@ -251,7 +253,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
                   }}
                 >
                   <Settings className="h-5 w-5" />
-                  Settings
+                  {t('settings')}
                 </Link>
                 <button
                   onClick={() => {
@@ -261,7 +263,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
                   className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-base font-medium text-red-600 hover:bg-red-50"
                 >
                   <LogOut className="h-5 w-5" />
-                  Sign out
+                  {t('signOut')}
                 </button>
               </>
             ) : (
@@ -273,7 +275,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
                     setMobileMenuOpen(false);
                   }}
                 >
-                  Sign in
+                  {t('signIn')}
                 </Link>
                 <Link
                   href="/signup"
@@ -282,7 +284,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
                     setMobileMenuOpen(false);
                   }}
                 >
-                  Sign up
+                  {t('signUp')}
                 </Link>
               </>
             )}

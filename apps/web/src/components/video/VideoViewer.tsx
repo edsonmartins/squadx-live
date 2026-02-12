@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useEffect, useState, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import { Maximize2, Minimize2, Volume2, VolumeX, Mic } from 'lucide-react';
 import { ConnectionStatus } from './ConnectionStatus';
 import { QualityIndicator } from './QualityIndicator';
@@ -25,6 +26,7 @@ export function VideoViewer({
   onReconnect,
   className = '',
 }: VideoViewerProps) {
+  const t = useTranslations('video');
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -159,8 +161,8 @@ export function VideoViewer({
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-800">
             <Mic className="h-8 w-8 text-gray-400" />
           </div>
-          <p className="mt-4 text-sm font-medium text-gray-300">No screen is being shared</p>
-          <p className="mt-1 text-xs text-gray-500">Voice session active</p>
+          <p className="mt-4 text-sm font-medium text-gray-300">{t('noScreenShared')}</p>
+          <p className="mt-1 text-xs text-gray-500">{t('voiceSessionActive')}</p>
         </div>
       )}
 
@@ -173,7 +175,7 @@ export function VideoViewer({
         >
           <span className="flex items-center gap-2">
             <VolumeX className="h-4 w-4" />
-            Tap to enable audio
+            {t('tapToEnableAudio')}
           </span>
         </button>
       )}
@@ -199,7 +201,7 @@ export function VideoViewer({
                 type="button"
                 onClick={toggleMute}
                 className="rounded-lg bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
-                title={isMuted ? 'Unmute (M)' : 'Mute (M)'}
+                title={isMuted ? t('unmuteTooltip') : t('muteTooltip')}
               >
                 {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
               </button>
@@ -211,7 +213,7 @@ export function VideoViewer({
                   void toggleFullscreen();
                 }}
                 className="rounded-lg bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
-                title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}
+                title={isFullscreen ? t('exitFullscreenTooltip') : t('fullscreenTooltip')}
               >
                 {isFullscreen ? (
                   <Minimize2 className="h-5 w-5" />

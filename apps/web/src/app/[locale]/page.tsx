@@ -1,8 +1,8 @@
-import Link from 'next/link';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { Link } from '@/i18n/routing';
 import {
   Monitor,
   MousePointer2,
-  Users,
   Lock,
   Globe,
   Cpu,
@@ -17,7 +17,6 @@ import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { RotatingText } from '@/components/RotatingText';
 
-// Custom GitHub icon SVG component (brand icons deprecated in lucide)
 function GitHubIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -26,62 +25,67 @@ function GitHubIcon({ className }: { className?: string }) {
   );
 }
 
-const features = [
-  {
-    icon: Monitor,
-    title: 'Real-time Screen Sharing',
-    description:
-      'Low-latency WebRTC streaming delivers crystal-clear screen sharing with adaptive quality.',
-  },
-  {
-    icon: MousePointer2,
-    title: 'Remote Control',
-    description:
-      'Mouse and keyboard control with explicit host approval. Both can control simultaneously.',
-  },
-  {
-    icon: PenTool,
-    title: 'Collaborative Whiteboard',
-    description:
-      'Real-time drawing and diagramming with Excalidraw. Perfect for brainstorming and explaining concepts.',
-  },
-  {
-    icon: Lock,
-    title: 'Secure by Design',
-    description: 'End-to-end encrypted via WebRTC DTLS-SRTP. Media never touches our servers.',
-  },
-  {
-    icon: Globe,
-    title: 'PWA Viewer',
-    description: 'Join sessions from any browser. No downloads required for viewers.',
-  },
-  {
-    icon: Cpu,
-    title: 'Cross-platform',
-    description:
-      'Desktop apps for macOS, Windows, and Linux. Install via Homebrew, WinGet, or APT.',
-  },
-];
+export default async function HomePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
 
-const steps = [
-  {
-    number: '1',
-    title: 'Install the Desktop App',
-    description: 'Download SquadX Live on your computer via your package manager or direct download.',
-  },
-  {
-    number: '2',
-    title: 'Start a Session',
-    description: 'Click "Start Session" and choose which screen or window to share.',
-  },
-  {
-    number: '3',
-    title: 'Share the Link',
-    description: 'Send the join link to your collaborator. They can join from any browser.',
-  },
-];
+  const t = await getTranslations('landing');
 
-export default function HomePage() {
+  const features = [
+    {
+      icon: Monitor,
+      title: t('features.screenSharing.title'),
+      description: t('features.screenSharing.description'),
+    },
+    {
+      icon: MousePointer2,
+      title: t('features.remoteControl.title'),
+      description: t('features.remoteControl.description'),
+    },
+    {
+      icon: PenTool,
+      title: t('features.whiteboard.title'),
+      description: t('features.whiteboard.description'),
+    },
+    {
+      icon: Lock,
+      title: t('features.secure.title'),
+      description: t('features.secure.description'),
+    },
+    {
+      icon: Globe,
+      title: t('features.pwa.title'),
+      description: t('features.pwa.description'),
+    },
+    {
+      icon: Cpu,
+      title: t('features.crossPlatform.title'),
+      description: t('features.crossPlatform.description'),
+    },
+  ];
+
+  const steps = [
+    {
+      number: '1',
+      title: t('howItWorks.step1.title'),
+      description: t('howItWorks.step1.description'),
+    },
+    {
+      number: '2',
+      title: t('howItWorks.step2.title'),
+      description: t('howItWorks.step2.description'),
+    },
+    {
+      number: '3',
+      title: t('howItWorks.step3.title'),
+      description: t('howItWorks.step3.description'),
+    },
+  ];
+
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
@@ -92,37 +96,35 @@ export default function HomePage() {
           <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8 lg:py-36">
             <div className="text-center">
               <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
-                <RotatingText /> <span className="gradient-text">together</span>, in real-time
+                <RotatingText /> <span className="gradient-text">{t('hero.rotatingText')}</span>{t('hero.title')}
               </h1>
               <p className="mx-auto mt-6 max-w-2xl text-lg text-gray-600 sm:text-xl">
-                Collaborative screen sharing with simultaneous remote mouse and keyboard control.
-                Like Screenhero, but open source.
+                {t('hero.subtitle')}
               </p>
               <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
                 <Link
                   href="/download"
                   className="bg-primary-600 hover:bg-primary-700 flex items-center gap-2 rounded-lg px-6 py-3 text-base font-semibold text-white shadow-lg transition-all hover:shadow-xl"
                 >
-                  Download for Free
+                  {t('hero.downloadFree')}
                   <ArrowRight className="h-5 w-5" />
                 </Link>
-                <Link
+                <a
                   href="https://github.com/squadx/squadx-live"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-6 py-3 text-base font-semibold text-gray-900 shadow transition-all hover:border-gray-400 hover:shadow-md"
                 >
                   <GitHubIcon className="h-5 w-5" />
-                  View on GitHub
-                </Link>
+                  {t('hero.viewOnGitHub')}
+                </a>
               </div>
               <p className="mt-6 text-sm text-gray-500">
-                Free and open source. No account required for viewers.
+                {t('hero.freeOpenSource')}
               </p>
             </div>
           </div>
 
-          {/* Decorative background elements */}
           <div className="bg-primary-100/50 absolute -top-40 -right-40 h-80 w-80 rounded-full blur-3xl" />
           <div className="bg-accent-100/50 absolute -bottom-40 -left-40 h-80 w-80 rounded-full blur-3xl" />
         </section>
@@ -132,10 +134,10 @@ export default function HomePage() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                Everything you need for remote collaboration
+                {t('features.title')}
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
-                Built for developers, designers, and anyone who needs to work together in real-time.
+                {t('features.subtitle')}
               </p>
             </div>
 
@@ -161,17 +163,16 @@ export default function HomePage() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                Get started in minutes
+                {t('howItWorks.title')}
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
-                No complicated setup. Just install, share, and collaborate.
+                {t('howItWorks.subtitle')}
               </p>
             </div>
 
             <div className="mt-16 grid gap-8 lg:grid-cols-3">
               {steps.map((step, index) => (
                 <div key={step.number} className="relative">
-                  {/* Connector line */}
                   {index < steps.length - 1 && (
                     <div className="bg-primary-200 absolute top-16 left-1/2 hidden h-0.5 w-full lg:block" />
                   )}
@@ -188,20 +189,19 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Social Proof / Testimonials */}
+        {/* Testimonials */}
         <section className="bg-white py-20 sm:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                Loved by developers and executives
+                {t('testimonials.title')}
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
-                ...and everyone in between. See what others are saying about SquadX Live.
+                {t('testimonials.subtitle')}
               </p>
             </div>
 
             <div className="mt-16 grid gap-8 md:grid-cols-3">
-              {/* User testimonials */}
               {[
                 {
                   quote:
@@ -240,15 +240,15 @@ export default function HomePage() {
             </div>
 
             <p className="mt-8 text-center text-sm text-gray-500">
-              Want to share your experience?{' '}
-              <Link
+              {t('testimonials.shareExperience')}{' '}
+              <a
                 href="https://github.com/squadx/squadx-live/discussions"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary-600 hover:underline"
               >
-                Join the discussion on GitHub
-              </Link>
+                {t('testimonials.joinDiscussion')}
+              </a>
             </p>
           </div>
         </section>
@@ -259,56 +259,52 @@ export default function HomePage() {
             <div className="grid items-center gap-12 lg:grid-cols-2">
               <div>
                 <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                  Security you can trust
+                  {t('security.title')}
                 </h2>
                 <p className="mt-4 text-lg text-gray-600">
-                  SquadX Live is built with security at its core. Your screen data never touches our
-                  servers.
+                  {t('security.subtitle')}
                 </p>
 
                 <ul className="mt-8 space-y-4">
                   <li className="flex items-start gap-3">
                     <Shield className="text-accent-600 mt-0.5 h-6 w-6 flex-shrink-0" />
                     <div>
-                      <strong className="font-semibold text-gray-900">End-to-End Encryption</strong>
-                      <p className="text-gray-600">All media encrypted via WebRTC DTLS-SRTP</p>
+                      <strong className="font-semibold text-gray-900">{t('security.e2e.title')}</strong>
+                      <p className="text-gray-600">{t('security.e2e.description')}</p>
                     </div>
                   </li>
                   <li className="flex items-start gap-3">
                     <Lock className="text-accent-600 mt-0.5 h-6 w-6 flex-shrink-0" />
                     <div>
-                      <strong className="font-semibold text-gray-900">Explicit Consent</strong>
-                      <p className="text-gray-600">Host must approve all control requests</p>
+                      <strong className="font-semibold text-gray-900">{t('security.consent.title')}</strong>
+                      <p className="text-gray-600">{t('security.consent.description')}</p>
                     </div>
                   </li>
                   <li className="flex items-start gap-3">
                     <Zap className="text-accent-600 mt-0.5 h-6 w-6 flex-shrink-0" />
                     <div>
-                      <strong className="font-semibold text-gray-900">Emergency Revoke</strong>
-                      <p className="text-gray-600">
-                        Ctrl+Shift+Escape instantly revokes all control
-                      </p>
+                      <strong className="font-semibold text-gray-900">{t('security.revoke.title')}</strong>
+                      <p className="text-gray-600">{t('security.revoke.description')}</p>
                     </div>
                   </li>
                   <li className="flex items-start gap-3">
                     <RefreshCw className="text-accent-600 mt-0.5 h-6 w-6 flex-shrink-0" />
                     <div>
-                      <strong className="font-semibold text-gray-900">Open Source</strong>
-                      <p className="text-gray-600">Fully auditable code under MIT license</p>
+                      <strong className="font-semibold text-gray-900">{t('security.openSource.title')}</strong>
+                      <p className="text-gray-600">{t('security.openSource.description')}</p>
                     </div>
                   </li>
                 </ul>
               </div>
 
-              {/* Placeholder for security diagram/illustration */}
               <div className="relative">
                 <div className="from-primary-100 to-accent-100 aspect-square rounded-2xl bg-gradient-to-br p-8">
                   <div className="border-primary-300 flex h-full flex-col items-center justify-center rounded-xl border-2 border-dashed bg-white/50">
                     <Lock className="text-primary-600 h-16 w-16" />
                     <p className="mt-4 text-center text-sm text-gray-600">
-                      Direct peer-to-peer connection
+                      {t('security.p2p')}
                       <br />
-                      No server-side media storage
+                      {t('security.noStorage')}
                     </p>
                   </div>
                 </div>
@@ -322,25 +318,24 @@ export default function HomePage() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Ready to collaborate?
+                {t('cta.title')}
               </h2>
               <p className="text-primary-100 mx-auto mt-4 max-w-2xl text-lg">
-                Download SquadX Live and start sharing your screen in seconds. Free, open source, and
-                privacy-focused.
+                {t('cta.subtitle')}
               </p>
               <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
                 <Link
                   href="/download"
                   className="text-primary-600 hover:bg-primary-50 flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-base font-semibold shadow-lg transition-all hover:shadow-xl"
                 >
-                  Download Now
+                  {t('cta.downloadNow')}
                   <ArrowRight className="h-5 w-5" />
                 </Link>
                 <Link
                   href="/features"
                   className="border-primary-400 hover:bg-primary-500 flex items-center gap-2 rounded-lg border px-6 py-3 text-base font-semibold text-white transition-all"
                 >
-                  Learn More
+                  {t('cta.learnMore')}
                 </Link>
               </div>
             </div>

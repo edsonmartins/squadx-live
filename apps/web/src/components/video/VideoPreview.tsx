@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { Monitor, StopCircle } from 'lucide-react';
 import type { CaptureState } from '@/hooks/useScreenCapture';
 
@@ -21,6 +22,7 @@ export function VideoPreview({
   onStopCapture,
   className = '',
 }: VideoPreviewProps) {
+  const t = useTranslations('video');
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Attach stream to video element
@@ -50,13 +52,13 @@ export function VideoPreview({
           {captureState === 'idle' && (
             <>
               <Monitor className="h-16 w-16 text-gray-600" />
-              <p className="mt-4 text-gray-400">Click below to start sharing your screen</p>
+              <p className="mt-4 text-gray-400">{t('clickToShare')}</p>
               <button
                 type="button"
                 onClick={onStartCapture}
                 className="bg-primary-600 hover:bg-primary-700 mt-6 rounded-lg px-6 py-3 font-semibold text-white transition-colors"
               >
-                Start Screen Share
+                {t('startScreenShare')}
               </button>
             </>
           )}
@@ -64,9 +66,9 @@ export function VideoPreview({
           {captureState === 'requesting' && (
             <>
               <Monitor className="h-16 w-16 animate-pulse text-blue-500" />
-              <p className="mt-4 text-gray-400">Requesting screen access...</p>
+              <p className="mt-4 text-gray-400">{t('requestingAccess')}</p>
               <p className="mt-2 text-sm text-gray-500">
-                Please select a screen or window to share
+                {t('selectScreen')}
               </p>
             </>
           )}
@@ -80,7 +82,7 @@ export function VideoPreview({
                 onClick={onStartCapture}
                 className="bg-primary-600 hover:bg-primary-700 mt-6 rounded-lg px-6 py-3 font-semibold text-white transition-colors"
               >
-                Try Again
+                {t('tryAgain')}
               </button>
             </>
           )}
@@ -96,7 +98,7 @@ export function VideoPreview({
             className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-red-700"
           >
             <StopCircle className="h-5 w-5" />
-            Stop Sharing
+            {t('stopSharing')}
           </button>
         </div>
       )}

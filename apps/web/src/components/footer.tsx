@@ -1,4 +1,5 @@
-import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/routing';
 import { Logo } from '@/components/Logo';
 
 // Custom GitHub icon SVG component (brand icons deprecated in lucide)
@@ -19,53 +20,29 @@ function TwitterIcon({ className }: { className?: string }) {
   );
 }
 
-const footerLinks = {
-  product: [
-    { name: 'Features', href: '/features' },
-    { name: 'Download', href: '/download' },
-    { name: 'Pricing', href: '/pricing' },
-    { name: 'Changelog', href: '/changelog' },
-  ],
-  install: [
-    {
-      name: 'Homebrew (macOS)',
-      href: 'https://github.com/squadx/homebrew-squadx-live',
-      external: true,
-    },
-    {
-      name: 'Scoop (Windows)',
-      href: 'https://github.com/squadx/scoop-squadx-live',
-      external: true,
-    },
-    {
-      name: 'WinGet (Windows)',
-      href: 'https://github.com/microsoft/winget-pkgs/tree/master/manifests/s/SquadX/SquadXLive',
-      external: true,
-    },
-    {
-      name: 'Chocolatey (Windows)',
-      href: 'https://community.chocolatey.org/packages/squadx-live',
-      external: true,
-    },
-    { name: 'AUR (Arch)', href: 'https://aur.archlinux.org/packages/squadx-live-bin', external: true },
-    { name: 'APT (Debian)', href: 'https://github.com/squadx/squadx-live-apt', external: true },
-    { name: 'RPM (Fedora)', href: 'https://github.com/squadx/squadx-live-rpm', external: true },
-    { name: 'Gentoo', href: 'https://github.com/squadx/gentoo-squadx-live', external: true },
-    { name: 'Nix', href: 'https://github.com/squadx/squadx-live-nix', external: true },
-  ],
-  resources: [
-    { name: 'Documentation', href: '/docs' },
-    { name: 'FAQ', href: '/docs#faq' },
-    { name: 'System Requirements', href: '/docs#requirements' },
-    { name: 'Troubleshooting', href: '/docs#troubleshooting' },
-  ],
-  company: [
-    { name: 'About', href: '/about' },
-    { name: 'Blog', href: '/blog' },
-    { name: 'Privacy Policy', href: '/privacy' },
-    { name: 'Terms of Service', href: '/terms' },
-  ],
-};
+const installLinks = [
+  {
+    name: 'Homebrew (macOS)',
+    href: 'https://github.com/squadx/homebrew-squadx-live',
+  },
+  {
+    name: 'Scoop (Windows)',
+    href: 'https://github.com/squadx/scoop-squadx-live',
+  },
+  {
+    name: 'WinGet (Windows)',
+    href: 'https://github.com/microsoft/winget-pkgs/tree/master/manifests/s/SquadX/SquadXLive',
+  },
+  {
+    name: 'Chocolatey (Windows)',
+    href: 'https://community.chocolatey.org/packages/squadx-live',
+  },
+  { name: 'AUR (Arch)', href: 'https://aur.archlinux.org/packages/squadx-live-bin' },
+  { name: 'APT (Debian)', href: 'https://github.com/squadx/squadx-live-apt' },
+  { name: 'RPM (Fedora)', href: 'https://github.com/squadx/squadx-live-rpm' },
+  { name: 'Gentoo', href: 'https://github.com/squadx/gentoo-squadx-live' },
+  { name: 'Nix', href: 'https://github.com/squadx/squadx-live-nix' },
+];
 
 const socialLinks = [
   {
@@ -80,7 +57,30 @@ const socialLinks = [
   },
 ];
 
-export function Footer() {
+export async function Footer() {
+  const t = await getTranslations('footer');
+
+  const productLinks = [
+    { name: t('features'), href: '/features' },
+    { name: t('download'), href: '/download' },
+    { name: t('pricing'), href: '/pricing' },
+    { name: t('changelog'), href: '/changelog' },
+  ];
+
+  const resourceLinks = [
+    { name: t('documentation'), href: '/docs' },
+    { name: t('faq'), href: '/docs#faq' },
+    { name: t('systemRequirements'), href: '/docs#requirements' },
+    { name: t('troubleshooting'), href: '/docs#troubleshooting' },
+  ];
+
+  const companyLinks = [
+    { name: t('about'), href: '/about' },
+    { name: t('blog'), href: '/blog' },
+    { name: t('privacyPolicy'), href: '/privacy' },
+    { name: t('termsOfService'), href: '/terms' },
+  ];
+
   return (
     <footer className="border-t border-gray-200 bg-gray-50">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
@@ -89,12 +89,11 @@ export function Footer() {
           <div className="col-span-2 lg:col-span-1">
             <Logo size="lg" />
             <p className="mt-4 text-sm text-gray-600">
-              Collaborative screen sharing with simultaneous remote control. Like Screenhero, but
-              open source.
+              {t('description')}
             </p>
             <div className="mt-6 flex gap-4">
               {socialLinks.map((item) => (
-                <Link
+                <a
                   key={item.name}
                   href={item.href}
                   target="_blank"
@@ -103,16 +102,16 @@ export function Footer() {
                 >
                   <span className="sr-only">{item.name}</span>
                   <item.icon className="h-5 w-5" />
-                </Link>
+                </a>
               ))}
             </div>
           </div>
 
           {/* Product links */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900">Product</h3>
+            <h3 className="text-sm font-semibold text-gray-900">{t('product')}</h3>
             <ul className="mt-4 space-y-3">
-              {footerLinks.product.map((item) => (
+              {productLinks.map((item) => (
                 <li key={item.name}>
                   <Link
                     href={item.href}
@@ -127,18 +126,18 @@ export function Footer() {
 
           {/* Install links */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900">Install</h3>
+            <h3 className="text-sm font-semibold text-gray-900">{t('install')}</h3>
             <ul className="mt-4 space-y-3">
-              {footerLinks.install.map((item) => (
+              {installLinks.map((item) => (
                 <li key={item.name}>
-                  <Link
+                  <a
                     href={item.href}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm text-gray-600 transition-colors hover:text-gray-900"
                   >
                     {item.name}
-                  </Link>
+                  </a>
                 </li>
               ))}
             </ul>
@@ -146,9 +145,9 @@ export function Footer() {
 
           {/* Resources links */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900">Resources</h3>
+            <h3 className="text-sm font-semibold text-gray-900">{t('resources')}</h3>
             <ul className="mt-4 space-y-3">
-              {footerLinks.resources.map((item) => (
+              {resourceLinks.map((item) => (
                 <li key={item.name}>
                   <Link
                     href={item.href}
@@ -163,9 +162,9 @@ export function Footer() {
 
           {/* Company links */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900">Company</h3>
+            <h3 className="text-sm font-semibold text-gray-900">{t('company')}</h3>
             <ul className="mt-4 space-y-3">
-              {footerLinks.company.map((item) => (
+              {companyLinks.map((item) => (
                 <li key={item.name}>
                   <Link
                     href={item.href}
@@ -191,7 +190,7 @@ export function Footer() {
             >
               SquadX Team
             </a>{' '}
-            Open source under MIT License.
+            {t('copyright')}
           </p>
         </div>
       </div>

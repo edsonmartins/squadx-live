@@ -3,11 +3,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
+import { useTranslations } from 'next-intl';
 import { Lock, Eye, EyeOff, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 
 export function ResetPasswordForm() {
   const router = useRouter();
+  const t = useTranslations('auth');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -30,7 +32,7 @@ export function ResetPasswordForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'Failed to reset password');
+        setError(data.error || t('failedToResetPassword'));
         return;
       }
 
@@ -39,7 +41,7 @@ export function ResetPasswordForm() {
         router.push('/login');
       }, 3000);
     } catch {
-      setError('An unexpected error occurred');
+      setError(t('unexpectedError'));
     } finally {
       setLoading(false);
     }
@@ -51,15 +53,15 @@ export function ResetPasswordForm() {
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
           <CheckCircle className="h-6 w-6 text-green-600" />
         </div>
-        <h3 className="mt-4 text-lg font-semibold text-gray-900">Password updated</h3>
+        <h3 className="mt-4 text-lg font-semibold text-gray-900">{t('passwordUpdated')}</h3>
         <p className="mt-2 text-sm text-gray-600">
-          Your password has been successfully reset. Redirecting to sign in...
+          {t('passwordResetSuccess')}
         </p>
         <Link
           href="/login"
           className="text-primary-600 hover:text-primary-500 mt-6 inline-block text-sm font-medium"
         >
-          Sign in now
+          {t('signInNow')}
         </Link>
       </div>
     );
@@ -76,7 +78,7 @@ export function ResetPasswordForm() {
 
       <div>
         <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-          New password
+          {t('newPassword')}
         </label>
         <div className="relative mt-1">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -92,7 +94,7 @@ export function ResetPasswordForm() {
             required
             autoComplete="new-password"
             className="focus:border-primary-500 focus:ring-primary-500 block w-full rounded-lg border border-gray-300 py-2.5 pr-10 pl-10 text-gray-900 placeholder:text-gray-400 focus:ring-1 focus:outline-none"
-            placeholder="Min 8 chars, 1 uppercase, 1 number"
+            placeholder={t('passwordHint')}
           />
           <button
             type="button"
@@ -105,13 +107,13 @@ export function ResetPasswordForm() {
           </button>
         </div>
         <p className="mt-1 text-xs text-gray-500">
-          At least 8 characters with one uppercase letter and one number
+          {t('passwordRequirements')}
         </p>
       </div>
 
       <div>
         <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-          Confirm new password
+          {t('confirmNewPassword')}
         </label>
         <div className="relative mt-1">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -127,7 +129,7 @@ export function ResetPasswordForm() {
             required
             autoComplete="new-password"
             className="focus:border-primary-500 focus:ring-primary-500 block w-full rounded-lg border border-gray-300 py-2.5 pr-3 pl-10 text-gray-900 placeholder:text-gray-400 focus:ring-1 focus:outline-none"
-            placeholder="Confirm your new password"
+            placeholder={t('confirmNewPasswordPlaceholder')}
           />
         </div>
       </div>
@@ -138,7 +140,7 @@ export function ResetPasswordForm() {
         className="bg-primary-600 hover:bg-primary-700 focus:ring-primary-500 flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white shadow transition-all focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
       >
         {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-        {loading ? 'Resetting...' : 'Reset password'}
+        {loading ? t('resettingPassword') : t('resetPassword')}
       </button>
     </form>
   );

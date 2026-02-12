@@ -3,7 +3,8 @@
 
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
+import { useTranslations } from 'next-intl';
 import { Mail, Lock, Eye, EyeOff, Loader2, AlertCircle, Key } from 'lucide-react';
 import { trackLogin } from '@/lib/analytics';
 
@@ -11,6 +12,7 @@ export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect') || '/dashboard';
+  const t = useTranslations('auth');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -33,7 +35,7 @@ export function LoginForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'Failed to sign in');
+        setError(data.error || t('failedToSignIn'));
         return;
       }
 
@@ -41,7 +43,7 @@ export function LoginForm() {
       router.push(redirect);
       router.refresh();
     } catch {
-      setError('An unexpected error occurred');
+      setError(t('unexpectedError'));
     } finally {
       setLoading(false);
     }
@@ -58,7 +60,7 @@ export function LoginForm() {
 
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-          Email address
+          {t('emailAddress')}
         </label>
         <div className="relative mt-1">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -74,7 +76,7 @@ export function LoginForm() {
             required
             autoComplete="email"
             className="focus:border-primary-500 focus:ring-primary-500 block w-full rounded-lg border border-gray-300 py-2.5 pr-3 pl-10 text-gray-900 placeholder:text-gray-400 focus:ring-1 focus:outline-none"
-            placeholder="you@example.com"
+            placeholder={t('emailPlaceholder')}
           />
         </div>
       </div>
@@ -82,13 +84,13 @@ export function LoginForm() {
       <div>
         <div className="flex items-center justify-between">
           <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-            Password
+            {t('password')}
           </label>
           <Link
             href="/forgot-password"
             className="text-primary-600 hover:text-primary-500 text-sm font-medium"
           >
-            Forgot password?
+            {t('forgotPassword')}
           </Link>
         </div>
         <div className="relative mt-1">
@@ -105,7 +107,7 @@ export function LoginForm() {
             required
             autoComplete="current-password"
             className="focus:border-primary-500 focus:ring-primary-500 block w-full rounded-lg border border-gray-300 py-2.5 pr-10 pl-10 text-gray-900 placeholder:text-gray-400 focus:ring-1 focus:outline-none"
-            placeholder="Enter your password"
+            placeholder={t('passwordPlaceholder')}
           />
           <button
             type="button"
@@ -125,7 +127,7 @@ export function LoginForm() {
         className="bg-primary-600 hover:bg-primary-700 focus:ring-primary-500 flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white shadow transition-all focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
       >
         {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-        {loading ? 'Signing in...' : 'Sign in'}
+        {loading ? t('signingIn') : t('signIn')}
       </button>
 
       {/* Passkey Coming Soon */}
@@ -134,7 +136,7 @@ export function LoginForm() {
           <div className="w-full border-t border-gray-200" />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="bg-white px-2 text-gray-500">or</span>
+          <span className="bg-white px-2 text-gray-500">{t('or')}</span>
         </div>
       </div>
 
@@ -144,16 +146,16 @@ export function LoginForm() {
         className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 text-sm font-medium text-gray-400"
       >
         <Key className="h-4 w-4" />
-        Sign in with Passkey
+        {t('signInWithPasskey')}
         <span className="ml-1 rounded bg-gray-200 px-1.5 py-0.5 text-xs text-gray-500">
-          Coming soon
+          {t('comingSoon')}
         </span>
       </button>
 
       <p className="text-center text-sm text-gray-600">
-        Don&apos;t have an account?{' '}
+        {t('noAccount')}{' '}
         <Link href="/signup" className="text-primary-600 hover:text-primary-500 font-medium">
-          Sign up
+          {t('signUp')}
         </Link>
       </p>
     </form>

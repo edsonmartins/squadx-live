@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect, use, useCallback, useRef } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
   Users,
   Copy,
@@ -62,6 +63,8 @@ let globalMicCaptureInProgress = false;
 
 export default function HostSessionPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: sessionId } = use(params);
+  const t = useTranslations('host');
+  const tCommon = useTranslations('common');
   const [session, setSession] = useState<SessionData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -96,7 +99,7 @@ export default function HostSessionPage({ params }: { params: Promise<{ id: stri
       <div className="flex min-h-screen items-center justify-center bg-gray-900">
         <div className="text-center">
           <Loader2 className="mx-auto h-8 w-8 animate-spin text-white" />
-          <p className="mt-4 text-sm text-gray-400">Loading session...</p>
+          <p className="mt-4 text-sm text-gray-400">{t('loadingSession')}</p>
         </div>
       </div>
     );
@@ -118,13 +121,13 @@ export default function HostSessionPage({ params }: { params: Promise<{ id: stri
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-900/50">
               <AlertCircle className="h-6 w-6 text-red-400" />
             </div>
-            <h1 className="mt-4 text-xl font-semibold text-white">Session Not Found</h1>
+            <h1 className="mt-4 text-xl font-semibold text-white">{t('sessionNotFound')}</h1>
             <p className="mt-2 text-sm text-gray-400">{error}</p>
             <Link
               href="/"
               className="bg-primary-600 hover:bg-primary-700 mt-6 inline-block rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors"
             >
-              Go to Homepage
+              {t('goToHomepage')}
             </Link>
           </div>
         </main>
@@ -149,6 +152,8 @@ function HostContentP2P({
   sessionId: string;
 }) {
   const router = useRouter();
+  const t = useTranslations('host');
+  const tCommon = useTranslations('common');
   const [currentSession, setCurrentSession] = useState(session);
   const [copied, setCopied] = useState(false);
   const [isPausing, setIsPausing] = useState(false);
@@ -504,7 +509,7 @@ function HostContentP2P({
               <Logo size="sm" variant="light" />
               <div className="flex items-center gap-2">
                 <span className="rounded-full bg-green-900/50 px-2 py-0.5 text-xs font-medium text-green-400">
-                  Hosting
+                  {t('hosting')}
                 </span>
                 <span
                   className={`rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -513,7 +518,7 @@ function HostContentP2P({
                       : 'bg-gray-800 text-gray-400'
                   }`}
                 >
-                  {captureState === 'active' ? 'Screen Sharing' : 'Voice Only'}
+                  {captureState === 'active' ? t('screenSharing') : t('voiceOnly')}
                 </span>
               </div>
             </div>
@@ -541,7 +546,7 @@ function HostContentP2P({
                         className="flex items-center gap-1.5 rounded-md bg-red-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-red-700"
                       >
                         <Circle className="h-3 w-3 fill-current" />
-                        Record
+                        {t('record')}
                       </button>
                     </>
                   ) : (
@@ -554,7 +559,7 @@ function HostContentP2P({
                         type="button"
                         onClick={handleTogglePause}
                         className="rounded-md p-1.5 text-gray-400 transition-colors hover:bg-gray-700"
-                        title={isPaused ? 'Resume' : 'Pause'}
+                        title={isPaused ? t('resume') : t('pause')}
                       >
                         {isPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
                       </button>
@@ -564,7 +569,7 @@ function HostContentP2P({
                         className="flex items-center gap-1.5 rounded-md bg-gray-700 px-3 py-1.5 text-xs font-medium text-gray-200 transition-colors hover:bg-gray-600"
                       >
                         <StopCircle className="h-3 w-3" />
-                        Stop
+                        {t('stop')}
                       </button>
                     </>
                   )}
@@ -579,7 +584,7 @@ function HostContentP2P({
                   className="flex items-center gap-1.5 rounded-lg bg-green-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-green-700"
                 >
                   <Download className="h-4 w-4" />
-                  Download
+                  {t('download')}
                 </button>
               )}
 
@@ -595,14 +600,14 @@ function HostContentP2P({
                 } disabled:opacity-50`}
                 title={
                   !hasMic
-                    ? 'No microphone available'
+                    ? t('noMicAvailable')
                     : micEnabled
-                      ? 'Mute microphone'
-                      : 'Unmute microphone'
+                      ? t('muteMic')
+                      : t('unmuteMic')
                 }
               >
                 {micEnabled ? <Mic className="h-4 w-4" /> : <MicOff className="h-4 w-4" />}
-                <span className="hidden sm:inline">{micEnabled ? 'Mic On' : 'Mic Off'}</span>
+                <span className="hidden sm:inline">{micEnabled ? t('micOn') : t('micOff')}</span>
               </button>
 
               {/* Whiteboard button */}
@@ -616,7 +621,7 @@ function HostContentP2P({
                 }`}
               >
                 <PenTool className="h-4 w-4" />
-                <span className="hidden sm:inline">Whiteboard</span>
+                <span className="hidden sm:inline">{t('whiteboard')}</span>
               </button>
 
               {/* Chat toggle */}
@@ -632,13 +637,13 @@ function HostContentP2P({
                 }`}
               >
                 <MessageSquare className="h-4 w-4" />
-                <span className="hidden sm:inline">Chat</span>
+                <span className="hidden sm:inline">{t('chat')}</span>
               </button>
 
               {/* Viewer count */}
               <div className="flex items-center gap-1.5 rounded-full bg-gray-800 px-2.5 py-1 text-xs font-medium text-gray-300">
                 <Eye className="h-3.5 w-3.5" />
-                {viewerCount} {viewerCount === 1 ? 'viewer' : 'viewers'}
+                {viewerCount} {viewerCount === 1 ? t('viewer') : t('viewers')}
               </div>
 
               {/* Pause session button */}
@@ -646,7 +651,7 @@ function HostContentP2P({
                 type="button"
                 onClick={() => void handlePauseSession()}
                 disabled={isPausing || isEnding || isRecording}
-                title={isRecording ? 'Stop recording first' : 'Pause session (can resume later)'}
+                title={isRecording ? t('stopRecordingFirst') : t('pauseSessionTooltip')}
                 className="flex items-center gap-1.5 rounded-lg border border-gray-700 bg-gray-800 px-3 py-1.5 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700 disabled:opacity-50"
               >
                 {isPausing ? (
@@ -654,7 +659,7 @@ function HostContentP2P({
                 ) : (
                   <Pause className="h-4 w-4" />
                 )}
-                <span className="hidden sm:inline">Pause</span>
+                <span className="hidden sm:inline">{t('pause')}</span>
               </button>
 
               {/* End session button */}
@@ -662,7 +667,7 @@ function HostContentP2P({
                 type="button"
                 onClick={() => void handleEndSession()}
                 disabled={isPausing || isEnding || isRecording}
-                title={isRecording ? 'Stop recording first' : 'End session permanently'}
+                title={isRecording ? t('stopRecordingFirst') : t('endSessionTooltip')}
                 className="flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
               >
                 {isEnding ? (
@@ -670,7 +675,7 @@ function HostContentP2P({
                 ) : (
                   <StopCircle className="h-4 w-4" />
                 )}
-                <span className="hidden sm:inline">End</span>
+                <span className="hidden sm:inline">{t('end')}</span>
               </button>
             </div>
           </div>
@@ -686,32 +691,32 @@ function HostContentP2P({
             <div className="border-b border-gray-800 bg-gray-900 px-4 py-2">
               <div className="flex flex-wrap items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <label className="text-sm text-gray-400">Share:</label>
+                  <label className="text-sm text-gray-400">{t('shareLabel')}</label>
                   <select
                     value={shareType}
                     onChange={(e) => setShareType(e.target.value as ShareType)}
                     className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-1.5 text-sm text-gray-200 focus:border-blue-500 focus:outline-none"
                   >
-                    <option value="window">Window (Recommended)</option>
-                    <option value="screen">Entire Screen</option>
-                    <option value="browser">Browser Tab</option>
+                    <option value="window">{t('windowRecommended')}</option>
+                    <option value="screen">{t('entireScreen')}</option>
+                    <option value="browser">{t('browserTab')}</option>
                   </select>
                 </div>
                 <div className="flex items-center gap-2">
-                  <label className="text-sm text-gray-400">Quality:</label>
+                  <label className="text-sm text-gray-400">{t('qualityLabel')}</label>
                   <select
                     value={captureQuality}
                     onChange={(e) => setCaptureQuality(e.target.value as CaptureQuality)}
                     className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-1.5 text-sm text-gray-200 focus:border-blue-500 focus:outline-none"
                   >
-                    <option value="720p">720p (HD)</option>
-                    <option value="1080p">1080p (Full HD)</option>
-                    <option value="4k">4K (where available)</option>
+                    <option value="720p">{t('quality720p')}</option>
+                    <option value="1080p">{t('quality1080p')}</option>
+                    <option value="4k">{t('quality4k')}</option>
                   </select>
                 </div>
                 {shareType === 'screen' && (
                   <span className="text-xs text-yellow-400">
-                    Tip: Minimize this window to avoid mirror effect
+                    {t('minimizeTip')}
                   </span>
                 )}
               </div>
@@ -733,7 +738,7 @@ function HostContentP2P({
               {/* Join code */}
               <div className="flex items-center gap-3">
                 <div>
-                  <p className="text-xs text-gray-500">Join Code</p>
+                  <p className="text-xs text-gray-500">{t('joinCode')}</p>
                   <p className="font-mono text-lg font-bold text-white">
                     {currentSession.join_code}
                   </p>
@@ -746,12 +751,12 @@ function HostContentP2P({
                   {copied ? (
                     <>
                       <Check className="h-4 w-4 text-green-400" />
-                      Copied!
+                      {t('copied')}
                     </>
                   ) : (
                     <>
                       <Copy className="h-4 w-4" />
-                      Copy Link
+                      {t('copyLink')}
                     </>
                   )}
                 </button>
@@ -765,25 +770,23 @@ function HostContentP2P({
                   className="bg-primary-600 hover:bg-primary-700 flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors"
                 >
                   <Share2 className="h-4 w-4" />
-                  Share Session
+                  {t('shareSession')}
                 </button>
                 <button
                   type="button"
                   onClick={() => {
                     if (
-                      confirm(
-                        'This will invalidate the current join link. Anyone with the old link will no longer be able to join. Continue?'
-                      )
+                      confirm(t('confirmResetLink'))
                     ) {
                       void handleRegenerateCode();
                     }
                   }}
                   disabled={isRegenerating}
                   className="flex items-center gap-2 rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700 disabled:opacity-50"
-                  title="Generate a new join code, invalidating the old link"
+                  title={t('regenerateTooltip')}
                 >
                   <RefreshCw className={`h-4 w-4 ${isRegenerating ? 'animate-spin' : ''}`} />
-                  Reset Invite Link
+                  {t('resetInviteLink')}
                 </button>
               </div>
             </div>
@@ -808,23 +811,23 @@ function HostContentP2P({
             <div className="flex-1 overflow-y-auto p-4">
               {/* Session info */}
               <div className="mb-6">
-                <h3 className="text-sm font-semibold text-white">Session Info</h3>
+                <h3 className="text-sm font-semibold text-white">{t('sessionInfo')}</h3>
                 <div className="mt-3 space-y-3">
                   <div>
-                    <p className="text-xs text-gray-500">Status</p>
+                    <p className="text-xs text-gray-500">{t('status')}</p>
                     <p className="text-sm text-white">
-                      {captureState === 'active' ? 'Sharing Screen' : 'Voice Only'}
+                      {captureState === 'active' ? t('sharingScreen') : t('voiceOnly')}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Mode</p>
+                    <p className="text-xs text-gray-500">{t('mode')}</p>
                     <p className="text-sm text-white">
-                      {session.mode === 'sfu' ? 'SFU (LiveKit)' : 'P2P'} — View Only (Web)
+                      {session.mode === 'sfu' ? t('sfuLiveKit') : t('p2p')} — {t('viewOnlyWeb')}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Viewers</p>
-                    <p className="text-sm text-white">{viewerCount} connected</p>
+                    <p className="text-xs text-gray-500">{t('viewers')}</p>
+                    <p className="text-sm text-white">{viewerCount} {t('viewersConnected')}</p>
                   </div>
                 </div>
               </div>
@@ -833,26 +836,26 @@ function HostContentP2P({
               <div className="rounded-lg border border-gray-700 bg-gray-800/50 p-4">
                 <h4 className="flex items-center gap-2 text-sm font-semibold text-white">
                   <Users className="h-4 w-4" />
-                  Invite Viewers
+                  {t('inviteViewers')}
                 </h4>
                 <ol className="mt-3 space-y-2 text-sm text-gray-400">
                   <li className="flex items-start gap-2">
                     <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-gray-700 text-xs font-medium text-white">
                       1
                     </span>
-                    Share the join link or code
+                    {t('inviteStep1')}
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-gray-700 text-xs font-medium text-white">
                       2
                     </span>
-                    Viewers open the link in their browser
+                    {t('inviteStep2')}
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-gray-700 text-xs font-medium text-white">
                       3
                     </span>
-                    They&apos;ll see your screen instantly
+                    {t('inviteStep3')}
                   </li>
                 </ol>
               </div>
@@ -860,10 +863,9 @@ function HostContentP2P({
               {/* Limitations note */}
               <div className="mt-4 rounded-lg border border-yellow-900/50 bg-yellow-900/20 p-3">
                 <p className="text-xs text-yellow-400">
-                  <strong>Note:</strong> Web hosting is view-only. For remote control features, use
-                  the{' '}
+                  <strong>Note:</strong> {t('webHostingNote')}{' '}
                   <Link href="/download" className="underline hover:text-yellow-300">
-                    desktop app
+                    {t('desktopApp')}
                   </Link>
                   .
                 </p>
@@ -890,14 +892,14 @@ function HostContentP2P({
       {showWhiteboard && (
         <div className="fixed inset-0 z-50 bg-gray-900">
           <div className="relative h-full w-full">
-            {/* Close button */}
+            {/* Close button - z-[100] to be above Excalidraw toolbar */}
             <button
               type="button"
               onClick={() => setShowWhiteboard(false)}
-              className="absolute right-4 top-4 z-10 flex items-center gap-1.5 rounded-lg bg-gray-800 px-3 py-1.5 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700"
+              className="absolute right-4 top-4 z-[100] flex items-center gap-1.5 rounded-lg bg-gray-800 px-3 py-1.5 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700 shadow-lg"
             >
               <X className="h-4 w-4" />
-              <span>Fechar</span>
+              <span>{tCommon('close')}</span>
             </button>
 
             <WhiteboardPanel
@@ -932,6 +934,8 @@ function HostContentSFU({
   sessionId: string;
 }) {
   const router = useRouter();
+  const t = useTranslations('host');
+  const tCommon = useTranslations('common');
   const [currentSession, setCurrentSession] = useState(session);
   const [copied, setCopied] = useState(false);
   const [isPausing, setIsPausing] = useState(false);
@@ -1125,9 +1129,7 @@ function HostContentSFU({
   // Handle end session
   const handleEndSession = useCallback(async () => {
     if (isPausing || isEnding) return;
-    const confirmed = confirm(
-      'Are you sure you want to end this session? This action cannot be undone.'
-    );
+    const confirmed = confirm(t('confirmEndSession'));
     if (!confirmed) return;
     setIsEnding(true);
     try {
@@ -1172,7 +1174,7 @@ function HostContentSFU({
               <Logo size="sm" variant="light" />
               <div className="flex items-center gap-2">
                 <span className="rounded-full bg-green-900/50 px-2 py-0.5 text-xs font-medium text-green-400">
-                  Hosting (SFU)
+                  {t('hostingSFU')}
                 </span>
                 <span
                   className={`rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -1181,7 +1183,7 @@ function HostContentSFU({
                       : 'bg-gray-800 text-gray-400'
                   }`}
                 >
-                  {captureState === 'active' ? 'Screen Sharing' : 'Voice Only'}
+                  {captureState === 'active' ? t('screenSharing') : t('voiceOnly')}
                 </span>
               </div>
             </div>
@@ -1207,7 +1209,7 @@ function HostContentSFU({
                         className="flex items-center gap-1.5 rounded-md bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700"
                       >
                         <Circle className="h-3 w-3 fill-current" />
-                        Record
+                        {t('record')}
                       </button>
                     </>
                   ) : (
@@ -1220,6 +1222,7 @@ function HostContentSFU({
                         type="button"
                         onClick={handleTogglePause}
                         className="rounded-md p-1.5 text-gray-400 hover:bg-gray-700"
+                        title={isPaused ? t('resume') : t('pause')}
                       >
                         {isPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
                       </button>
@@ -1229,7 +1232,7 @@ function HostContentSFU({
                         className="flex items-center gap-1.5 rounded-md bg-gray-700 px-3 py-1.5 text-xs font-medium text-gray-200 hover:bg-gray-600"
                       >
                         <StopCircle className="h-3 w-3" />
-                        Stop
+                        {t('stop')}
                       </button>
                     </>
                   )}
@@ -1243,7 +1246,7 @@ function HostContentSFU({
                   className="flex items-center gap-1.5 rounded-lg bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
                 >
                   <Download className="h-4 w-4" />
-                  Download
+                  {t('download')}
                 </button>
               )}
 
@@ -1257,9 +1260,16 @@ function HostContentSFU({
                     ? 'bg-green-700 text-white hover:bg-green-600'
                     : 'border border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700'
                 } disabled:opacity-50`}
+                title={
+                  !hasMic
+                    ? t('noMicAvailable')
+                    : micEnabled
+                      ? t('muteMic')
+                      : t('unmuteMic')
+                }
               >
                 {micEnabled ? <Mic className="h-4 w-4" /> : <MicOff className="h-4 w-4" />}
-                <span className="hidden sm:inline">{micEnabled ? 'Mic On' : 'Mic Off'}</span>
+                <span className="hidden sm:inline">{micEnabled ? t('micOn') : t('micOff')}</span>
               </button>
 
               {/* Whiteboard */}
@@ -1273,7 +1283,7 @@ function HostContentSFU({
                 }`}
               >
                 <PenTool className="h-4 w-4" />
-                <span className="hidden sm:inline">Whiteboard</span>
+                <span className="hidden sm:inline">{t('whiteboard')}</span>
               </button>
 
               {/* Chat toggle */}
@@ -1287,13 +1297,13 @@ function HostContentSFU({
                 }`}
               >
                 <MessageSquare className="h-4 w-4" />
-                <span className="hidden sm:inline">Chat</span>
+                <span className="hidden sm:inline">{t('chat')}</span>
               </button>
 
               {/* Viewer count */}
               <div className="flex items-center gap-1.5 rounded-full bg-gray-800 px-2.5 py-1 text-xs font-medium text-gray-300">
                 <Eye className="h-3.5 w-3.5" />
-                {viewerCount} {viewerCount === 1 ? 'viewer' : 'viewers'}
+                {viewerCount} {viewerCount === 1 ? t('viewer') : t('viewers')}
               </div>
 
               {/* Pause button */}
@@ -1301,10 +1311,11 @@ function HostContentSFU({
                 type="button"
                 onClick={() => void handlePauseSession()}
                 disabled={isPausing || isEnding || isRecording}
+                title={isRecording ? t('stopRecordingFirst') : t('pauseSessionTooltip')}
                 className="flex items-center gap-1.5 rounded-lg border border-gray-700 bg-gray-800 px-3 py-1.5 text-sm font-medium text-gray-300 hover:bg-gray-700 disabled:opacity-50"
               >
                 {isPausing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Pause className="h-4 w-4" />}
-                <span className="hidden sm:inline">Pause</span>
+                <span className="hidden sm:inline">{t('pause')}</span>
               </button>
 
               {/* End button */}
@@ -1312,10 +1323,11 @@ function HostContentSFU({
                 type="button"
                 onClick={() => void handleEndSession()}
                 disabled={isPausing || isEnding || isRecording}
+                title={isRecording ? t('stopRecordingFirst') : t('endSessionTooltip')}
                 className="flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
               >
                 {isEnding ? <Loader2 className="h-4 w-4 animate-spin" /> : <StopCircle className="h-4 w-4" />}
-                <span className="hidden sm:inline">End</span>
+                <span className="hidden sm:inline">{t('end')}</span>
               </button>
             </div>
           </div>
@@ -1329,32 +1341,32 @@ function HostContentSFU({
             <div className="border-b border-gray-800 bg-gray-900 px-4 py-2">
               <div className="flex flex-wrap items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <label className="text-sm text-gray-400">Share:</label>
+                  <label className="text-sm text-gray-400">{t('shareLabel')}</label>
                   <select
                     value={shareType}
                     onChange={(e) => setShareType(e.target.value as ShareType)}
                     className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-1.5 text-sm text-gray-200"
                   >
-                    <option value="window">Window (Recommended)</option>
-                    <option value="screen">Entire Screen</option>
-                    <option value="browser">Browser Tab</option>
+                    <option value="window">{t('windowRecommended')}</option>
+                    <option value="screen">{t('entireScreen')}</option>
+                    <option value="browser">{t('browserTab')}</option>
                   </select>
                 </div>
                 <div className="flex items-center gap-2">
-                  <label className="text-sm text-gray-400">Quality:</label>
+                  <label className="text-sm text-gray-400">{t('qualityLabel')}</label>
                   <select
                     value={captureQuality}
                     onChange={(e) => setCaptureQuality(e.target.value as CaptureQuality)}
                     className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-1.5 text-sm text-gray-200"
                   >
-                    <option value="720p">720p (HD)</option>
-                    <option value="1080p">1080p (Full HD)</option>
-                    <option value="4k">4K</option>
+                    <option value="720p">{t('quality720p')}</option>
+                    <option value="1080p">{t('quality1080p')}</option>
+                    <option value="4k">{t('quality4k')}</option>
                   </select>
                 </div>
                 {shareType === 'screen' && (
                   <span className="text-xs text-yellow-400">
-                    Tip: Minimize this window to avoid mirror effect
+                    {t('minimizeTip')}
                   </span>
                 )}
               </div>
@@ -1375,7 +1387,7 @@ function HostContentSFU({
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div>
-                  <p className="text-xs text-gray-500">Join Code</p>
+                  <p className="text-xs text-gray-500">{t('joinCode')}</p>
                   <p className="font-mono text-lg font-bold text-white">{currentSession.join_code}</p>
                 </div>
                 <button
@@ -1386,12 +1398,12 @@ function HostContentSFU({
                   {copied ? (
                     <>
                       <Check className="h-4 w-4 text-green-400" />
-                      Copied!
+                      {t('copied')}
                     </>
                   ) : (
                     <>
                       <Copy className="h-4 w-4" />
-                      Copy Link
+                      {t('copyLink')}
                     </>
                   )}
                 </button>
@@ -1403,20 +1415,21 @@ function HostContentSFU({
                   className="bg-primary-600 hover:bg-primary-700 flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white"
                 >
                   <Share2 className="h-4 w-4" />
-                  Share Session
+                  {t('shareSession')}
                 </button>
                 <button
                   type="button"
                   onClick={() => {
-                    if (confirm('This will invalidate the current join link. Continue?')) {
+                    if (confirm(t('confirmResetLink'))) {
                       void handleRegenerateCode();
                     }
                   }}
                   disabled={isRegenerating}
                   className="flex items-center gap-2 rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 disabled:opacity-50"
+                  title={t('regenerateTooltip')}
                 >
                   <RefreshCw className={`h-4 w-4 ${isRegenerating ? 'animate-spin' : ''}`} />
-                  Reset Link
+                  {t('resetInviteLink')}
                 </button>
               </div>
             </div>
@@ -1438,21 +1451,21 @@ function HostContentSFU({
             </div>
             <div className="flex-1 overflow-y-auto p-4">
               <div className="mb-6">
-                <h3 className="text-sm font-semibold text-white">Session Info</h3>
+                <h3 className="text-sm font-semibold text-white">{t('sessionInfo')}</h3>
                 <div className="mt-3 space-y-3">
                   <div>
-                    <p className="text-xs text-gray-500">Status</p>
+                    <p className="text-xs text-gray-500">{t('status')}</p>
                     <p className="text-sm text-white">
-                      {captureState === 'active' ? 'Sharing Screen' : 'Voice Only'}
+                      {captureState === 'active' ? t('sharingScreen') : t('voiceOnly')}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Mode</p>
-                    <p className="text-sm text-white">SFU (LiveKit)</p>
+                    <p className="text-xs text-gray-500">{t('mode')}</p>
+                    <p className="text-sm text-white">{t('sfuLiveKit')}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Viewers</p>
-                    <p className="text-sm text-white">{viewerCount} connected</p>
+                    <p className="text-xs text-gray-500">{t('viewers')}</p>
+                    <p className="text-sm text-white">{viewerCount} {t('viewersConnected')}</p>
                   </div>
                 </div>
               </div>
@@ -1475,14 +1488,14 @@ function HostContentSFU({
       {showWhiteboard && (
         <div className="fixed inset-0 z-50 bg-gray-900">
           <div className="relative h-full w-full">
-            {/* Close button */}
+            {/* Close button - z-[100] to be above Excalidraw toolbar */}
             <button
               type="button"
               onClick={() => setShowWhiteboard(false)}
-              className="absolute right-4 top-4 z-10 flex items-center gap-1.5 rounded-lg bg-gray-800 px-3 py-1.5 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700"
+              className="absolute right-4 top-4 z-[100] flex items-center gap-1.5 rounded-lg bg-gray-800 px-3 py-1.5 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700 shadow-lg"
             >
               <X className="h-4 w-4" />
-              <span>Fechar</span>
+              <span>{tCommon('close')}</span>
             </button>
 
             <WhiteboardPanel
