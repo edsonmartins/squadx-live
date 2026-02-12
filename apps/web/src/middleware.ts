@@ -43,7 +43,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Gate protection check
-  const isGatePage = pathname === '/gate';
+  const isGatePage = pathname === '/gate' || pathname.startsWith('/gate/');
 
   // Skip i18n for gate page
   if (isGatePage) {
@@ -87,8 +87,8 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * - public folder assets
+     * - public folder assets (images)
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };
