@@ -44,7 +44,13 @@ export async function middleware(request: NextRequest) {
 
   // Gate protection check
   const isGatePage = pathname === '/gate';
-  if (GATE_ENABLED && !isGatePage) {
+
+  // Skip i18n for gate page
+  if (isGatePage) {
+    return NextResponse.next();
+  }
+
+  if (GATE_ENABLED) {
     const gateCookie = request.cookies.get(GATE_COOKIE_NAME);
     const isAuthorized = gateCookie?.value === GATE_COOKIE_VALUE;
 
