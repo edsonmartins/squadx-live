@@ -1,4 +1,6 @@
-import { getTranslations } from 'next-intl/server';
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { Logo } from '@/components/Logo';
 
@@ -57,8 +59,8 @@ const socialLinks = [
   },
 ];
 
-export async function Footer() {
-  const t = await getTranslations('footer');
+export function Footer() {
+  const t = useTranslations('footer');
 
   const productLinks = [
     { name: t('features'), href: '/features' },
