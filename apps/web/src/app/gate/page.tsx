@@ -41,7 +41,7 @@ export default function GatePage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 px-4">
       <div className="w-full max-w-md">
-        <div className="mb-8 text-center">
+        <div className="mb-8 flex flex-col items-center">
           <Logo size="lg" variant="light" />
           <p className="mt-4 text-gray-400">Beta Access</p>
         </div>
