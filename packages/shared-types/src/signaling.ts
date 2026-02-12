@@ -81,6 +81,53 @@ export type ControlMessage =
   | KickMessage
   | MuteMessage;
 
+// Presentation state (for viewer requesting to present)
+export type PresentationState = 'idle' | 'requested' | 'presenting';
+
+// Presentation request message (viewer wants to present)
+export interface PresentationRequestMessage {
+  type: 'presentation-request';
+  participantId: string;
+  participantName: string;
+  timestamp: number;
+}
+
+// Presentation grant message (host approves viewer to present)
+export interface PresentationGrantMessage {
+  type: 'presentation-grant';
+  participantId: string;
+  timestamp: number;
+}
+
+// Presentation revoke message (stop current presenter)
+export interface PresentationRevokeMessage {
+  type: 'presentation-revoke';
+  reason?: 'host-revoked' | 'self-stopped' | 'new-presenter';
+  timestamp: number;
+}
+
+// Presentation deny message (host denies viewer request)
+export interface PresentationDenyMessage {
+  type: 'presentation-deny';
+  participantId: string;
+  timestamp: number;
+}
+
+// Presentation active message (broadcast who is presenting)
+export interface PresentationActiveMessage {
+  type: 'presentation-active';
+  presenterId: string | null;
+  presenterName: string | null;
+}
+
+// Union type for presentation messages
+export type PresentationMessage =
+  | PresentationRequestMessage
+  | PresentationGrantMessage
+  | PresentationRevokeMessage
+  | PresentationDenyMessage
+  | PresentationActiveMessage;
+
 // Cursor position message (for multi-cursor overlay)
 export interface CursorPositionMessage {
   type: 'cursor';

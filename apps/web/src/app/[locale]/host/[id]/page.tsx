@@ -29,6 +29,7 @@ import { HostParticipantList } from '@/components/participants/HostParticipantLi
 import { ChatPanel } from '@/components/chat/ChatPanel';
 import { useParticipants } from '@/components/chat/useParticipants';
 import { WhiteboardPanel } from '@/modules/whiteboard';
+import { PresentationRequestNotification } from '@/components/session/PresentationRequestNotification';
 import { useScreenCapture, type CaptureQuality, type ShareType } from '@/hooks/useScreenCapture';
 import { useRecording, formatDuration, type RecordingQuality } from '@/hooks/useRecording';
 import { useWebRTCHost } from '@/hooks/useWebRTCHost';
@@ -209,6 +210,10 @@ function HostContentP2P({
     hasMic,
     toggleMic,
     micStream,
+    presentingViewer,
+    presentationRequests,
+    grantPresentation,
+    denyPresentation,
   } = useWebRTCHost({
     sessionId,
     hostId: session.host_user_id,
@@ -886,6 +891,13 @@ function HostContentP2P({
         )}
       </div>
 
+      {/* Presentation request notifications */}
+      <PresentationRequestNotification
+        requests={presentationRequests}
+        onApprove={grantPresentation}
+        onDeny={denyPresentation}
+      />
+
       {/* Whiteboard overlay */}
       {showWhiteboard && (
         <div className="fixed inset-0 z-50 bg-gray-900">
@@ -990,6 +1002,10 @@ function HostContentSFU({
     micEnabled,
     hasMic,
     toggleMic,
+    presentingViewer,
+    presentationRequests,
+    grantPresentation,
+    denyPresentation,
   } = useWebRTCHostSFU({
     sessionId,
     hostId: session.host_user_id,
@@ -1481,6 +1497,13 @@ function HostContentSFU({
           />
         )}
       </div>
+
+      {/* Presentation request notifications */}
+      <PresentationRequestNotification
+        requests={presentationRequests}
+        onApprove={grantPresentation}
+        onDeny={denyPresentation}
+      />
 
       {/* Whiteboard overlay */}
       {showWhiteboard && (

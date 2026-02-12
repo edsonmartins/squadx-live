@@ -63,6 +63,14 @@ export type {
   QualityMetrics,
   NetworkQuality,
   PresenceState,
+  // Presentation types
+  PresentationState,
+  PresentationRequestMessage,
+  PresentationGrantMessage,
+  PresentationRevokeMessage,
+  PresentationDenyMessage,
+  PresentationActiveMessage,
+  PresentationMessage,
 } from './signaling.js';
 
 // Input types

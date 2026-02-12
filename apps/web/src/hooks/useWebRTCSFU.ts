@@ -18,6 +18,10 @@ import type {
   CursorPositionMessage,
   KickMessage,
   MuteMessage,
+  PresentationState,
+  PresentationMessage,
+  PresentationRequestMessage,
+  PresentationRevokeMessage,
 } from '@squadx/shared-types';
 
 const LIVEKIT_URL = process.env.NEXT_PUBLIC_LIVEKIT_URL ?? '';
@@ -28,11 +32,15 @@ const decoder = new TextDecoder();
 interface UseWebRTCSFUOptions {
   sessionId: string;
   participantId: string;
+  participantName?: string;
   onStreamReady?: (stream: MediaStream) => void;
   onStreamEnded?: () => void;
   onControlStateChange?: (state: ControlStateUI) => void;
   onCursorUpdate?: (cursor: CursorPositionMessage) => void;
   onKicked?: (reason?: string) => void;
+  onPresentationGranted?: () => void;
+  onPresentationRevoked?: () => void;
+  onPresentationDenied?: () => void;
 }
 
 interface UseWebRTCSFUReturn {
@@ -52,6 +60,11 @@ interface UseWebRTCSFUReturn {
   micEnabled: boolean;
   hasMic: boolean;
   toggleMic: () => void;
+  // Presentation
+  presentationState: PresentationState;
+  requestPresentation: () => void;
+  stopPresentation: () => void;
+  publishStream: (stream: MediaStream) => void;
 }
 
 function mapConnectionState(lkState: LKConnectionState): ConnectionState {
@@ -72,11 +85,15 @@ function mapConnectionState(lkState: LKConnectionState): ConnectionState {
 export function useWebRTCSFU({
   sessionId,
   participantId,
+  participantName = 'Viewer',
   onStreamReady,
   onStreamEnded,
   onControlStateChange,
   onCursorUpdate,
   onKicked,
+  onPresentationGranted,
+  onPresentationRevoked,
+  onPresentationDenied,
 }: UseWebRTCSFUOptions): UseWebRTCSFUReturn {
   const [connectionState, setConnectionState] = useState<ConnectionState>('idle');
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
@@ -87,8 +104,10 @@ export function useWebRTCSFU({
   const [dataChannelReady, setDataChannelReady] = useState(false);
   const [micEnabled, setMicEnabled] = useState(false);
   const [hasMic, setHasMic] = useState(false);
+  const [presentationState, setPresentationState] = useState<PresentationState>('idle');
 
   const roomRef = useRef<Room | null>(null);
+  const localStreamRef = useRef<MediaStream | null>(null);
   const inputSequenceRef = useRef(0);
   const statsIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -97,6 +116,9 @@ export function useWebRTCSFU({
   const onKickedRef = useRef(onKicked);
   const onStreamReadyRef = useRef(onStreamReady);
   const onStreamEndedRef = useRef(onStreamEnded);
+  const onPresentationGrantedRef = useRef(onPresentationGranted);
+  const onPresentationRevokedRef = useRef(onPresentationRevoked);
+  const onPresentationDeniedRef = useRef(onPresentationDenied);
   const disconnectRef = useRef<(() => void) | undefined>(undefined);
 
   onControlStateChangeRef.current = onControlStateChange;
@@ -104,6 +126,9 @@ export function useWebRTCSFU({
   onKickedRef.current = onKicked;
   onStreamReadyRef.current = onStreamReady;
   onStreamEndedRef.current = onStreamEnded;
+  onPresentationGrantedRef.current = onPresentationGranted;
+  onPresentationRevokedRef.current = onPresentationRevoked;
+  onPresentationDeniedRef.current = onPresentationDenied;
 
   // Handle incoming data messages from LiveKit
   const handleDataReceived = useCallback(
@@ -114,7 +139,8 @@ export function useWebRTCSFU({
           | ControlMessage
           | CursorPositionMessage
           | KickMessage
-          | MuteMessage;
+          | MuteMessage
+          | PresentationMessage;
 
         if ('type' in message) {
           switch (message.type) {
@@ -148,6 +174,24 @@ export function useWebRTCSFU({
               }
               break;
             }
+            // Presentation messages
+            case 'presentation-grant':
+              setPresentationState('presenting');
+              onPresentationGrantedRef.current?.();
+              break;
+            case 'presentation-revoke':
+              setPresentationState('idle');
+              // Stop local stream if presenting
+              if (localStreamRef.current) {
+                localStreamRef.current.getTracks().forEach((track) => track.stop());
+                localStreamRef.current = null;
+              }
+              onPresentationRevokedRef.current?.();
+              break;
+            case 'presentation-deny':
+              setPresentationState('idle');
+              onPresentationDeniedRef.current?.();
+              break;
           }
         }
       } catch {
@@ -466,6 +510,71 @@ export function useWebRTCSFU({
     };
   }, [initialize, disconnect]);
 
+  // Request to present (share screen)
+  const requestPresentation = useCallback(() => {
+    const room = roomRef.current;
+    if (!room || presentationState !== 'idle') return;
+
+    setPresentationState('requested');
+
+    const message: PresentationRequestMessage = {
+      type: 'presentation-request',
+      participantId,
+      participantName,
+      timestamp: Date.now(),
+    };
+
+    const data = encoder.encode(JSON.stringify(message));
+    void room.localParticipant.publishData(data, { reliable: true });
+  }, [participantId, participantName, presentationState]);
+
+  // Stop presenting
+  const stopPresentation = useCallback(() => {
+    const room = roomRef.current;
+    if (!room) return;
+
+    // Stop local stream tracks
+    if (localStreamRef.current) {
+      localStreamRef.current.getTracks().forEach((track) => track.stop());
+      localStreamRef.current = null;
+    }
+
+    // Unpublish video track
+    const videoPub = room.localParticipant.getTrackPublication(Track.Source.ScreenShare);
+    if (videoPub) {
+      void room.localParticipant.unpublishTrack(videoPub.track!);
+    }
+
+    setPresentationState('idle');
+
+    // Notify host that we stopped presenting
+    const message: PresentationRevokeMessage = {
+      type: 'presentation-revoke',
+      reason: 'self-stopped',
+      timestamp: Date.now(),
+    };
+
+    const data = encoder.encode(JSON.stringify(message));
+    void room.localParticipant.publishData(data, { reliable: true });
+  }, []);
+
+  // Publish local stream when presenting
+  const publishStream = useCallback((stream: MediaStream) => {
+    const room = roomRef.current;
+    if (!room || presentationState !== 'presenting') return;
+
+    localStreamRef.current = stream;
+
+    // Publish screen share track via LiveKit
+    const videoTrack = stream.getVideoTracks()[0];
+    if (videoTrack) {
+      void room.localParticipant.publishTrack(videoTrack, {
+        source: Track.Source.ScreenShare,
+        simulcast: false,
+      });
+    }
+  }, [presentationState]);
+
   return {
     connectionState,
     remoteStream,
@@ -483,5 +592,10 @@ export function useWebRTCSFU({
     micEnabled,
     hasMic,
     toggleMic,
+    // Presentation
+    presentationState,
+    requestPresentation,
+    stopPresentation,
+    publishStream,
   };
 }

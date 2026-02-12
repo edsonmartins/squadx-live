@@ -15,6 +15,10 @@ import type {
   CursorPositionMessage,
   KickMessage,
   MuteMessage,
+  PresentationRequestMessage,
+  PresentationGrantMessage,
+  PresentationRevokeMessage,
+  PresentationDenyMessage,
 } from '@squadx/shared-types';
 
 const LIVEKIT_URL = process.env.NEXT_PUBLIC_LIVEKIT_URL ?? '';
@@ -33,6 +37,13 @@ export interface ViewerConnection {
   audioTrack: MediaStreamTrack | null;
   audioElement: HTMLAudioElement | null;
   isMuted: boolean;
+}
+
+// Presentation request from a viewer
+export interface PresentationRequest {
+  id: string;
+  name: string;
+  timestamp: number;
 }
 
 interface UseWebRTCHostSFUOptions {
@@ -65,6 +76,12 @@ interface UseWebRTCHostSFUReturn {
   hasMic: boolean;
   toggleMic: () => void;
   micStream: MediaStream | null;
+  // Presentation feature
+  presentingViewer: { id: string; name: string } | null;
+  presentationRequests: PresentationRequest[];
+  grantPresentation: (viewerId: string) => void;
+  revokePresentation: () => void;
+  denyPresentation: (viewerId: string) => void;
 }
 
 export function useWebRTCHostSFU({
@@ -83,6 +100,10 @@ export function useWebRTCHostSFU({
   const [controllingViewer, setControllingViewer] = useState<string | null>(null);
   const [micEnabled, setMicEnabled] = useState(false);
   const [hasMic, setHasMic] = useState(false);
+
+  // Presentation state
+  const [presentingViewer, setPresentingViewer] = useState<{ id: string; name: string } | null>(null);
+  const [presentationRequests, setPresentationRequests] = useState<PresentationRequest[]>([]);
 
   const roomRef = useRef<Room | null>(null);
   const viewersRef = useRef<Map<string, ViewerConnection>>(new Map());
@@ -120,7 +141,7 @@ export function useWebRTCHostSFU({
 
     try {
       const text = decoder.decode(payload);
-      const message = JSON.parse(text) as ControlMessage | InputMessage | CursorPositionMessage;
+      const message = JSON.parse(text) as ControlMessage | InputMessage | CursorPositionMessage | PresentationRequestMessage | PresentationRevokeMessage;
 
       if ('type' in message) {
         switch (message.type) {
@@ -142,6 +163,27 @@ export function useWebRTCHostSFU({
           case 'cursor':
             onCursorUpdateRef.current?.(viewerId, message);
             break;
+          case 'presentation-request': {
+            const presReq = message as PresentationRequestMessage;
+            setPresentationRequests((prev) => {
+              // Avoid duplicates
+              if (prev.some((r) => r.id === presReq.participantId)) return prev;
+              return [...prev, {
+                id: presReq.participantId,
+                name: presReq.participantName,
+                timestamp: presReq.timestamp,
+              }];
+            });
+            break;
+          }
+          case 'presentation-revoke': {
+            // Viewer stopped presenting on their own
+            const revokeMsg = message as PresentationRevokeMessage;
+            if (revokeMsg.reason === 'self-stopped') {
+              setPresentingViewer((prev) => (prev?.id === viewerId ? null : prev));
+            }
+            break;
+          }
         }
       }
     } catch {
@@ -550,6 +592,60 @@ export function useWebRTCHostSFU({
     [sendData]
   );
 
+  // Grant presentation to a viewer
+  const grantPresentation = useCallback((viewerId: string) => {
+    // If someone else is already presenting, revoke them first
+    if (presentingViewer && presentingViewer.id !== viewerId) {
+      const revokeMessage: PresentationRevokeMessage = {
+        type: 'presentation-revoke',
+        reason: 'new-presenter',
+        timestamp: Date.now(),
+      };
+      sendData(revokeMessage, presentingViewer.id);
+    }
+
+    // Find the request to get the viewer name
+    const request = presentationRequests.find((r) => r.id === viewerId);
+
+    // Send grant message
+    const grantMessage: PresentationGrantMessage = {
+      type: 'presentation-grant',
+      participantId: viewerId,
+      timestamp: Date.now(),
+    };
+    sendData(grantMessage, viewerId);
+
+    // Update state
+    setPresentingViewer({ id: viewerId, name: request?.name ?? 'Viewer' });
+    setPresentationRequests((prev) => prev.filter((r) => r.id !== viewerId));
+  }, [presentingViewer, presentationRequests, sendData]);
+
+  // Revoke presentation (host takes back control)
+  const revokePresentation = useCallback(() => {
+    if (!presentingViewer) return;
+
+    const revokeMessage: PresentationRevokeMessage = {
+      type: 'presentation-revoke',
+      reason: 'host-revoked',
+      timestamp: Date.now(),
+    };
+    sendData(revokeMessage, presentingViewer.id);
+
+    setPresentingViewer(null);
+  }, [presentingViewer, sendData]);
+
+  // Deny a presentation request
+  const denyPresentation = useCallback((viewerId: string) => {
+    const denyMessage: PresentationDenyMessage = {
+      type: 'presentation-deny',
+      participantId: viewerId,
+      timestamp: Date.now(),
+    };
+    sendData(denyMessage, viewerId);
+
+    setPresentationRequests((prev) => prev.filter((r) => r.id !== viewerId));
+  }, [sendData]);
+
   return {
     isHosting,
     viewerCount: viewers.size,
@@ -568,5 +664,11 @@ export function useWebRTCHostSFU({
     hasMic,
     toggleMic,
     micStream: null, // LiveKit manages mic internally
+    // Presentation feature
+    presentingViewer,
+    presentationRequests,
+    grantPresentation,
+    revokePresentation,
+    denyPresentation,
   };
 }

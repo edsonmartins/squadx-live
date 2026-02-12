@@ -191,7 +191,17 @@
     "high": "Alta",
     "medium": "Media",
     "low": "Baja",
-    "auto": "Automático"
+    "auto": "Automático",
+    "requestPresentation": "Presentar",
+    "awaitingApproval": "Esperando aprobación...",
+    "stopPresentation": "Dejar de Presentar",
+    "wantsToPresent": "quiere presentar",
+    "approve": "Aprobar",
+    "deny": "Rechazar",
+    "youArePresenting": "Estás presentando",
+    "isPresenting": "{name} está presentando",
+    "takeOverPresentation": "Retomar presentación",
+    "presentationRequests": "Solicitudes de Presentación"
   },
   "host": {
     "loadingSession": "Cargando sesión...",

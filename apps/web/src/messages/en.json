@@ -191,7 +191,17 @@
     "high": "High",
     "medium": "Medium",
     "low": "Low",
-    "auto": "Auto"
+    "auto": "Auto",
+    "requestPresentation": "Present",
+    "awaitingApproval": "Awaiting approval...",
+    "stopPresentation": "Stop Presenting",
+    "wantsToPresent": "wants to present",
+    "approve": "Approve",
+    "deny": "Deny",
+    "youArePresenting": "You are presenting",
+    "isPresenting": "{name} is presenting",
+    "takeOverPresentation": "Take over presentation",
+    "presentationRequests": "Presentation Requests"
   },
   "host": {
     "loadingSession": "Loading session...",

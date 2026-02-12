@@ -11,8 +11,13 @@ import {
   AlertCircle,
   Mic,
   MicOff,
+  PenTool,
+  X,
+  Monitor,
+  StopCircle,
 } from 'lucide-react';
 import { Wifi, WifiOff, RefreshCw } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type {
   ConnectionState,
   CursorPositionMessage,
@@ -20,10 +25,12 @@ import type {
   NetworkQuality,
   ControlStateUI,
   InputEvent,
+  PresentationState,
 } from '@squadx/shared-types';
 import { VideoViewer } from '@/components/video';
 import { useWebRTC } from '@/hooks/useWebRTC';
 import { useWebRTCSFU } from '@/hooks/useWebRTCSFU';
+import { useScreenCapture } from '@/hooks/useScreenCapture';
 import {
   ControlRequestButton,
   ControlStatusIndicator,
@@ -34,6 +41,7 @@ import { ChatPanel } from '@/components/chat/ChatPanel';
 import { SessionSettingsPanel } from '@/components/session/SessionSettingsPanel';
 import { HostPresenceIndicator } from '@/components/session/HostPresenceIndicator';
 import { useSessionPresence } from '@/hooks/useSessionPresence';
+import { WhiteboardPanel } from '@/modules/whiteboard';
 import { Logo } from '@/components/Logo';
 
 type SidebarPanel = 'participants' | 'chat' | 'settings' | null;
@@ -239,6 +247,11 @@ interface SessionViewerContentProps {
   micEnabled: boolean;
   hasMic: boolean;
   toggleMic: () => void;
+  // Presentation
+  presentationState: PresentationState;
+  requestPresentation: () => void;
+  stopPresentation: () => void;
+  publishStream: (stream: MediaStream) => void;
 }
 
 function SessionViewerContent({
@@ -261,9 +274,36 @@ function SessionViewerContent({
   micEnabled,
   hasMic,
   toggleMic,
+  presentationState,
+  requestPresentation,
+  stopPresentation,
+  publishStream,
 }: SessionViewerContentProps) {
+  const t = useTranslations('session');
+  const tCommon = useTranslations('common');
   const [activePanel, setActivePanel] = useState<SidebarPanel>('participants');
+  const [showWhiteboard, setShowWhiteboard] = useState(false);
+  const [whiteboardBoardId, setWhiteboardBoardId] = useState<string | undefined>(undefined);
   const videoContainerRef = useRef<HTMLDivElement>(null);
+
+  // Screen capture for when viewer is presenting
+  const { stream: captureStream, startCapture, stopCapture, captureState } = useScreenCapture();
+
+  // When presentation is granted, start screen capture
+  useEffect(() => {
+    if (presentationState === 'presenting' && captureState === 'idle') {
+      void startCapture({ quality: '1080p', shareType: 'window' });
+    } else if (presentationState !== 'presenting' && captureState === 'active') {
+      void stopCapture();
+    }
+  }, [presentationState, captureState, startCapture, stopCapture]);
+
+  // Publish captured stream when available
+  useEffect(() => {
+    if (captureStream && presentationState === 'presenting') {
+      publishStream(captureStream);
+    }
+  }, [captureStream, presentationState, publishStream]);
 
   // Track host presence in real-time
   const { status: sessionStatus, currentHostId, hostOnline } = useSessionPresence(sessionId);
@@ -377,6 +417,49 @@ function SessionViewerContent({
               {micEnabled ? <Mic className="h-4 w-4" /> : <MicOff className="h-4 w-4" />}
               {micEnabled ? 'Mic On' : 'Mic Off'}
             </button>
+            {/* Whiteboard button */}
+            <button
+              type="button"
+              onClick={() => setShowWhiteboard(true)}
+              className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                showWhiteboard
+                  ? 'bg-primary-600 text-white'
+                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+              }`}
+            >
+              <PenTool className="h-4 w-4" />
+              {t('whiteboard')}
+            </button>
+
+            {/* Presentation button */}
+            {presentationState === 'idle' && (
+              <button
+                type="button"
+                onClick={requestPresentation}
+                disabled={!dataChannelReady}
+                className="flex items-center gap-2 rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700 disabled:opacity-50"
+              >
+                <Monitor className="h-4 w-4" />
+                {t('requestPresentation')}
+              </button>
+            )}
+            {presentationState === 'requested' && (
+              <div className="flex items-center gap-2 rounded-lg bg-yellow-900/50 px-4 py-2 text-sm font-medium text-yellow-400">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {t('awaitingApproval')}
+              </div>
+            )}
+            {presentationState === 'presenting' && (
+              <button
+                type="button"
+                onClick={stopPresentation}
+                className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700"
+              >
+                <StopCircle className="h-4 w-4" />
+                {t('stopPresentation')}
+              </button>
+            )}
+
             <button
               type="button"
               onClick={() => {
@@ -478,6 +561,38 @@ function SessionViewerContent({
           </aside>
         )}
       </div>
+
+      {/* Whiteboard overlay */}
+      {showWhiteboard && (
+        <div className="fixed inset-0 z-50 bg-gray-900">
+          <div className="relative h-full w-full">
+            {/* Close button - z-[100] to be above Excalidraw toolbar */}
+            <button
+              type="button"
+              onClick={() => setShowWhiteboard(false)}
+              className="absolute right-4 top-4 z-[100] flex items-center gap-1.5 rounded-lg bg-gray-800 px-3 py-1.5 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700 shadow-lg"
+            >
+              <X className="h-4 w-4" />
+              <span>{tCommon('close')}</span>
+            </button>
+
+            <WhiteboardPanel
+              sessionId={sessionId}
+              boardId={whiteboardBoardId}
+              participantId={participantId}
+              participantName="Viewer"
+              participantColor="#10b981"
+              isHost={false}
+              onBoardChange={(boardId) => {
+                if (boardId && boardId !== 'undefined') {
+                  setWhiteboardBoardId(boardId);
+                }
+              }}
+              className="h-full"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

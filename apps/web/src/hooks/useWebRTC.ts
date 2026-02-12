@@ -13,6 +13,10 @@ import type {
   CursorPositionMessage,
   KickMessage,
   MuteMessage,
+  PresentationState,
+  PresentationMessage,
+  PresentationRequestMessage,
+  PresentationRevokeMessage,
 } from '@squadx/shared-types';
 
 // ICE server configuration
@@ -37,11 +41,16 @@ if (
 interface UseWebRTCOptions {
   sessionId: string;
   participantId: string;
+  participantName?: string;
   onStreamReady?: (stream: MediaStream) => void;
   onStreamEnded?: () => void;
   onControlStateChange?: (state: ControlStateUI) => void;
   onCursorUpdate?: (cursor: CursorPositionMessage) => void;
   onKicked?: (reason?: string) => void;
+  // Presentation callbacks
+  onPresentationGranted?: () => void;
+  onPresentationRevoked?: () => void;
+  onPresentationDenied?: () => void;
 }
 
 interface UseWebRTCReturn {
@@ -63,16 +72,25 @@ interface UseWebRTCReturn {
   micEnabled: boolean;
   hasMic: boolean;
   toggleMic: () => void;
+  // Presentation (viewer requesting to present)
+  presentationState: PresentationState;
+  requestPresentation: () => void;
+  stopPresentation: () => void;
+  publishStream: (stream: MediaStream) => void;
 }
 
 export function useWebRTC({
   sessionId,
   participantId,
+  participantName = 'Viewer',
   onStreamReady,
   onStreamEnded,
   onControlStateChange,
   onCursorUpdate,
   onKicked,
+  onPresentationGranted,
+  onPresentationRevoked,
+  onPresentationDenied,
 }: UseWebRTCOptions): UseWebRTCReturn {
   const [connectionState, setConnectionState] = useState<ConnectionState>('idle');
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
@@ -83,6 +101,7 @@ export function useWebRTC({
   const [dataChannelReady, setDataChannelReady] = useState(false);
   const [micEnabled, setMicEnabled] = useState(false);
   const [hasMic, setHasMic] = useState(false);
+  const [presentationState, setPresentationState] = useState<PresentationState>('idle');
 
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const micStreamRef = useRef<MediaStream | null>(null);
@@ -98,17 +117,26 @@ export function useWebRTC({
   // Serialize signaling message processing to prevent race conditions
   const signalQueueRef = useRef<Promise<void>>(Promise.resolve());
 
+  // Local stream for when viewer is presenting
+  const localStreamRef = useRef<MediaStream | null>(null);
+
   // Use refs to avoid circular dependencies in callbacks
   const handleConnectionFailureRef = useRef<(() => Promise<void>) | undefined>(undefined);
   const onControlStateChangeRef = useRef(onControlStateChange);
   const onCursorUpdateRef = useRef(onCursorUpdate);
   const onKickedRef = useRef(onKicked);
+  const onPresentationGrantedRef = useRef(onPresentationGranted);
+  const onPresentationRevokedRef = useRef(onPresentationRevoked);
+  const onPresentationDeniedRef = useRef(onPresentationDenied);
   const disconnectRef = useRef<(() => void) | undefined>(undefined);
 
   // Keep refs updated
   onControlStateChangeRef.current = onControlStateChange;
   onCursorUpdateRef.current = onCursorUpdate;
   onKickedRef.current = onKicked;
+  onPresentationGrantedRef.current = onPresentationGranted;
+  onPresentationRevokedRef.current = onPresentationRevoked;
+  onPresentationDeniedRef.current = onPresentationDenied;
 
   // Calculate network quality from metrics
   const calculateNetworkQuality = useCallback((metrics: QualityMetrics): NetworkQuality => {
@@ -131,7 +159,8 @@ export function useWebRTC({
         | ControlMessage
         | CursorPositionMessage
         | KickMessage
-        | MuteMessage;
+        | MuteMessage
+        | PresentationMessage;
 
       if ('type' in message) {
         switch (message.type) {
@@ -163,6 +192,24 @@ export function useWebRTC({
             }
             break;
           }
+          // Presentation messages
+          case 'presentation-grant':
+            setPresentationState('presenting');
+            onPresentationGrantedRef.current?.();
+            break;
+          case 'presentation-revoke':
+            setPresentationState('idle');
+            // Stop local stream if presenting
+            if (localStreamRef.current) {
+              localStreamRef.current.getTracks().forEach((track) => track.stop());
+              localStreamRef.current = null;
+            }
+            onPresentationRevokedRef.current?.();
+            break;
+          case 'presentation-deny':
+            setPresentationState('idle');
+            onPresentationDeniedRef.current?.();
+            break;
         }
       }
     } catch {
@@ -264,6 +311,90 @@ export function useWebRTC({
     },
     [participantId]
   );
+
+  // Request to present (share screen)
+  const requestPresentation = useCallback(() => {
+    const dc = dataChannelRef.current;
+    if (dc?.readyState !== 'open' || presentationState !== 'idle') return;
+
+    setPresentationState('requested');
+
+    const message: PresentationRequestMessage = {
+      type: 'presentation-request',
+      participantId,
+      participantName,
+      timestamp: Date.now(),
+    };
+
+    dc.send(JSON.stringify(message));
+  }, [participantId, participantName, presentationState]);
+
+  // Stop presenting
+  const stopPresentation = useCallback(() => {
+    const dc = dataChannelRef.current;
+    if (dc?.readyState !== 'open') return;
+
+    // Stop local stream tracks
+    if (localStreamRef.current) {
+      localStreamRef.current.getTracks().forEach((track) => track.stop());
+      localStreamRef.current = null;
+    }
+
+    // Remove video tracks from peer connection
+    const pc = peerConnectionRef.current;
+    if (pc) {
+      const senders = pc.getSenders();
+      senders.forEach((sender) => {
+        if (sender.track?.kind === 'video') {
+          pc.removeTrack(sender);
+        }
+      });
+    }
+
+    setPresentationState('idle');
+
+    // Notify host that we stopped presenting
+    const message: PresentationRevokeMessage = {
+      type: 'presentation-revoke',
+      reason: 'self-stopped',
+      timestamp: Date.now(),
+    };
+
+    dc.send(JSON.stringify(message));
+  }, []);
+
+  // Publish local stream when presenting
+  const publishStream = useCallback((stream: MediaStream) => {
+    const pc = peerConnectionRef.current;
+    if (!pc || presentationState !== 'presenting') return;
+
+    localStreamRef.current = stream;
+
+    // Add video tracks to peer connection
+    stream.getVideoTracks().forEach((track) => {
+      pc.addTrack(track, stream);
+    });
+
+    // Trigger renegotiation by creating a new offer
+    pc.createOffer().then((offer) => {
+      return pc.setLocalDescription(offer).then(() => {
+        if (offer.sdp) {
+          void channelRef.current?.send({
+            type: 'broadcast',
+            event: 'signal',
+            payload: {
+              type: 'offer',
+              sdp: offer.sdp,
+              senderId: participantId,
+              timestamp: Date.now(),
+            } satisfies SignalMessage,
+          });
+        }
+      });
+    }).catch((err) => {
+      console.error('Failed to publish stream:', err);
+    });
+  }, [participantId, presentationState]);
 
   // Collect WebRTC stats
   const collectStats = useCallback(async () => {
@@ -677,5 +808,10 @@ export function useWebRTC({
     micEnabled,
     hasMic,
     toggleMic,
+    // Presentation
+    presentationState,
+    requestPresentation,
+    stopPresentation,
+    publishStream,
   };
 }
