@@ -83,17 +83,10 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match only these paths:
-     * - /api/* (API routes)
-     * - /[locale]/* (i18n routes)
-     * - / (home)
-     * - /gate (gate page)
-     *
-     * Excludes static files by not matching them
+     * Match all paths except:
+     * - _next (Next.js internals)
+     * - Static files (images, fonts, etc.)
      */
-    '/',
-    '/gate',
-    '/api/:path*',
-    '/(en|pt-BR|es)/:path*',
+    '/((?!_next|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|js|css|woff|woff2|ttf|eot|json|xml|txt|webmanifest|map)$).*)',
   ],
 };
