@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
+import { useTranslations } from 'next-intl';
 import { User, Video, Users, Palette, Info, ArrowLeft, Check, Bell } from 'lucide-react';
 import { HeaderClient } from '@/components/header-client';
 import { Footer } from '@/components/footer';
@@ -45,6 +46,8 @@ const DEFAULT_SETTINGS: AppSettings = {
 const SETTINGS_KEY = 'squadx-live-web-settings';
 
 export default function SettingsPage() {
+  const t = useTranslations('settings');
+  const tCommon = useTranslations('common');
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
   const [saved, setSaved] = useState(false);
 
