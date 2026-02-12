@@ -157,7 +157,7 @@ export function RecentSessions() {
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-900">{t('recentSessions')}</h2>
         <Link
-          href="/sessions"
+          href="/dashboard"
           className="text-primary-600 hover:text-primary-700 text-sm font-medium"
         >
           {t('viewAll')}
