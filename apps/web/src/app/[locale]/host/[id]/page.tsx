@@ -8,7 +8,6 @@ import {
   Users,
   Copy,
   Check,
-  LogOut,
   Loader2,
   AlertCircle,
   Share2,
@@ -32,7 +31,7 @@ import { useParticipants } from '@/components/chat/useParticipants';
 import { WhiteboardPanel } from '@/modules/whiteboard';
 import { useScreenCapture, type CaptureQuality, type ShareType } from '@/hooks/useScreenCapture';
 import { useRecording, formatDuration, type RecordingQuality } from '@/hooks/useRecording';
-import { useWebRTCHost, type ViewerConnection } from '@/hooks/useWebRTCHost';
+import { useWebRTCHost } from '@/hooks/useWebRTCHost';
 import { useWebRTCHostSFU } from '@/hooks/useWebRTCHostSFU';
 import { useAudioMixer } from '@/hooks/useAudioMixer';
 import type { SessionParticipant } from '@squadx/shared-types';
@@ -64,7 +63,6 @@ let globalMicCaptureInProgress = false;
 export default function HostSessionPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: sessionId } = use(params);
   const t = useTranslations('host');
-  const tCommon = useTranslations('common');
   const [session, setSession] = useState<SessionData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

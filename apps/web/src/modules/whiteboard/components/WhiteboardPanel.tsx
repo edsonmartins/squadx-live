@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslations, useLocale } from 'next-intl';
 import { WhiteboardCanvas } from './WhiteboardCanvas';
 import { CursorOverlay } from './CursorOverlay';
 import { AgentPresenceOverlay } from './AgentPresenceOverlay';
@@ -28,7 +29,18 @@ import {
   WifiOff,
   PanelLeftClose,
   PanelLeft,
+  X,
 } from 'lucide-react';
+
+// Map app locale to Excalidraw langCode
+function getExcalidrawLangCode(locale: string): string {
+  const langMap: Record<string, string> = {
+    'en': 'en',
+    'pt-BR': 'pt-BR',
+    'es': 'es-ES',
+  };
+  return langMap[locale] || 'en';
+}
 
 interface WhiteboardContentProps {
   sessionId: string;
@@ -49,6 +61,10 @@ function WhiteboardContentWithSync({
   participantColor,
   onBoardChange,
 }: WhiteboardContentProps) {
+  const t = useTranslations('whiteboard');
+  const locale = useLocale();
+  const excalidrawLangCode = getExcalidrawLangCode(locale);
+
   const {
     board,
     elements,
@@ -66,6 +82,8 @@ function WhiteboardContentWithSync({
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [excalidrawAPI, setLocalExcalidrawAPI] = useState<ExcalidrawImperativeAPI | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [newBoardName, setNewBoardName] = useState('');
 
   // Board persistence with debounced auto-save
   const {
@@ -200,18 +218,29 @@ function WhiteboardContentWithSync({
     [setExcalidrawAPI]
   );
 
-  const handleCreateBoard = async () => {
+  const handleCreateBoard = async (title?: string) => {
     try {
-      const newBoard = await createBoard(sessionId);
+      const newBoard = await createBoard(sessionId, title);
       if (!newBoard?.id) {
         console.error('Failed to create board: no ID returned');
         return;
       }
       setBoards((prev) => [...prev, newBoard]);
       onBoardChange?.(newBoard.id);
+      setShowCreateDialog(false);
+      setNewBoardName('');
     } catch (err) {
       console.error('Failed to create board:', err);
     }
+  };
+
+  const handleCreateBoardWithDialog = () => {
+    setShowCreateDialog(true);
+  };
+
+  const handleSubmitNewBoard = (e: React.FormEvent) => {
+    e.preventDefault();
+    void handleCreateBoard(newBoardName.trim() || undefined);
   };
 
   const handleSelectBoard = (selectedBoardId: string) => {
@@ -222,24 +251,77 @@ function WhiteboardContentWithSync({
   if (!board && !isLoading && !boardId) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-6 bg-gray-50 dark:bg-gray-900 p-8">
+        {/* Create Board Dialog */}
+        {showCreateDialog && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="w-full max-w-sm rounded-xl bg-white dark:bg-gray-800 p-6 shadow-xl">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {t('createNewBoard')}
+                </h3>
+                <button
+                  onClick={() => {
+                    setShowCreateDialog(false);
+                    setNewBoardName('');
+                  }}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <form onSubmit={handleSubmitNewBoard}>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {t('boardName')}
+                </label>
+                <input
+                  type="text"
+                  value={newBoardName}
+                  onChange={(e) => setNewBoardName(e.target.value)}
+                  placeholder={t('enterBoardName')}
+                  className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  autoFocus
+                />
+                <div className="mt-4 flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowCreateDialog(false);
+                      setNewBoardName('');
+                    }}
+                    className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    {t('cancel')}
+                  </button>
+                  <button
+                    type="submit"
+                    className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                  >
+                    {t('create')}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-col items-center gap-2 text-center">
           <PenTool className="h-12 w-12 text-indigo-500" />
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-            SquadX Whiteboard
+            {t('squadxWhiteboard')}
           </h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md">
-            Colabore visualmente com sua equipe. Desenhe diagramas, esboce ideias e faça brainstorm juntos em tempo real.
+            {t('collaborateVisually')}
           </p>
         </div>
 
         <div className="flex flex-col gap-3 w-full max-w-xs">
           {isHost && (
             <button
-              onClick={handleCreateBoard}
+              onClick={handleCreateBoardWithDialog}
               className="flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-3 text-sm font-medium text-white hover:bg-indigo-700 transition-colors"
             >
               <Plus className="h-4 w-4" />
-              Criar Novo Quadro
+              {t('createNewBoard')}
             </button>
           )}
 
@@ -251,7 +333,7 @@ function WhiteboardContentWithSync({
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                   <span className="bg-gray-50 dark:bg-gray-900 px-2 text-gray-500 dark:text-gray-400">
-                    Ou selecione existente
+                    {t('orSelectExisting')}
                   </span>
                 </div>
               </div>
@@ -269,7 +351,7 @@ function WhiteboardContentWithSync({
                         {b.title}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">
-                        Atualizado {new Date(b.updatedAt).toLocaleDateString('pt-BR')}
+                        {t('updated')} {new Date(b.updatedAt).toLocaleDateString(locale)}
                       </div>
                     </div>
                   </button>
@@ -280,7 +362,7 @@ function WhiteboardContentWithSync({
 
           {!isHost && boards.length === 0 && (
             <div className="text-center text-sm text-gray-500 dark:text-gray-400">
-              Aguardando o host criar um quadro branco...
+              {t('waitingForHostBoard')}
             </div>
           )}
         </div>
@@ -295,7 +377,7 @@ function WhiteboardContentWithSync({
         <div className="flex flex-col items-center gap-2">
           <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
           <span className="text-sm text-gray-500 dark:text-gray-400">
-            Carregando whiteboard...
+            {t('loading')}
           </span>
         </div>
       </div>
@@ -309,7 +391,7 @@ function WhiteboardContentWithSync({
         <div className="flex flex-col items-center gap-2 text-center">
           <AlertCircle className="h-8 w-8 text-red-500" />
           <span className="text-sm text-gray-900 dark:text-white font-medium">
-            Falha ao carregar whiteboard
+            {t('failedToLoad')}
           </span>
           <span className="text-sm text-gray-500 dark:text-gray-400">
             {error}
@@ -344,7 +426,7 @@ function WhiteboardContentWithSync({
             <button
               onClick={() => setShowSidebar(!showSidebar)}
               className="flex items-center justify-center h-8 w-8 rounded-lg bg-white/90 dark:bg-gray-800/90 backdrop-blur shadow-sm border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
-              title={showSidebar ? 'Ocultar painel' : 'Mostrar painel'}
+              title={showSidebar ? t('hidePanel') : t('showPanel')}
             >
               {showSidebar ? (
                 <PanelLeftClose className="h-4 w-4" />
@@ -359,7 +441,7 @@ function WhiteboardContentWithSync({
                 {isSaving || isPersisting ? (
                   <Loader2 className="h-3 w-3 animate-spin text-gray-400" />
                 ) : (
-                  <span title={lastSavedAt ? `Salvo às ${lastSavedAt.toLocaleTimeString('pt-BR')}` : 'Salvo'}>
+                  <span title={lastSavedAt ? t('savedAt', { time: lastSavedAt.toLocaleTimeString(locale) }) : t('saved')}>
                     <Check className="h-3 w-3 text-green-500" />
                   </span>
                 )}
@@ -377,12 +459,12 @@ function WhiteboardContentWithSync({
             {isConnected ? (
               <>
                 <Wifi className="h-3 w-3" />
-                <span>Sincronizado</span>
+                <span>{t('synced')}</span>
               </>
             ) : (
               <>
                 <WifiOff className="h-3 w-3" />
-                <span>Desconectado</span>
+                <span>{t('disconnected')}</span>
               </>
             )}
           </div>
@@ -440,6 +522,7 @@ function WhiteboardContentWithSync({
           onAPIReady={handleAPIReady}
           viewModeEnabled={!canDraw}
           theme={theme}
+          langCode={excalidrawLangCode}
           className="h-full w-full"
         />
       </div>

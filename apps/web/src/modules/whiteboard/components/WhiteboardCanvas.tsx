@@ -36,6 +36,7 @@ const Excalidraw = dynamic(
 
 interface WhiteboardCanvasInternalProps extends WhiteboardCanvasProps {
   onAPIReady?: (api: ExcalidrawImperativeAPI) => void;
+  langCode?: string;
 }
 
 export function WhiteboardCanvas({
@@ -50,6 +51,7 @@ export function WhiteboardCanvas({
   gridModeEnabled = false,
   theme = 'light',
   className = '',
+  langCode = 'en',
 }: WhiteboardCanvasInternalProps) {
   const [isClient, setIsClient] = useState(false);
 
@@ -126,7 +128,7 @@ export function WhiteboardCanvas({
             image: true,
           },
         }}
-        langCode="en"
+        langCode={langCode}
         renderTopRightUI={() => null}
       />
     </div>

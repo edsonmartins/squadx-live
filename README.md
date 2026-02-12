@@ -43,6 +43,12 @@ O SquadX Live transforma o desenvolvimento de software em uma experiência verda
 - **Presença visual** - Veja cursores e status dos agentes em tempo real
 - **Histórico de ações** - Acompanhe o que cada agente contribuiu
 
+### Internacionalização
+- **Multi-idioma** - Interface disponível em Inglês, Português (BR) e Espanhol
+- **Detecção automática** - Detecta o idioma do navegador automaticamente
+- **URL-based routing** - URLs com prefixo de locale (`/pt-BR`, `/es`)
+- **Whiteboard traduzido** - Excalidraw também traduzido para o idioma selecionado
+
 ### Segurança
 - **Criptografia E2E** - Toda mídia criptografada via WebRTC DTLS-SRTP
 - **Sem armazenamento no servidor** - Dados de tela nunca tocam nossos servidores
@@ -56,13 +62,14 @@ O SquadX Live transforma o desenvolvimento de software em uma experiência verda
 
 | Componente | Tecnologia |
 |-----------|------------|
-| Frontend | Next.js 16, React 19, TypeScript |
+| Frontend | Next.js 15, React 19, TypeScript |
 | Desktop | Tauri 2.0 (Rust), Electron (legado) |
 | Whiteboard | Excalidraw, Yjs (CRDT) |
 | Tempo real | y-websocket, Supabase Realtime |
 | Mídia | WebRTC (P2P nativo), LiveKit SFU |
 | Integração IA | MCP Server, Anthropic SDK |
 | Backend | Supabase (Auth, PostgreSQL, Storage) |
+| i18n | next-intl |
 | Build | pnpm, Turborepo |
 
 ---
@@ -221,6 +228,7 @@ pnpm start -- --session-id SEU_SESSION_ID --board-id SEU_BOARD_ID
 - [x] Whiteboard colaborativo (Excalidraw + Yjs)
 - [x] MCP Server para agentes de IA
 - [x] Sistema de permissões para agentes
+- [x] Internacionalização (EN, PT-BR, ES)
 
 ### Próximo
 - [ ] Integração de voz/vídeo
