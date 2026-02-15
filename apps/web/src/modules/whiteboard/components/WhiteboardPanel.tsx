@@ -130,7 +130,7 @@ function WhiteboardContentWithSync({
   }, []);
 
 
-  // Load board list for session
+  // Load board list for session (with polling for non-hosts waiting for boards)
   useEffect(() => {
     async function fetchBoards() {
       try {
@@ -147,7 +147,22 @@ function WhiteboardContentWithSync({
     }
 
     fetchBoards();
-  }, [sessionId]);
+
+    // Poll for board updates for non-hosts waiting for a board to be created
+    // This ensures viewers see new boards created by the host
+    let pollInterval: NodeJS.Timeout | null = null;
+    if (!isHost && !boardId) {
+      pollInterval = setInterval(() => {
+        fetchBoards();
+      }, 3000); // Poll every 3 seconds
+    }
+
+    return () => {
+      if (pollInterval) {
+        clearInterval(pollInterval);
+      }
+    };
+  }, [sessionId, isHost, boardId]);
 
   // Load specific board if boardId provided
   useEffect(() => {
