@@ -15,6 +15,8 @@ import {
   MicOff,
   PenTool,
   X,
+  Monitor,
+  StopCircle,
 } from 'lucide-react';
 import { Wifi, WifiOff, RefreshCw } from 'lucide-react';
 import { HostPresenceIndicator } from '@/components/session/HostPresenceIndicator';
@@ -26,10 +28,12 @@ import type {
   NetworkQuality,
   ControlStateUI,
   InputEvent,
+  PresentationState,
 } from '@squadx/shared-types';
 import { VideoViewer } from '@/components/video';
 import { useWebRTC } from '@/hooks/useWebRTC';
 import { useWebRTCSFU } from '@/hooks/useWebRTCSFU';
+import { useScreenCapture } from '@/hooks/useScreenCapture';
 import {
   ControlRequestButton,
   ControlStatusIndicator,
@@ -276,6 +280,11 @@ interface GuestViewerContentProps {
   micEnabled: boolean;
   hasMic: boolean;
   toggleMic: () => void;
+  // Presentation
+  presentationState: PresentationState;
+  requestPresentation: () => void;
+  stopPresentation: () => void;
+  publishStream: (stream: MediaStream) => void;
 }
 
 function GuestViewerContent({
@@ -298,6 +307,10 @@ function GuestViewerContent({
   micEnabled,
   hasMic,
   toggleMic,
+  presentationState,
+  requestPresentation,
+  stopPresentation,
+  publishStream,
 }: GuestViewerContentProps) {
   const t = useTranslations('viewer');
   const tCommon = useTranslations('common');
@@ -306,6 +319,37 @@ function GuestViewerContent({
   const activeParticipants = session.session_participants.filter((p) => p.role !== 'left');
   const [showWhiteboard, setShowWhiteboard] = useState(false);
   const [whiteboardBoardId, setWhiteboardBoardId] = useState<string | undefined>(undefined);
+
+  // Screen capture for when guest is presenting
+  const { stream: captureStream, startCapture, stopCapture, captureState, error: captureError } = useScreenCapture();
+
+  // When presentation is granted, start screen capture
+  useEffect(() => {
+    if (presentationState === 'presenting' && captureState === 'idle') {
+      void startCapture({ quality: '1080p', shareType: 'window' });
+    } else if (presentationState !== 'presenting' && captureState === 'active') {
+      void stopCapture();
+    }
+  }, [presentationState, captureState, startCapture, stopCapture]);
+
+  // If screen capture fails or is cancelled, stop the presentation
+  useEffect(() => {
+    if (presentationState === 'presenting' && (captureState === 'error' || (captureState === 'idle' && !captureStream))) {
+      const timeout = setTimeout(() => {
+        if (captureState === 'error' || (captureState === 'idle' && !captureStream)) {
+          stopPresentation();
+        }
+      }, 1000);
+      return () => clearTimeout(timeout);
+    }
+  }, [presentationState, captureState, captureStream, stopPresentation]);
+
+  // Publish captured stream when available
+  useEffect(() => {
+    if (captureStream && presentationState === 'presenting') {
+      publishStream(captureStream);
+    }
+  }, [captureStream, presentationState, publishStream]);
 
   // Track host presence in real-time
   const { status: sessionStatus, currentHostId, hostOnline } = useSessionPresence(session.id);
@@ -420,6 +464,37 @@ function GuestViewerContent({
               <PenTool className="h-4 w-4" />
               {t('whiteboard')}
             </button>
+
+            {/* Presentation button */}
+            {presentationState === 'idle' && (
+              <button
+                type="button"
+                onClick={requestPresentation}
+                disabled={!dataChannelReady}
+                className="flex items-center gap-2 rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700 disabled:opacity-50"
+                title={captureError || undefined}
+              >
+                <Monitor className="h-4 w-4" />
+                {t('requestPresentation')}
+              </button>
+            )}
+            {presentationState === 'requested' && (
+              <div className="flex items-center gap-2 rounded-lg bg-yellow-900/50 px-4 py-2 text-sm font-medium text-yellow-400">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {t('awaitingApproval')}
+              </div>
+            )}
+            {presentationState === 'presenting' && (
+              <button
+                type="button"
+                onClick={stopPresentation}
+                className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700"
+              >
+                <StopCircle className="h-4 w-4" />
+                {t('stopPresentation')}
+              </button>
+            )}
+
             <button
               type="button"
               className="flex items-center gap-2 rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700"

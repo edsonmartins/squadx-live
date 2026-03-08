@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
+    "dev:https": "next dev --experimental-https",
     "build": "next build && npm run build:standalone",
     "build:standalone": "cp -r public .next/standalone/apps/web/ && cp -r .next/static .next/standalone/apps/web/.next/",
     "start": "next start",

@@ -287,7 +287,7 @@ function SessionViewerContent({
   const videoContainerRef = useRef<HTMLDivElement>(null);
 
   // Screen capture for when viewer is presenting
-  const { stream: captureStream, startCapture, stopCapture, captureState } = useScreenCapture();
+  const { stream: captureStream, startCapture, stopCapture, captureState, error: captureError } = useScreenCapture();
 
   // When presentation is granted, start screen capture
   useEffect(() => {
@@ -297,6 +297,19 @@ function SessionViewerContent({
       void stopCapture();
     }
   }, [presentationState, captureState, startCapture, stopCapture]);
+
+  // If screen capture fails or is cancelled, stop the presentation
+  useEffect(() => {
+    if (presentationState === 'presenting' && (captureState === 'error' || (captureState === 'idle' && !captureStream))) {
+      // Small delay to avoid race condition with initial capture request
+      const timeout = setTimeout(() => {
+        if (captureState === 'error' || (captureState === 'idle' && !captureStream)) {
+          stopPresentation();
+        }
+      }, 1000);
+      return () => clearTimeout(timeout);
+    }
+  }, [presentationState, captureState, captureStream, stopPresentation]);
 
   // Publish captured stream when available
   useEffect(() => {
@@ -438,9 +451,14 @@ function SessionViewerContent({
                 onClick={requestPresentation}
                 disabled={!dataChannelReady}
                 className="flex items-center gap-2 rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700 disabled:opacity-50"
+                title={captureError || undefined}
               >
                 <Monitor className="h-4 w-4" />
-                {t('requestPresentation')}
+                {captureError ? (
+                  <span className="text-red-400">{t('requestPresentation')}</span>
+                ) : (
+                  t('requestPresentation')
+                )}
               </button>
             )}
             {presentationState === 'requested' && (

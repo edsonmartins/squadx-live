@@ -330,7 +330,20 @@ function HostContentP2P({
   const copyJoinLink = useCallback(async () => {
     const joinUrl = `${window.location.origin}/join/${currentSession.join_code}`;
     try {
-      await navigator.clipboard.writeText(joinUrl);
+      // Use clipboard API if available (requires HTTPS or localhost)
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(joinUrl);
+      } else {
+        // Fallback for HTTP or unsupported browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = joinUrl;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-9999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
       setCopied(true);
       setTimeout(() => {
         setCopied(false);

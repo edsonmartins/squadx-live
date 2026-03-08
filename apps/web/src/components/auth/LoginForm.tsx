@@ -8,10 +8,42 @@ import { useTranslations } from 'next-intl';
 import { Mail, Lock, Eye, EyeOff, Loader2, AlertCircle, Key } from 'lucide-react';
 import { trackLogin } from '@/lib/analytics';
 
+// Validate redirect URL to prevent open redirect attacks
+function getSafeRedirect(redirectParam: string | null): string {
+  const defaultRedirect = '/dashboard';
+
+  if (!redirectParam) {
+    return defaultRedirect;
+  }
+
+  try {
+    // If it's a relative path starting with /, it's safe
+    if (redirectParam.startsWith('/') && !redirectParam.startsWith('//')) {
+      // Additional check: ensure it doesn't contain protocol-like patterns
+      if (redirectParam.includes(':') || redirectParam.includes('\\')) {
+        return defaultRedirect;
+      }
+      return redirectParam;
+    }
+
+    // If it's an absolute URL, check if it's same origin
+    const url = new URL(redirectParam, window.location.origin);
+    if (url.origin === window.location.origin) {
+      return url.pathname + url.search + url.hash;
+    }
+
+    // External URL - not allowed
+    return defaultRedirect;
+  } catch {
+    // Invalid URL
+    return defaultRedirect;
+  }
+}
+
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get('redirect') || '/dashboard';
+  const redirect = getSafeRedirect(searchParams.get('redirect'));
   const t = useTranslations('auth');
 
   const [email, setEmail] = useState('');

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/client';
+import { validateHostMessage } from '@/lib/webrtc-validation';
 import type {
   ConnectionState,
   SignalMessage,
@@ -11,11 +12,9 @@ import type {
   NetworkQuality,
   KickMessage,
   MuteMessage,
-  PresentationRequestMessage,
   PresentationGrantMessage,
   PresentationRevokeMessage,
   PresentationDenyMessage,
-  PresentationMessage,
 } from '@squadx/shared-types';
 
 // Adaptive bitrate encoding presets (optimized for screen sharing with text)
@@ -51,23 +50,26 @@ const BITRATE_PRESETS: Record<NetworkQuality, BitratePreset> = {
 // Stats collection interval (ms)
 const STATS_INTERVAL = 2000;
 
-// ICE server configuration
-const ICE_SERVERS: RTCIceServer[] = [
+// Default ICE servers (STUN only - fallback if TURN credentials fetch fails)
+const DEFAULT_ICE_SERVERS: RTCIceServer[] = [
   { urls: 'stun:stun.l.google.com:19302' },
   { urls: 'stun:stun1.l.google.com:19302' },
 ];
 
-// Get TURN servers from environment if available
-if (
-  process.env.NEXT_PUBLIC_TURN_URL &&
-  process.env.NEXT_PUBLIC_TURN_USERNAME &&
-  process.env.NEXT_PUBLIC_TURN_CREDENTIAL
-) {
-  ICE_SERVERS.push({
-    urls: process.env.NEXT_PUBLIC_TURN_URL,
-    username: process.env.NEXT_PUBLIC_TURN_USERNAME,
-    credential: process.env.NEXT_PUBLIC_TURN_CREDENTIAL,
-  });
+// Fetch dynamic TURN credentials from server
+async function fetchIceServers(): Promise<RTCIceServer[]> {
+  try {
+    const response = await fetch('/api/turn-credentials');
+    if (!response.ok) {
+      console.warn('[WebRTCHost] Failed to fetch TURN credentials, using STUN only');
+      return DEFAULT_ICE_SERVERS;
+    }
+    const data = (await response.json()) as { iceServers: RTCIceServer[] };
+    return data.iceServers || DEFAULT_ICE_SERVERS;
+  } catch (error) {
+    console.warn('[WebRTCHost] Error fetching TURN credentials:', error);
+    return DEFAULT_ICE_SERVERS;
+  }
 }
 
 export interface ViewerConnection {
@@ -158,6 +160,7 @@ export function useWebRTCHost({
   const hostMicStreamRef = useRef<MediaStream | null>(null);
   const localStreamRef = useRef<MediaStream | null>(localStream);
   const isStartingRef = useRef(false); // Prevents concurrent startHosting calls
+  const iceServersRef = useRef<RTCIceServer[]>(DEFAULT_ICE_SERVERS);
   // Buffer ICE candidates per viewer until their remote description is set
   const pendingCandidatesRef = useRef<Map<string, RTCIceCandidateInit[]>>(new Map());
   const onControlRequestRef = useRef(onControlRequest);
@@ -255,63 +258,56 @@ export function useWebRTCHost({
     }
   }, [calculateNetworkQuality, adjustBitrate]);
 
-  // Handle data channel messages from a viewer
+  // Handle data channel messages from a viewer with validation
   const handleDataChannelMessage = useCallback((viewerId: string, event: MessageEvent<string>) => {
-    try {
-      const message = JSON.parse(event.data) as
-        | ControlMessage
-        | InputMessage
-        | CursorPositionMessage
-        | PresentationMessage;
+    // Validate message before processing
+    const message = validateHostMessage(event.data);
+    if (!message) {
+      // Invalid or malformed message - ignore
+      return;
+    }
 
-      if ('type' in message) {
-        switch (message.type) {
-          case 'control-request':
-            onControlRequestRef.current?.(viewerId);
-            break;
-          case 'control-revoke': {
-            // Viewer is releasing control
-            const viewer = viewersRef.current.get(viewerId);
-            if (viewer) {
-              viewer.controlState = 'view-only';
-              setViewers(new Map(viewersRef.current));
-              setControllingViewer((prev) => (prev === viewerId ? null : prev));
-            }
-            break;
-          }
-          case 'input':
-            onInputReceivedRef.current?.(viewerId, message);
-            break;
-          case 'cursor':
-            onCursorUpdateRef.current?.(viewerId, message);
-            break;
-          // Presentation messages
-          case 'presentation-request': {
-            const presMsg = message as PresentationRequestMessage;
-            setPresentationRequests((prev) => {
-              // Avoid duplicates
-              if (prev.some((r) => r.id === presMsg.participantId)) return prev;
-              return [...prev, {
-                id: presMsg.participantId,
-                name: presMsg.participantName,
-                timestamp: presMsg.timestamp,
-              }];
-            });
-            onPresentationRequestRef.current?.(presMsg.participantId, presMsg.participantName);
-            break;
-          }
-          case 'presentation-revoke': {
-            // Viewer stopped presenting
-            const revokeMsg = message as PresentationRevokeMessage;
-            if (revokeMsg.reason === 'self-stopped') {
-              setPresentingViewer((prev) => (prev?.id === viewerId ? null : prev));
-            }
-            break;
-          }
+    switch (message.type) {
+      case 'control-request':
+        onControlRequestRef.current?.(viewerId);
+        break;
+      case 'control-revoke': {
+        // Viewer is releasing control
+        const viewer = viewersRef.current.get(viewerId);
+        if (viewer) {
+          viewer.controlState = 'view-only';
+          setViewers(new Map(viewersRef.current));
+          setControllingViewer((prev) => (prev === viewerId ? null : prev));
         }
+        break;
       }
-    } catch {
-      // Invalid message format - ignore
+      case 'input':
+        onInputReceivedRef.current?.(viewerId, message as InputMessage);
+        break;
+      case 'cursor':
+        onCursorUpdateRef.current?.(viewerId, message as CursorPositionMessage);
+        break;
+      // Presentation messages
+      case 'presentation-request': {
+        setPresentationRequests((prev) => {
+          // Avoid duplicates
+          if (prev.some((r) => r.id === message.participantId)) return prev;
+          return [...prev, {
+            id: message.participantId,
+            name: message.participantName,
+            timestamp: message.timestamp,
+          }];
+        });
+        onPresentationRequestRef.current?.(message.participantId, message.participantName);
+        break;
+      }
+      case 'presentation-revoke': {
+        // Viewer stopped presenting
+        if (message.reason === 'self-stopped') {
+          setPresentingViewer((prev) => (prev?.id === viewerId ? null : prev));
+        }
+        break;
+      }
     }
   }, []);
 
@@ -361,7 +357,7 @@ export function useWebRTCHost({
   const createPeerConnection = useCallback(
     (viewerId: string): RTCPeerConnection => {
       const pc = new RTCPeerConnection({
-        iceServers: ICE_SERVERS,
+        iceServers: iceServersRef.current,
         iceCandidatePoolSize: 10,
       });
 
@@ -663,6 +659,11 @@ export function useWebRTCHost({
       return;
     }
     isStartingRef.current = true;
+
+    // Fetch dynamic TURN credentials from server
+    console.log('[WebRTCHost] Fetching ICE server credentials...');
+    iceServersRef.current = await fetchIceServers();
+    console.log('[WebRTCHost] ICE servers configured:', iceServersRef.current.length);
 
     // Stop any existing mic stream before capturing new one
     if (hostMicStreamRef.current) {

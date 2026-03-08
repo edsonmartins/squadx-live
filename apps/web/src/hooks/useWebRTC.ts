@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/client';
+import { validateViewerMessage } from '@/lib/webrtc-validation';
 import type {
   ConnectionState,
   QualityMetrics,
@@ -11,31 +12,31 @@ import type {
   ControlMessage,
   ControlStateUI,
   CursorPositionMessage,
-  KickMessage,
-  MuteMessage,
   PresentationState,
-  PresentationMessage,
   PresentationRequestMessage,
   PresentationRevokeMessage,
 } from '@squadx/shared-types';
 
-// ICE server configuration
-const ICE_SERVERS: RTCIceServer[] = [
+// Default ICE servers (will be replaced with dynamic credentials)
+const DEFAULT_ICE_SERVERS: RTCIceServer[] = [
   { urls: 'stun:stun.l.google.com:19302' },
   { urls: 'stun:stun1.l.google.com:19302' },
 ];
 
-// Get TURN servers from environment if available
-if (
-  process.env.NEXT_PUBLIC_TURN_URL &&
-  process.env.NEXT_PUBLIC_TURN_USERNAME &&
-  process.env.NEXT_PUBLIC_TURN_CREDENTIAL
-) {
-  ICE_SERVERS.push({
-    urls: process.env.NEXT_PUBLIC_TURN_URL,
-    username: process.env.NEXT_PUBLIC_TURN_USERNAME,
-    credential: process.env.NEXT_PUBLIC_TURN_CREDENTIAL,
-  });
+// Fetch dynamic ICE servers with TURN credentials from API
+async function fetchIceServers(): Promise<RTCIceServer[]> {
+  try {
+    const response = await fetch('/api/turn-credentials');
+    if (!response.ok) {
+      console.warn('[WebRTC] Failed to fetch TURN credentials, using STUN only');
+      return DEFAULT_ICE_SERVERS;
+    }
+    const data = await response.json() as { iceServers: RTCIceServer[] };
+    return data.iceServers || DEFAULT_ICE_SERVERS;
+  } catch (error) {
+    console.warn('[WebRTC] Error fetching TURN credentials:', error);
+    return DEFAULT_ICE_SERVERS;
+  }
 }
 
 interface UseWebRTCOptions {
@@ -112,6 +113,9 @@ export function useWebRTC({
   const inputSequenceRef = useRef(0);
   const maxReconnectAttempts = 3;
 
+  // Dynamic ICE servers fetched from API
+  const iceServersRef = useRef<RTCIceServer[]>(DEFAULT_ICE_SERVERS);
+
   // Buffer ICE candidates that arrive before remote description is set
   const pendingCandidatesRef = useRef<RTCIceCandidateInit[]>([]);
   // Serialize signaling message processing to prevent race conditions
@@ -152,68 +156,62 @@ export function useWebRTC({
     return 'bad';
   }, []);
 
-  // Handle incoming data channel messages
+  // Handle incoming data channel messages with validation
   const handleDataChannelMessage = useCallback((event: MessageEvent<string>) => {
-    try {
-      const message = JSON.parse(event.data) as
-        | ControlMessage
-        | CursorPositionMessage
-        | KickMessage
-        | MuteMessage
-        | PresentationMessage;
+    // Validate message before processing
+    const message = validateViewerMessage(event.data);
+    if (!message) {
+      // Invalid or malformed message - ignore
+      return;
+    }
 
-      if ('type' in message) {
-        switch (message.type) {
-          case 'control-grant':
-            setControlState('granted');
-            onControlStateChangeRef.current?.('granted');
-            break;
-          case 'control-revoke':
-            setControlState('view-only');
-            onControlStateChangeRef.current?.('view-only');
-            break;
-          case 'cursor':
-            onCursorUpdateRef.current?.(message);
-            break;
-          case 'kick':
-            // Host kicked this viewer
-            setError('You were removed from the session');
-            disconnectRef.current?.();
-            onKickedRef.current?.(message.reason);
-            break;
-          case 'mute': {
-            // Host force-muted/unmuted this viewer's mic
-            const micStream = micStreamRef.current;
-            if (micStream) {
-              micStream.getAudioTracks().forEach((track) => {
-                track.enabled = !message.muted;
-              });
-              setMicEnabled(!message.muted);
-            }
-            break;
-          }
-          // Presentation messages
-          case 'presentation-grant':
-            setPresentationState('presenting');
-            onPresentationGrantedRef.current?.();
-            break;
-          case 'presentation-revoke':
-            setPresentationState('idle');
-            // Stop local stream if presenting
-            if (localStreamRef.current) {
-              localStreamRef.current.getTracks().forEach((track) => track.stop());
-              localStreamRef.current = null;
-            }
-            onPresentationRevokedRef.current?.();
-            break;
-          case 'presentation-deny':
-            setPresentationState('idle');
-            onPresentationDeniedRef.current?.();
-            break;
+    switch (message.type) {
+      case 'control-grant':
+        setControlState('granted');
+        onControlStateChangeRef.current?.('granted');
+        break;
+      case 'control-revoke':
+        setControlState('view-only');
+        onControlStateChangeRef.current?.('view-only');
+        break;
+      case 'cursor':
+        onCursorUpdateRef.current?.(message as CursorPositionMessage);
+        break;
+      case 'kick':
+        // Host kicked this viewer
+        setError('You were removed from the session');
+        disconnectRef.current?.();
+        onKickedRef.current?.(message.reason);
+        break;
+      case 'mute': {
+        // Host force-muted/unmuted this viewer's mic
+        const micStream = micStreamRef.current;
+        if (micStream) {
+          micStream.getAudioTracks().forEach((track) => {
+            track.enabled = !message.muted;
+          });
+          setMicEnabled(!message.muted);
         }
+        break;
       }
-    } catch {
-      // Invalid message format - ignore
+      // Presentation messages
+      case 'presentation-grant':
+        setPresentationState('presenting');
+        onPresentationGrantedRef.current?.();
+        break;
+      case 'presentation-revoke':
+        setPresentationState('idle');
+        // Stop local stream if presenting
+        if (localStreamRef.current) {
+          localStreamRef.current.getTracks().forEach((track) => track.stop());
+          localStreamRef.current = null;
+        }
+        onPresentationRevokedRef.current?.();
+        break;
+      case 'presentation-deny':
+        setPresentationState('idle');
+        onPresentationDeniedRef.current?.();
+        break;
     }
   }, []);
 
@@ -568,7 +566,7 @@ export function useWebRTC({
   // Create and configure peer connection
   const createPeerConnection = useCallback(() => {
     const pc = new RTCPeerConnection({
-      iceServers: ICE_SERVERS,
+      iceServers: iceServersRef.current,
       iceCandidatePoolSize: 10,
     });
 
@@ -709,6 +707,14 @@ export function useWebRTC({
   // Initialize connection
   const initialize = useCallback(async () => {
     const supabase = createClient();
+
+    // Fetch dynamic TURN credentials before creating peer connection
+    try {
+      const servers = await fetchIceServers();
+      iceServersRef.current = servers;
+    } catch (err) {
+      console.warn('[WebRTC] Failed to fetch ICE servers, using defaults:', err);
+    }
 
     // Capture microphone BEFORE setting up the peer connection
     // so mic tracks are available when the SDP answer is created

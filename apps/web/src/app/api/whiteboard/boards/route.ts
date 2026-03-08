@@ -87,18 +87,44 @@ export async function GET(request: Request) {
       return errorResponse('Authentication required', 401);
     }
 
-    // Build query
-    let query = supabase
+    // sessionId is required to prevent IDOR - users can only list boards for sessions they have access to
+    if (!sessionId) {
+      return errorResponse('sessionId is required', 400);
+    }
+
+    // Verify user has access to the session (host or participant)
+    const { data: session, error: sessionError } = await supabase
+      .from('sessions')
+      .select('id, host_user_id')
+      .eq('id', sessionId)
+      .single();
+
+    if (sessionError || !session) {
+      return errorResponse('Session not found', 404);
+    }
+
+    // Check if user is host or participant
+    const isHost = session.host_user_id === user.id;
+    if (!isHost) {
+      const { data: participant } = await supabase
+        .from('session_participants')
+        .select('id')
+        .eq('session_id', sessionId)
+        .eq('user_id', user.id)
+        .single();
+
+      if (!participant) {
+        return errorResponse('Access denied', 403);
+      }
+    }
+
+    // Build query - now always filtered by sessionId
+    const { data: boards, error: boardsError } = await supabase
       .from('whiteboard_boards')
       .select('*')
       .eq('is_archived', false)
+      .eq('session_id', sessionId)
       .order('updated_at', { ascending: false });
-
-    if (sessionId) {
-      query = query.eq('session_id', sessionId);
-    }
-
-    const { data: boards, error: boardsError } = await query;
 
     if (boardsError) {
       console.error('List boards error:', boardsError);

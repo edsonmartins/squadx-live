@@ -47,7 +47,8 @@ export function useChat({
       setIsLoading(true);
       setError(null);
 
-      const res = await fetch(`/api/chat/history?sessionId=${sessionId}`);
+      const params = new URLSearchParams({ sessionId });
+      const res = await fetch(`/api/chat/history?${params.toString()}`);
       const data = (await res.json()) as ApiResponse<ChatHistoryData>;
 
       if (!res.ok) {
@@ -73,9 +74,11 @@ export function useChat({
     if (!oldestMessage) return;
 
     try {
-      const res = await fetch(
-        `/api/chat/history?sessionId=${sessionId}&before=${oldestMessage.created_at}`
-      );
+      const params = new URLSearchParams({
+        sessionId,
+        before: oldestMessage.created_at,
+      });
+      const res = await fetch(`/api/chat/history?${params.toString()}`);
       const data = (await res.json()) as ApiResponse<ChatHistoryData>;
 
       if (!res.ok) {
@@ -99,7 +102,8 @@ export function useChat({
       eventSourceRef.current.close();
     }
 
-    const url = `/api/chat/stream?sessionId=${sessionId}`;
+    const params = new URLSearchParams({ sessionId });
+    const url = `/api/chat/stream?${params.toString()}`;
     const eventSource = new EventSource(url);
     eventSourceRef.current = eventSource;
 

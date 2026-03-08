@@ -9,6 +9,44 @@ const updateBoardSchema = z.object({
   isArchived: z.boolean().optional(),
 });
 
+// Helper to verify user access to a board's session
+async function verifyBoardAccess(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  boardId: string,
+  userId: string
+): Promise<{ board: Record<string, unknown>; isHost: boolean; isCreator: boolean } | { error: string; status: number }> {
+  // Get the board with session info
+  const { data: board, error: boardError } = await supabase
+    .from('whiteboard_boards')
+    .select('*, sessions!inner(id, host_user_id)')
+    .eq('id', boardId)
+    .single();
+
+  if (boardError || !board) {
+    return { error: 'Board not found', status: 404 };
+  }
+
+  const session = board.sessions as { id: string; host_user_id: string };
+  const isHost = session.host_user_id === userId;
+  const isCreator = board.created_by === userId;
+
+  // Check if user is host, creator, or participant
+  if (!isHost && !isCreator) {
+    const { data: participant } = await supabase
+      .from('session_participants')
+      .select('id')
+      .eq('session_id', session.id)
+      .eq('user_id', userId)
+      .single();
+
+    if (!participant) {
+      return { error: 'Access denied', status: 403 };
+    }
+  }
+
+  return { board, isHost, isCreator };
+}
+
 // GET /api/whiteboard/boards/[boardId] - Get a specific board
 export async function GET(
   _request: Request,
@@ -25,16 +63,13 @@ export async function GET(
       return errorResponse('Authentication required', 401);
     }
 
-    // Get the board
-    const { data: board, error: boardError } = await supabase
-      .from('whiteboard_boards')
-      .select('*')
-      .eq('id', boardId)
-      .single();
-
-    if (boardError || !board) {
-      return errorResponse('Board not found', 404);
+    // Verify user has access to the board's session
+    const accessResult = await verifyBoardAccess(supabase, boardId, user.id);
+    if ('error' in accessResult) {
+      return errorResponse(accessResult.error, accessResult.status);
     }
+
+    const { board } = accessResult;
 
     // Transform to camelCase
     const response = {
@@ -73,6 +108,19 @@ async function updateBoard(
 
     if (authError || !user) {
       return errorResponse('Authentication required', 401);
+    }
+
+    // Verify user has write access to the board (host or creator only)
+    const accessResult = await verifyBoardAccess(supabase, boardId, user.id);
+    if ('error' in accessResult) {
+      return errorResponse(accessResult.error, accessResult.status);
+    }
+
+    const { isHost, isCreator } = accessResult;
+
+    // Only host or creator can modify the board
+    if (!isHost && !isCreator) {
+      return errorResponse('Only the host or board creator can modify this board', 403);
     }
 
     // Build update object
@@ -160,6 +208,19 @@ export async function DELETE(
 
     if (authError || !user) {
       return errorResponse('Authentication required', 401);
+    }
+
+    // Verify user has write access to the board (host or creator only)
+    const accessResult = await verifyBoardAccess(supabase, boardId, user.id);
+    if ('error' in accessResult) {
+      return errorResponse(accessResult.error, accessResult.status);
+    }
+
+    const { isHost, isCreator } = accessResult;
+
+    // Only host or creator can delete the board
+    if (!isHost && !isCreator) {
+      return errorResponse('Only the host or board creator can delete this board', 403);
     }
 
     // Archive the board (soft delete)
